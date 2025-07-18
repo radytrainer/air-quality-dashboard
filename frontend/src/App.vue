@@ -1,9 +1,11 @@
+<!-- src/App.vue -->
 <template>
+  <Navbar />
   <div class="min-h-screen bg-gray-100">
-    <Dashboard />
+    <RouterView />
   </div>
 </template>
 
 <script setup>
-import Dashboard from '@/views/DashboardView.vue'
+import Navbar from './components/Navbar.vue'
 </script>
