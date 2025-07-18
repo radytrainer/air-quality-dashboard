@@ -4,9 +4,9 @@
     <div class="flex items-center gap-6">
       <!-- Logo -->
       <img
-        src="https://via.placeholder.com/40x40.png?text=AQI"
+        src="/src/assets/images/Logo.png"
         alt="AQI Logo"
-        class="h-10 w-10"
+        class="h-18 w-40"
       />
 
       <!-- Search Bar -->
@@ -98,7 +98,7 @@
 </template>
 
 <script setup>
-// No script logic needed for static navbar
+
 </script>
 
 <style scoped>
