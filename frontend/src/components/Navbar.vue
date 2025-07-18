@@ -9,6 +9,22 @@
 
       <!-- Search Bar -->
       <div class="relative">
+<<<<<<< HEAD
+=======
+
+        <input
+          type="text"
+          placeholder="Search any Location, City, State or Country"
+          class="bg-gray-100 text-gray-900 px-10 py-2.5 rounded-md w-96 placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
+        />
+        <i
+          class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+        ></i>
+        <i
+          class="fas fa-crosshairs absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer hover:text-blue-600 transition"
+          title="Locate me"
+        ></i>
+>>>>>>> 87fbb293ba1d43052bfd380629fc3455347886b8
           <div>
         <CitySearch @city-selected="handleCitySelected" />
       <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
@@ -129,11 +145,19 @@
           </div>
         </transition>
       </div>
+<<<<<<< HEAD
+=======
+<!-- Login Button -->
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-semibold transition">
+        Login
+
+>>>>>>> 87fbb293ba1d43052bfd380629fc3455347886b8
     </div>
   </nav>
 </template>
 
 <script setup>
+<<<<<<< HEAD
 
 import CitySearch from './CitySearch.vue'
 import { ref } from 'vue'
@@ -146,6 +170,13 @@ const selectedCity = ref('')
 function handleCitySelected(city) {
   selectedCity.value = city
 }
+=======
+
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/services/api'
+import { useAuthStore } from '@/stores/airQuality'
+>>>>>>> 87fbb293ba1d43052bfd380629fc3455347886b8
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -199,6 +230,17 @@ function logout() {
   isLoggedIn.value = false
   showLoginForm.value = false
 
+<<<<<<< HEAD
+=======
+import CitySearch from './CitySearch.vue'
+import { ref } from 'vue'
+
+const selectedCity = ref('')
+
+function handleCitySelected(city) {
+  selectedCity.value = city
+
+>>>>>>> 87fbb293ba1d43052bfd380629fc3455347886b8
 }
 </script>
 
