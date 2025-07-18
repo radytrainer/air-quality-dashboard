@@ -9,25 +9,10 @@
 
       <!-- Search Bar -->
       <div class="relative">
-<<<<<<<<< Temporary merge branch 1
           <div>
         <CitySearch @city-selected="handleCitySelected" />
       <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
       </div>
-=========
-        <input
-          type="text"
-          placeholder="Search any Location, City, State or Country"
-          class="bg-gray-100 text-gray-900 px-10 py-2.5 rounded-md w-96 placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
-        />
-        <i
-          class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-        ></i>
-        <i
-          class="fas fa-crosshairs absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer hover:text-blue-600 transition"
-          title="Locate me"
-        ></i>
->>>>>>>>> Temporary merge branch 2
       </div>
     </div>
 
@@ -76,13 +61,6 @@
         aria-label="Toggle theme" title="Toggle Light/Dark Mode">
         <i class="fas fa-sun"></i>
       </button>
-
-<<<<<<<<< Temporary merge branch 1
-      <!-- Login Button -->
-      <button class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-semibold transition">
-        Login
-      </button>
-=========
       <!-- Login / Logout -->
       <div>
         <button
@@ -151,25 +129,23 @@
           </div>
         </transition>
       </div>
->>>>>>>>> Temporary merge branch 2
     </div>
   </nav>
 </template>
 
 <script setup>
-<<<<<<<<< Temporary merge branch 1
+
 import CitySearch from './CitySearch.vue'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/services/api'
+import { useAuthStore } from '@/stores/airQuality'
 
 const selectedCity = ref('')
 
 function handleCitySelected(city) {
   selectedCity.value = city
-=========
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import api from '@/services/api'
-import { useAuthStore } from '@/stores/airQuality'
+}
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -222,7 +198,7 @@ function logout() {
   auth.logout() // clear token from Pinia + localStorage
   isLoggedIn.value = false
   showLoginForm.value = false
->>>>>>>>> Temporary merge branch 2
+
 }
 </script>
 
