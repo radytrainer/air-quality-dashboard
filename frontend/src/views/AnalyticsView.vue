@@ -1,21 +1,8 @@
 <template>
-  <div class="min-h-screen bg-white relative overflow-hidden">
-    <!-- Animated Background -->
-    <div class="absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob">
-      </div>
-      <div
-        class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000">
-      </div>
-      <div
-        class="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000">
-      </div>
-    </div>
-
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 relative overflow-hidden">
     <!-- Floating Particles -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div v-for="i in 20" :key="i" :class="`absolute w-2 h-2 bg-gray-300 rounded-full opacity-10 animate-float`"
+      <div v-for="i in 10" :key="i" :class="`absolute w-1 h-1 bg-white rounded-full opacity-20 animate-float`"
         :style="{
           left: Math.random() * 100 + '%',
           top: Math.random() * 100 + '%',
@@ -31,14 +18,14 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div class="text-gray-900">
             <h1
-              class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
+              class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
               Air Quality Analytics
             </h1>
             <p class="text-gray-600 mt-2 text-lg">Real-time pollution monitoring & insights</p>
             <div class="flex items-center gap-4 mt-3">
               <div class="flex items-center gap-2">
-                <div class="w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
-                <span class="text-green-400 font-medium">Live Data</span>
+                <div class="w-3 h-3 bg-teal-400 rounded-full animate-ping"></div>
+                <span class="text-teal-400 font-medium">Live Data</span>
               </div>
               <div class="text-gray-500">{{ currentTime }}</div>
             </div>
@@ -46,15 +33,17 @@
 
           <div class="flex items-center gap-3">
             <select v-model="timeRange"
-              class="px-4 py-3 bg-gray-100/80 backdrop-blur-md border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-300">
+              class="px-4 py-3 bg-white/80 backdrop-blur-md border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all duration-300">
               <option value="24h" class="text-gray-900">Last 24h</option>
               <option value="7d" class="text-gray-900">Last 7 days</option>
               <option value="30d" class="text-gray-900">Last 30 days</option>
               <option value="90d" class="text-gray-900">Last 90 days</option>
             </select>
             <button
-              class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-              <CalendarDaysIcon class="h-5 w-5 mr-2 inline" />
+              class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 text-white rounded-xl hover:from-cyan-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+              <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
               Custom Range
             </button>
           </div>
@@ -63,15 +52,17 @@
         <!-- Real-time Status Cards with Animations -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div
-            class="group relative overflow-hidden bg-gray-100/80 backdrop-blur-md rounded-2xl p-6 border border-gray-300 hover:bg-gray-200/80 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
+            class="group relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 hover:bg-white/90 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-gray-700 font-medium">Current AQI</h3>
-                <div class="p-2 bg-blue-500/20 rounded-lg">
-                  <WindIcon class="h-6 w-6 text-blue-400" />
+                <div class="p-2 bg-blue-200/20 rounded-lg">
+                  <svg class="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
                 </div>
               </div>
               <div class="text-4xl font-bold text-gray-900 mb-2 transition-all duration-300">
@@ -82,32 +73,38 @@
                 <div class="w-2 h-2 rounded-full bg-current mr-2 animate-ping"></div>
                 {{ aqiStatus.status }}
               </div>
-              <div class="mt-4 h-2 bg-gray-300 rounded-full overflow-hidden">
+              <div class="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  class="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full transition-all duration-1000 ease-out"
+                  class="h-full bg-gradient-to-r from-blue-300 to-cyan-300 rounded-full transition-all duration-1000 ease-out"
                   :style="{ width: (currentAQI / 200) * 100 + '%' }"></div>
               </div>
             </div>
           </div>
 
           <div
-            class="group relative overflow-hidden bg-gray-100/80 backdrop-blur-md rounded-2xl p-6 border border-gray-300 hover:bg-gray-200/80 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
+            class="group relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 hover:bg-white/90 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-green-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-teal-200/20 to-blue-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-gray-700 font-medium">PM2.5 Level</h3>
-                <div class="p-2 bg-green-500/20 rounded-lg">
-                  <DropletsIcon class="h-6 w-6 text-green-400" />
+                <div class="p-2 bg-teal-200/20 rounded-lg">
+                  <svg class="h-6 w-6 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
               </div>
               <div class="text-4xl font-bold text-gray-900 mb-2">{{ animatedPM25 }}</div>
               <p class="text-gray-600 text-sm mb-3">μg/m³</p>
               <div class="flex items-center">
-                <TrendingUpIcon v-if="avgPM25 > 35" class="h-5 w-5 text-red-400 mr-2 animate-bounce" />
-                <TrendingDownIcon v-else class="h-5 w-5 text-green-400 mr-2 animate-bounce" />
-                <span :class="`text-sm font-medium ${avgPM25 > 35 ? 'text-red-400' : 'text-green-400'}`">
+                <svg v-if="avgPM25 > 35" class="h-5 w-5 text-red-400 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                <svg v-else class="h-5 w-5 text-teal-400 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                <span :class="`text-sm font-medium ${avgPM25 > 35 ? 'text-red-400' : 'text-teal-400'}`">
                   {{ avgPM25 > 35 ? 'Above WHO limit' : 'Within WHO limit' }}
                 </span>
               </div>
@@ -115,23 +112,30 @@
           </div>
 
           <div
-            class="group relative overflow-hidden bg-gray-100/80 backdrop-blur-md rounded-2xl p-6 border border-gray-300 hover:bg-gray-200/80 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
+            class="group relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 hover:bg-white/90 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-cyan-200/20 to-blue-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-gray-700 font-medium">PM10 Level</h3>
-                <div class="p-2 bg-yellow-500/20 rounded-lg">
-                  <EyeIcon class="h-6 w-6 text-yellow-400" />
+                <div class="p-2 bg-cyan-200/20 rounded-lg">
+                  <svg class="h-6 w-6 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
                 </div>
               </div>
               <div class="text-4xl font-bold text-gray-900 mb-2">{{ animatedPM10 }}</div>
               <p class="text-gray-600 text-sm mb-3">μg/m³</p>
               <div class="flex items-center">
-                <TrendingUpIcon v-if="avgPM10 > 45" class="h-5 w-5 text-red-400 mr-2 animate-bounce" />
-                <TrendingDownIcon v-else class="h-5 w-5 text-green-400 mr-2 animate-bounce" />
-                <span :class="`text-sm font-medium ${avgPM10 > 45 ? 'text-red-400' : 'text-green-400'}`">
+                <svg v-if="avgPM10 > 45" class="h-5 w-5 text-red-400 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                <svg v-else class="h-5 w-5 text-teal-400 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                <span :class="`text-sm font-medium ${avgPM10 > 45 ? 'text-red-400' : 'text-teal-400'}`">
                   {{ avgPM10 > 45 ? 'Above WHO limit' : 'Within WHO limit' }}
                 </span>
               </div>
@@ -139,22 +143,24 @@
           </div>
 
           <div
-            class="group relative overflow-hidden bg-gray-100/80 backdrop-blur-md rounded-2xl p-6 border border-gray-300 hover:bg-gray-200/80 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
+            class="group relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 hover:bg-white/90 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-red-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-red-200/20 to-pink-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-gray-700 font-medium">Health Alerts</h3>
-                <div class="p-2 bg-red-500/20 rounded-lg">
-                  <AlertTriangleIcon class="h-6 w-6 text-red-400 animate-pulse" />
+                <div class="p-2 bg-red-200/20 rounded-lg">
+                  <svg class="h-6 w-6 text-red-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
               </div>
               <div class="text-4xl font-bold text-gray-900 mb-2">{{ animatedAlerts }}</div>
               <p class="text-gray-600 text-sm mb-3">This week</p>
               <div
-                class="inline-flex items-center px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm font-medium animate-pulse">
-                <div class="w-2 h-2 rounded-full bg-red-400 mr-2 animate-ping"></div>
+                class="inline-flex items-center px-3 py-1 bg-red-200/20 text-red-300 rounded-full text-sm font-medium animate-pulse">
+                <div class="w-2 h-2 rounded-full bg-red-300 mr-2 animate-ping"></div>
                 High Risk Days
               </div>
             </div>
@@ -162,19 +168,19 @@
         </div>
 
         <!-- Interactive Tabs with Smooth Transitions -->
-        <div class="bg-gray-100/80 backdrop-blur-md rounded-2xl border border-gray-300 overflow-hidden">
-          <div class="border-b border-gray-300">
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-200 overflow-hidden">
+          <div class="border-b border-gray-200">
             <nav class="flex space-x-0">
               <button v-for="(tab, index) in tabs" :key="tab.id" @click="activeTab = tab.id" :class="`relative px-8 py-6 font-medium text-sm transition-all duration-300 ${activeTab === tab.id
-                ? 'text-gray-900 bg-gray-200/80'
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
+                ? 'text-gray-900 bg-white/80'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
                 }`">
                 <span class="relative z-10 flex items-center gap-2">
                   <component :is="tab.icon" class="h-5 w-5" />
                   {{ tab.name }}
                 </span>
                 <div v-if="activeTab === tab.id"
-                  class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-pink-400 animate-pulse">
+                  class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-teal-400 animate-pulse">
                 </div>
               </button>
             </nav>
@@ -188,20 +194,22 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <!-- Interactive AQI Chart -->
                   <div
-                    class="group bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:bg-gray-200/50 transition-all duration-500">
+                    class="group bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:bg-white/70 transition-all duration-500">
                     <div class="flex items-center justify-between mb-6">
                       <div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Air Quality Index Trend</h3>
                         <p class="text-gray-600">Real-time AQI monitoring</p>
                       </div>
-                      <div class="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
-                        <TrendingUpIcon class="h-6 w-6 text-blue-400" />
+                      <div class="p-3 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-xl">
+                        <svg class="h-6 w-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
                       </div>
                     </div>
 
                     <!-- Animated Chart Visualization -->
                     <div
-                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-gray-200">
+                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-100/10 to-cyan-100/10 border border-gray-200">
                       <div class="absolute inset-4">
                         <!-- Animated Grid Lines -->
                         <div class="absolute inset-0 opacity-20">
@@ -217,15 +225,15 @@
                         <svg class="w-full h-full" viewBox="0 0 400 200">
                           <defs>
                             <linearGradient id="aqiGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:0.8" />
-                              <stop offset="100%" style="stop-color:#A855F7;stop-opacity:0.2" />
+                              <stop offset="0%" style="stop-color:#38BDF8;stop-opacity:0.8" />
+                              <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:0.2" />
                             </linearGradient>
                           </defs>
                           <path :d="aqiChartPath" fill="url(#aqiGradient)" class="animate-draw" />
-                          <path :d="aqiLinePath" fill="none" stroke="#60A5FA" stroke-width="3" class="animate-draw" />
+                          <path :d="aqiLinePath" fill="none" stroke="#38BDF8" stroke-width="3" class="animate-draw" />
                           <!-- Animated Data Points -->
                           <circle v-for="(point, index) in aqiDataPoints" :key="index" :cx="point.x" :cy="point.y" r="4"
-                            fill="#60A5FA" class="animate-pulse cursor-pointer hover:r-6 transition-all duration-300"
+                            fill="#38BDF8" class="animate-pulse cursor-pointer hover:r-6 transition-all duration-300"
                             :style="{ animationDelay: index * 0.1 + 's' }" />
                         </svg>
                       </div>
@@ -240,20 +248,22 @@
 
                   <!-- Interactive PM Levels Chart -->
                   <div
-                    class="group bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:bg-gray-200/50 transition-all duration-500">
+                    class="group bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:bg-white/70 transition-all duration-500">
                     <div class="flex items-center justify-between mb-6">
                       <div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Particulate Matter</h3>
                         <p class="text-gray-600">PM2.5 & PM10 levels</p>
                       </div>
-                      <div class="p-3 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-xl">
-                        <DropletsIcon class="h-6 w-6 text-green-400" />
+                      <div class="p-3 bg-gradient-to-br from-teal-200/20 to-blue-200/20 rounded-xl">
+                        <svg class="h-6 w-6 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
                       </div>
                     </div>
 
                     <!-- Animated Bar Chart -->
                     <div
-                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-green-500/10 to-blue-500/10 border border-gray-200">
+                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-teal-100/10 to-blue-100/10 border border-gray-200">
                       <div class="absolute inset-4 flex items-end justify-around">
                         <!-- Use item.date as key to ensure uniqueness -->
                         <div v-for="item in airQualityData.slice(-7)" :key="item.date"
@@ -261,7 +271,7 @@
                           <!-- PM2.5 Bar -->
                           <div class="relative">
                             <div
-                              class="w-6 bg-gradient-to-t from-blue-400 to-blue-600 rounded-t transition-all duration-1000 ease-out"
+                              class="w-6 bg-gradient-to-t from-blue-300 to-blue-500 rounded-t transition-all duration-1000 ease-out"
                               :style="{
                                 height: (item.pm25 / 80) * 150 + 'px',
                                 animationDelay: (airQualityData.length - 7 + airQualityData.indexOf(item)) * 0.1 + 's'
@@ -275,7 +285,7 @@
                           <!-- PM10 Bar -->
                           <div class="relative">
                             <div
-                              class="w-6 bg-gradient-to-t from-green-400 to-green-600 rounded-t transition-all duration-1000 ease-out"
+                              class="w-6 bg-gradient-to-t from-teal-300 to-teal-500 rounded-t transition-all duration-1000 ease-out"
                               :style="{
                                 height: (item.pm10 / 100) * 76 + 'px',
                                 animationDelay: (airQualityData.length - 7 + airQualityData.indexOf(item)) * 0.3 + 0.2 + 's'
@@ -295,154 +305,13 @@
                       <!-- Legend -->
                       <div class="absolute top-4 left-4 space-y-2">
                         <div class="flex items-center gap-2">
-                          <div class="w-3 h-3 bg-blue-400 rounded"></div>
+                          <div class="w-3 h-3 bg-blue-300 rounded"></div>
                           <span class="text-gray-900 text-xs">PM2.5</span>
                         </div>
                         <div class="flex items-center gap-2">
-                          <div class="w-3 h-3 bg-green-400 rounded"></div>
+                          <div class="w-3 h-3 bg-teal-300 rounded"></div>
                           <span class="text-gray-900 text-xs">PM10</span>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Comparison Tab -->
-              <div v-else-if="activeTab === 'comparison'" class="space-y-8" key="comparison">
-                <div class="bg-gray-100/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-200">
-                  <div class="flex items-center justify-between mb-8">
-                    <div>
-                      <h3 class="text-2xl font-bold text-gray-900 mb-2">Multi-Pollutant Analysis</h3>
-                      <p class="text-gray-600">Compare different pollutant concentrations</p>
-                    </div>
-                    <div class="flex gap-2">
-                      <button v-for="pollutant in pollutants" :key="pollutant.key"
-                        @click="togglePollutant(pollutant.key)" :class="`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${selectedPollutants.includes(pollutant.key)
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                          : 'bg-gray-200/50 text-gray-600 hover:bg-gray-300/50'
-                          }`">
-                        {{ pollutant.name }}
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Multi-line Chart -->
-                  <div
-                    class="h-80 relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-gray-200">
-                    <svg class="w-full h-full p-4" viewBox="0 0 800 300">
-                      <defs>
-                        <linearGradient v-for="(pollutant, index) in pollutants" :key="pollutant.key"
-                          :id="`gradient-${pollutant.key}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" :style="`stop-color:${pollutant.color};stop-opacity:0.6`" />
-                          <stop offset="100%" :style="`stop-color:${pollutant.color};stop-opacity:0.1`" />
-                        </linearGradient>
-                      </defs>
-
-                      <!-- Grid Lines -->
-                      <g class="opacity-20">
-                        <line v-for="i in 6" :key="'h' + i" :x1="50" :y1="i * 50" :x2="750" :y2="i * 50" stroke="gray"
-                          stroke-width="1" />
-                        <line v-for="i in 8" :key="'v' + i" :x1="50 + i * 100" :y1="0" :x2="50 + i * 100" :y2="300"
-                          stroke="gray" stroke-width="1" />
-                      </g>
-
-                      <!-- Pollutant Lines -->
-                      <g v-for="pollutant in pollutants" :key="pollutant.key">
-                        <path v-if="selectedPollutants.includes(pollutant.key)" :d="getPollutantPath(pollutant.key)"
-                          :fill="`url(#gradient-${pollutant.key})`" class="animate-draw" />
-                        <path v-if="selectedPollutants.includes(pollutant.key)" :d="getPollutantLinePath(pollutant.key)"
-                          fill="none" :stroke="pollutant.color" stroke-width="3" class="animate-draw" />
-                      </g>
-                    </svg>
-
-                    <!-- Interactive Legend -->
-                    <div class="absolute bottom-4 left-4 space-y-2">
-                      <div v-for="pollutant in pollutants" :key="pollutant.key"
-                        v-show="selectedPollutants.includes(pollutant.key)"
-                        class="flex items-center gap-2 animate-fade-in">
-                        <div class="w-3 h-3 rounded-full animate-pulse" :style="{ backgroundColor: pollutant.color }">
-                        </div>
-                        <span class="text-gray-900 text-sm font-medium">{{ pollutant.name }}</span>
-                        <span class="text-gray-600 text-xs">{{ getAveragePollutant(pollutant.key) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Environmental Tab -->
-              <div v-else-if="activeTab === 'environmental'" class="space-y-8" key="environmental">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <!-- Temperature Correlation -->
-                  <div class="bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
-                    <div class="flex items-center justify-between mb-6">
-                      <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Temperature Impact</h3>
-                        <p class="text-gray-600">Correlation with air quality</p>
-                      </div>
-                      <div class="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl">
-                        <ThermometerIcon class="h-6 w-6 text-orange-400" />
-                      </div>
-                    </div>
-
-                    <!-- Scatter Plot Visualization -->
-                    <div
-                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-gray-200">
-                      <svg class="w-full h-full p-4" viewBox="0 0 400 200">
-                        <!-- Correlation Line -->
-                        <line x1="20" y1="180" x2="380" y2="20" stroke="#F97316" stroke-width="2" opacity="0.5"
-                          stroke-dasharray="5,5" class="animate-pulse" />
-
-                        <!-- Data Points -->
-                        <circle v-for="(item, index) in airQualityData" :key="index" :cx="20 + (item.temp / 30) * 360"
-                          :cy="180 - (item.aqi / 200) * 160" r="4" :fill="getTemperatureColor(item.temp)"
-                          class="animate-pulse cursor-pointer hover:r-6 transition-all duration-300"
-                          :style="{ animationDelay: index * 0.05 + 's' }" />
-                      </svg>
-
-                      <!-- Correlation Info -->
-                      <div class="absolute top-4 right-4 bg-gray-900/50 backdrop-blur-sm rounded-lg p-3">
-                        <div class="text-orange-400 text-sm font-medium">Correlation: +0.72</div>
-                        <div class="text-gray-400 text-xs">Strong positive</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Humidity Impact -->
-                  <div class="bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
-                    <div class="flex items-center justify-between mb-6">
-                      <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Humidity Levels</h3>
-                        <p class="text-gray-600">Effect on air quality</p>
-                      </div>
-                      <div class="p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl">
-                        <CloudIcon class="h-6 w-6 text-cyan-400" />
-                      </div>
-                    </div>
-
-                    <!-- Humidity Wave Chart -->
-                    <div
-                      class="h-64 relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-gray-200">
-                      <svg class="w-full h-full p-4" viewBox="0 0 400 200">
-                        <defs>
-                          <linearGradient id="humidityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:#06B6D4; stop-opacity:1;" />
-                            <stop offset="100%" style="stop-color:#3B82F6; stop-opacity:0.2;" />
-                          </linearGradient>
-                        </defs>
-
-
-                        <!-- Animated Wave -->
-                        <path :d="humidityWavePath" fill="url(#humidityGradient)" class="animate-wave" />
-                        <path :d="humidityLinePath" fill="none" stroke="#06B6D4" stroke-width="3"
-                          class="animate-wave" />
-                      </svg>
-
-                      <!-- Current Humidity -->
-                      <div class="absolute top-4 right-4 bg-gray-900/50 backdrop-blur-sm rounded-lg p-3">
-                        <div class="text-cyan-400 text-sm font-medium">{{ currentHumidity }}%</div>
-                        <div class="text-gray-400 text-xs">Current humidity</div>
                       </div>
                     </div>
                   </div>
@@ -453,12 +322,12 @@
               <div v-else-if="activeTab === 'weekly'" class="space-y-8" key="weekly">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <!-- Weekly Trends -->
-                  <div class="lg:col-span-2 bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
+                  <div class="lg:col-span-2 bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Weekly Performance</h3>
 
                     <div class="space-y-6">
                       <div v-for="(week, index) in weeklyData" :key="week.week"
-                        class="group p-4 bg-gray-100/30 rounded-xl border border-gray-200 hover:bg-gray-200/30 transition-all duration-300"
+                        class="group p-4 bg-white/30 rounded-xl border border-gray-200 hover:bg-white/40 transition-all duration-300"
                         :style="{ animationDelay: index * 0.1 + 's' }">
                         <div class="flex items-center justify-between mb-3">
                           <h4 class="text-gray-900 font-medium">{{ week.week }}</h4>
@@ -470,15 +339,15 @@
 
                         <div class="grid grid-cols-3 gap-4 mb-4">
                           <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-400">{{ week.pm25 }}</div>
+                            <div class="text-2xl font-bold text-blue-300">{{ week.pm25 }}</div>
                             <div class="text-xs text-gray-600">PM2.5</div>
                           </div>
                           <div class="text-center">
-                            <div class="text-2xl font-bold text-green-400">{{ week.pm10 }}</div>
+                            <div class="text-2xl font-bold text-teal-300">{{ week.pm10 }}</div>
                             <div class="text-xs text-gray-600">PM10</div>
                           </div>
                           <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-400">{{ week.aqi }}</div>
+                            <div class="text-2xl font-bold text-cyan-300">{{ week.aqi }}</div>
                             <div class="text-xs text-gray-600">AQI</div>
                           </div>
                         </div>
@@ -487,18 +356,18 @@
                         <div class="space-y-2">
                           <div class="flex items-center gap-3">
                             <span class="text-xs text-gray-600 w-12">PM2.5</span>
-                            <div class="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
-                                class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000 ease-out"
+                                class="h-full bg-gradient-to-r from-blue-300 to-blue-500 rounded-full transition-all duration-1000 ease-out"
                                 :style="{ width: (week.pm25 / 80) * 100 + '%', animationDelay: (index * 0.1 + 0.2) + 's' }">
                               </div>
                             </div>
                           </div>
                           <div class="flex items-center gap-3">
                             <span class="text-xs text-gray-600 w-12">PM10</span>
-                            <div class="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
-                                class="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-1000 ease-out"
+                                class="h-full bg-gradient-to-r from-teal-300 to-teal-500 rounded-full transition-all duration-1000 ease-out"
                                 :style="{ width: (week.pm10 / 100) * 100 + '%', animationDelay: (index * 0.1 + 0.4) + 's' }">
                               </div>
                             </div>
@@ -509,17 +378,20 @@
                   </div>
 
                   <!-- Alert Summary -->
-                  <div class="bg-gray-100/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
+                  <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Alert Summary</h3>
 
                     <div class="space-y-4">
                       <div v-for="(week, index) in weeklyData" :key="'alert-' + week.week"
-                        class="flex items-center justify-between p-3 bg-gray-100/30 rounded-lg border border-gray-200"
+                        class="flex items-center justify-between p-3 bg-white/30 rounded-lg border border-gray-200"
                         :style="{ animationDelay: index * 0.1 + 's' }">
                         <span class="text-gray-700 text-sm">{{ week.week }}</span>
                         <div class="flex items-center gap-2">
-                          <AlertTriangleIcon v-for="i in week.alerts" :key="i"
-                            class="h-4 w-4 text-red-400 animate-pulse" :style="{ animationDelay: (i * 0.2) + 's' }" />
+                          <svg v-for="i in week.alerts" :key="i"
+                            class="h-4 w-4 text-red-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            :style="{ animationDelay: (i * 0.2) + 's' }">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
                           <span class="text-gray-900 font-medium ml-2">{{ week.alerts }}</span>
                         </div>
                       </div>
@@ -527,10 +399,10 @@
 
                     <!-- Total Alerts -->
                     <div
-                      class="mt-6 p-4 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-xl border border-red-500/30">
+                      class="mt-6 p-4 bg-gradient-to-r from-red-200/20 to-pink-200/20 rounded-xl border border-red-200/30">
                       <div class="text-center">
-                        <div class="text-3xl font-bold text-red-400 mb-1">{{ totalAlerts }}</div>
-                        <div class="text-red-300 text-sm">Total Alerts This Month</div>
+                        <div class="text-3xl font-bold text-red-300 mb-1">{{ totalAlerts }}</div>
+                        <div class="text-red-200 text-sm">Total Alerts This Month</div>
                       </div>
                     </div>
                   </div>
@@ -543,17 +415,19 @@
         <!-- Enhanced Insights Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- AI-Powered Insights -->
-          <div class="bg-gray-100/80 backdrop-blur-md rounded-2xl p-8 border border-gray-300">
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-200">
             <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-              <div class="p-2 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg">
-                <SparklesIcon class="h-6 w-6 text-purple-400" />
+              <div class="p-2 bg-gradient-to-br from-cyan-200/20 to-teal-200/20 rounded-lg">
+                <svg class="h-6 w-6 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
               </div>
               AI Insights
             </h3>
 
             <div class="space-y-6">
               <div v-for="(insight, index) in aiInsights" :key="index"
-                class="group p-4 bg-gray-100/30 rounded-xl border border-gray-200 hover:bg-gray-200/30 transition-all duration-300"
+                class="group p-4 bg-white/30 rounded-xl border border-gray-200 hover:bg-white/40 transition-all duration-300"
                 :style="{ animationDelay: index * 0.2 + 's' }">
                 <div class="flex items-start gap-4">
                   <div :class="`w-3 h-3 rounded-full mt-2 animate-pulse ${insight.color}`"></div>
@@ -573,10 +447,12 @@
           </div>
 
           <!-- Dynamic Health Recommendations -->
-          <div class="bg-gray-100/80 backdrop-blur-md rounded-2xl p-8 border border-gray-300">
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-200">
             <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-              <div class="p-2 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg">
-                <HeartIcon class="h-6 w-6 text-green-400" />
+              <div class="p-2 bg-gradient-to-br from-teal-200/20 to-blue-200/20 rounded-lg">
+                <svg class="h-6 w-6 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
               </div>
               Health Recommendations
             </h3>
@@ -586,7 +462,9 @@
                 :class="`p-4 rounded-xl border transition-all duration-500 hover:scale-105 ${recommendation.bgColor} ${recommendation.borderColor}`"
                 :style="{ animationDelay: index * 0.15 + 's' }">
                 <div class="flex items-start gap-3">
-                  <component :is="recommendation.icon" :class="`h-5 w-5 mt-0.5 ${recommendation.iconColor}`" />
+                  <svg :class="`h-5 w-5 mt-0.5 ${recommendation.iconColor}`" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="recommendation.iconPath" />
+                  </svg>
                   <div class="flex-1">
                     <h4 :class="`font-semibold mb-2 ${recommendation.titleColor}`">{{ recommendation.title }}</h4>
                     <p :class="`text-sm leading-relaxed ${recommendation.textColor}`">{{ recommendation.description }}
@@ -665,8 +543,6 @@ const weeklyData = [
 
 const tabs = [
   { id: 'trends', name: 'Pollution Trends', icon: TrendingUpIcon },
-  { id: 'comparison', name: 'Multi-Pollutant', icon: BarChart3Icon },
-  { id: 'environmental', name: 'Environmental', icon: CloudIcon },
   { id: 'weekly', name: 'Weekly Summary', icon: CalendarDaysIcon }
 ]
 
