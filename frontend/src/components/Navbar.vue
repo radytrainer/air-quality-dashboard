@@ -20,19 +20,19 @@
     <div class="flex items-center gap-8 text-base font-semibold">
       <RouterLink to="/home" class="px-3 py-1 rounded transition-colors duration-200 hover:text-sky-500"
         :class="$route.path === '/home' ? 'text-sky-500' : 'text-gray-700'">
-        Home
+        {{ $t('nav.home') }}
       </RouterLink>
       <RouterLink to="/city-detail" class="px-3 py-1 rounded transition-colors duration-200 hover:text-sky-500"
         :class="$route.path === '/city-detail' ? 'text-sky-500' : 'text-gray-700'">
-        City Detail
+        {{ $t('nav.cityDetail') }}
       </RouterLink>
       <RouterLink to="/compare-cities" class="px-3 py-1 rounded transition-colors duration-200 hover:text-sky-500"
         :class="$route.path === '/compare-cities' ? 'text-sky-500' : 'text-gray-700'">
-        Compare Cities
+        {{ $t('nav.compareCities') }}
       </RouterLink>
       <RouterLink to="/analytics" class="px-3 py-1 rounded transition-colors duration-200 hover:text-sky-500"
         :class="$route.path === '/analytics' ? 'text-sky-500' : 'text-gray-700'">
-        Analytics
+        {{ $t('nav.analytics') }}
       </RouterLink>
     </div>
 
@@ -47,14 +47,38 @@
         <i class="fas fa-caret-down ml-1 text-gray-500"></i>
       </div>
 
-      <!-- Language -->
-      <div
-        class="flex items-center gap-1 border-r border-gray-300 pr-4 text-gray-700 cursor-pointer hover:text-sky-500 transition"
-        title="Change Language">
-        <i class="fas fa-globe text-green-500"></i>
-        <span class="text-sm select-none">English</span>
-        <i class="fas fa-caret-down ml-1 text-gray-500"></i>
-      </div>
+      <!-- Language Switcher -->
+<div class="relative">
+  <button
+    @click="toggleLanguageDropdown"
+    class="flex items-center gap-1 border-r border-gray-300 pr-4 text-gray-700 hover:text-sky-500 transition"
+    title="Change Language"
+  >
+    <i class="fas fa-globe text-green-500"></i>
+    <span class="text-sm select-none">
+      {{ currentLanguage === 'en' ? 'English' : 'ខ្មែរ' }}
+    </span>
+    <i class="fas fa-caret-down ml-1 text-gray-500"></i>
+  </button>
+
+  <div
+    v-if="languageDropdownOpen"
+    class="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-50"
+  >
+    <button
+      @click="changeLanguage('en')"
+      class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+    >
+      English
+    </button>
+    <button
+      @click="changeLanguage('kh')"
+      class="block w-full px-4 py-2 text-left hover:bg-gray-100"
+    >
+      ភាសាខ្មែរ
+    </button>
+  </div>
+</div>
 
       <!-- Theme Toggle -->
       <button class="border-r border-gray-300 pr-4 text-yellow-500 cursor-pointer hover:text-yellow-600 transition"
@@ -68,14 +92,14 @@
           @click="toggleLoginForm"
           class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-semibold transition"
         >
-          Login
+          {{ $t('auth.login') }}
         </button>
         <button
           v-else
           @click="logout"
           class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md font-semibold transition"
         >
-          Logout
+          {{ $t('auth.logout') }}
         </button>
 
         <!-- Login Form Dropdown -->
@@ -85,7 +109,7 @@
             class="absolute right-0 mt-3 w-full max-w-md bg-white rounded-lg shadow-lg p-8 z-50"
           >
             <h2 class="text-2xl font-bold text-yellow-800 mb-6 text-center">
-              Login to Planet Air Check
+              {{ $t('auth.loginTitle') }}
             </h2>
 
             <div class="space-y-4">
@@ -108,8 +132,8 @@
                 :disabled="loading"
                 class="w-full px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-semibold rounded-lg transition duration-300"
               >
-                <span v-if="loading">Logging in...</span>
-                <span v-else>Login</span>
+                <span v-if="loading">{{ $t('auth.loggingIn') }}</span>
+                <span v-else>{{ $t('auth.login') }}</span>
               </button>
 
               <p v-if="errorMessage" class="text-red-500 text-center">{{ errorMessage }}</p>
@@ -117,13 +141,13 @@
 
             <!-- Register Link -->
             <p class="mt-6 text-center text-sm text-gray-600">
-              Don’t have an account?
+              {{ $t('auth.dontHaveAccount') }}
               <router-link
                 to="/register"
                 class="text-yellow-600 hover:underline font-semibold"
                 @click="closeLoginForm"
               >
-                Register
+                {{ $t('auth.register') }}
               </router-link>
             </p>
           </div>
@@ -140,8 +164,13 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/airQuality'
+import { useI18n } from 'vue-i18n'
 
 const selectedCity = ref('')
+const { locale } = useI18n()
+const currentLanguage = ref(locale.value)
+const languageDropdownOpen = ref(false)
+
 
 function handleCitySelected(city) {
   selectedCity.value = city
@@ -167,6 +196,16 @@ function closeLoginForm() {
   showLoginForm.value = false
   errorMessage.value = ''
 }
+function toggleLanguageDropdown() {
+  languageDropdownOpen.value = !languageDropdownOpen.value
+}
+
+function changeLanguage(lang) {
+  locale.value = lang
+  currentLanguage.value = lang
+  languageDropdownOpen.value = false
+}
+
 
 async function login() {
   errorMessage.value = ''
