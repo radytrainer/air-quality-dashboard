@@ -6,11 +6,12 @@ import CompareCitiesView from '@/views/CompareCitiesView.vue'
 import AnalyticsView from '@/views/AnalyticsView.vue'
 import Login from '@/views/Login.vue'
 import { useAuthStore } from '@/stores/airQuality'
+import RegisterPage from '@/views/RegisterPage.vue'
 
 const routes = [
   {
     path: '/',
-    redirect: '/home', // Redirect root to /home
+    redirect: '/home', 
   },
   {
     path: '/home',
@@ -21,21 +22,35 @@ const routes = [
     path: '/city-detail',
     name: 'city-detail',
     component: CityDetailView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/compare-cities',
     name: 'compare-cities',
     component: CompareCitiesView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/analytics',
     name: 'analytics',
     component: AnalyticsView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterPage
   }
 ]
 

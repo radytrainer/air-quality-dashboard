@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-sky-50 to-white text-gray-800">
     <!-- Header -->
-    <header class="bg-gradient-to-r from-sky-600 to-blue-500 text-white shadow-md py-6 px-6">
+    <header class="bg-gradient-to-r from-sky-600 to-blue-500 text-white shadow-md py-6 px-6 ">
       <div class="max-w-7xl mx-auto">
         <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
         <p class="text-sm text-white/80 mt-2">Monitor real-time air quality across the globe</p>
@@ -31,7 +31,7 @@
       <!-- AQI Card Grid -->
       <section>
         <h2 class="text-3xl font-semibold mb-8 text-gray-700 flex items-center">
-          📊 Air Quality Index by Location
+          📊 Air Quality by Location
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="(city, index) in cities" :key="index" :class="[
@@ -95,7 +95,7 @@
 
       <!-- AQI Scale Reference -->
       <section class="bg-white rounded-2xl shadow-lg p-6">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Air Quality Index Scale</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Air Quality Scale</h3>
         <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
           <div class="flex items-center space-x-2">
             <div class="w-4 h-4 bg-green-500 rounded"></div>
@@ -126,236 +126,133 @@
             <h2 class="text-3xl font-bold text-gray-900 mb-2">Major Air Pollutants</h2>
             <p class="text-xl text-blue-600 font-medium">Street 96</p>
           </div>
-
-          <!-- Get AQI App Button -->
-          <button
-            class="flex items-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <Smartphone class="h-5 w-5" />
-            <span>Get AQI App</span>
-          </button>
         </div>
 
         <!-- Pollutants Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- PM2.5 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- PM2.5 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 border-2 border-green-600 rounded-full relative">
-                        <div class="absolute inset-1 bg-green-600 rounded-full opacity-60"></div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        2.5</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-                    <p class="text-sm text-gray-600">(PM2.5)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
 
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">6</span>
-                <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- PM10 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.1s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- PM10 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-7 h-7 border-2 border-green-600 rounded-full relative">
-                        <div class="absolute inset-1 bg-green-600 rounded-full opacity-60"></div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        10</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-                    <p class="text-sm text-gray-600">(PM10)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">25</span>
-                <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- CO Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.2s;">
-            <div class="p-6 relative">
-              <!-- Warning indicator -->
-              <div
-                class="absolute top-4 right-4 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                <AlertTriangle class="h-3 w-3 text-white" />
-              </div>
-
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- CO Icon -->
-                  <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-yellow-600 rounded-full relative">
-                        <div class="absolute inset-1 border border-yellow-800 rounded-full"></div>
-                        <div class="absolute top-1 left-1 w-1 h-1 bg-yellow-800 rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-yellow-800 rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-yellow-600">
-                        CO</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
-                    <p class="text-sm text-gray-600">(CO)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-yellow-600 animate-number-pulse">34</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- SO2 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.3s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- SO2 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-lg relative">
-                        <div class="absolute top-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div
-                          class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full">
-                        </div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        SO₂</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
-                    <p class="text-sm text-gray-600">(SO2)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">9</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- NO2 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.4s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- NO2 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-lg relative">
-                        <div
-                          class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-2 border border-white rounded-full">
-                        </div>
-                        <div class="absolute bottom-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        NO₂</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
-                    <p class="text-sm text-gray-600">(NO2)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">13</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- O3 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.5s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- O3 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-full relative">
-                        <div class="absolute inset-1 border border-white rounded-full"></div>
-                        <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full">
-                        </div>
-                        <div class="absolute bottom-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        O₃</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Ozone</h3>
-                    <p class="text-sm text-gray-600">(O3)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">10</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
+  <!-- PM2.5 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM2.5</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+            <p class="text-sm text-gray-600">(PM2.5)</p>
           </div>
         </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">6</span>
+        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM10 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM10</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+            <p class="text-sm text-gray-600">(PM10)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">25</span>
+        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CO Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-bold">CO</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
+            <p class="text-sm text-gray-600">(CO)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-yellow-600">34</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SO2 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">SO₂</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
+            <p class="text-sm text-gray-600">(SO2)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">9</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NO2 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">NO₂</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
+            <p class="text-sm text-gray-600">(NO2)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">13</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- O3 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">O₃</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Ozone</h3>
+            <p class="text-sm text-gray-600">(O3)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">10</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
       </div>
 
       <!-- Bottom Info Section -->

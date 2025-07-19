@@ -136,7 +136,7 @@
 <script setup>
 
 import CitySearch from './CitySearch.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/airQuality'
@@ -150,7 +150,7 @@ function handleCitySelected(city) {
 const router = useRouter()
 const auth = useAuthStore()
 
-const isLoggedIn = ref(auth.isLoggedIn) // Assume you have isLoggedIn state in Pinia
+const isLoggedIn = computed(() => auth.isAuthenticated)
 const showLoginForm = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
@@ -195,11 +195,11 @@ async function login() {
 }
 
 function logout() {
-  auth.logout() // clear token from Pinia + localStorage
-  isLoggedIn.value = false
+  auth.logout()
   showLoginForm.value = false
-
+  router.push('/home') 
 }
+
 </script>
 
 <style scoped>

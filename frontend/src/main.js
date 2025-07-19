@@ -2,6 +2,8 @@ import './assets/tailwind.css'
 
 // import './assets/main.css'
 
+import VueApexCharts from "vue3-apexcharts"
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -17,5 +19,7 @@ app.use(pinia)
 
 // ✅ use router
 app.use(router)
+
+app.use(VueApexCharts)
 
 app.mount('#app')
