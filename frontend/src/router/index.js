@@ -6,11 +6,12 @@ import CompareCitiesView from '@/views/CompareCitiesView.vue'
 import AnalyticsView from '@/views/AnalyticsView.vue'
 import Login from '@/views/Login.vue'
 import { useAuthStore } from '@/stores/airQuality'
+import RegisterPage from '@/views/RegisterPage.vue'
 
 const routes = [
   {
     path: '/',
-    redirect: '/home', // Redirect root to /home
+    redirect: '/home', 
   },
   {
     path: '/home',
@@ -36,6 +37,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: Login,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterPage
   }
 ]
 
