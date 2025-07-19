@@ -5,7 +5,7 @@
     <!-- Left Section: Logo and Search -->
     <div class="flex items-center gap-6">
       <!-- Logo -->
-      <img src="/src/assets/images/Logo.png" alt="AQI Logo" class="h-18 w-40" />
+      <img src="/src/assets/images/Logo.png" alt="AQI Logo" class="h-16 w-38" />
 
       <!-- Search Bar -->
       <div class="relative">
