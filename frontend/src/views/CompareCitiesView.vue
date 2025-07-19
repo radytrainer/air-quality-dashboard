@@ -92,7 +92,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import CitySelector from '@/components/CitySelector.vue'
+import CitySelector from '@/components/CitySelectorForCompare.vue'
 import CityCard from '@/components/CityCard.vue'
 
 // Mock city data with AQI + flags + timezone
