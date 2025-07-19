@@ -1,31 +1,42 @@
 <template>
-  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-6">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <div class="w-20 h-12  shadow-md">
-          <img
-            :src="getFlagUrl(selectedCity.country)"
-            alt="Flag"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div>
-          <h2 class="text-xl font-semibold text-blue-900">{{ selectedCity.name }}</h2>
-          <p class="text-sm text-blue-700">{{ selectedCity.region }}, {{ selectedCity.country }}</p>
-          <p class="text-xs text-blue-600">{{ selectedCity.continent }}</p>
-        </div>
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div v-if="selectedCity" class="flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+          <img :src="getFlagUrl(selectedCity.country)" :alt="`${selectedCity.country} flag`" class="w-8 h-auto inline-block" />
+          {{ selectedCity.name }}
+          <span class="text-base font-normal text-gray-500">({{ selectedCity.country }})</span>
+        </h2>
+        <p class="text-gray-600 mt-1">
+          {{ selectedCity.region }}, {{ selectedCity.continent }}
+        </p>
+    
       </div>
       <div class="text-right">
         <div class="text-sm text-blue-600">Monitoring Status</div>
         <div class="text-sm font-medium text-blue-900">{{ selectedCity.monitoringLevel || 'Standard' }}</div>
       </div>
+
+    </div>
+    <div v-else class="text-center py-8 text-gray-500">
+      <p class="text-lg font-medium">No city selected.</p>
+      <p class="text-sm">Please select a city from the dropdown above to view its details.</p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
-  selectedCity: Object
+  selectedCity: {
+    type: Object,
+    default: null
+  },
+  currentTime: {
+    type: String,
+    default: 'N/A'
+  }
 })
 
 function getFlagUrl(countryName) {
@@ -52,8 +63,7 @@ function getFlagUrl(countryName) {
     'Brazil': 'br',
     'Argentina': 'ar'
   }
-
-  const code = countryCodes[countryName] || 'un'
+  const code = countryCodes[countryName] || 'un' // 'un' for unknown or default flag
   return `https://flagcdn.com/w80/${code}.png`
 }
 </script>
