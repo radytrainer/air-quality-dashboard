@@ -22,16 +22,25 @@ const routes = [
     path: '/city-detail',
     name: 'city-detail',
     component: CityDetailView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/compare-cities',
     name: 'compare-cities',
     component: CompareCitiesView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/analytics',
     name: 'analytics',
     component: AnalyticsView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
