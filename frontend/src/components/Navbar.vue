@@ -195,11 +195,11 @@ async function login() {
 }
 
 function logout() {
-  auth.logout() // clear token from Pinia + localStorage
-  isLoggedIn.value = false
+  auth.logout()
   showLoginForm.value = false
-
+  router.push('/home') 
 }
+
 </script>
 
 <style scoped>
