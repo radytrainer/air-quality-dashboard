@@ -1,27 +1,29 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 flex items-center justify-center">
     <div class="w-full max-w-sm bg-white rounded-xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold text-center text-blue-700 mb-6">Create an Account</h2>
+      <h2 class="text-3xl font-bold text-center text-blue-700 mb-6">
+        {{ $t('auth.register') }}
+      </h2>
 
       <div class="space-y-4">
         <input
           v-model="name"
           type="text"
-          placeholder="Full Name"
+          :placeholder="$t('auth.name') || 'name'"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model="email"
           type="email"
-          placeholder="Email Address"
+          :placeholder="$t('auth.emailPlaceholder')"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model="password"
           type="password"
-          placeholder="Password"
+          :placeholder="$t('auth.passwordPlaceholder')"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
@@ -31,7 +33,7 @@
         :disabled="loading"
         class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-md font-semibold transition duration-200 disabled:opacity-50"
       >
-        {{ loading ? 'Registering...' : 'Register' }}
+        {{ loading ? $t('auth.registering') || 'Registering...' : $t('auth.register') }}
       </button>
 
       <p
@@ -49,7 +51,9 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/airQuality'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -75,7 +79,7 @@ const register = async () => {
     router.push('/')
   } catch (err) {
     errorMessage.value =
-      err.response?.data?.message || 'Registration failed. Please try again.'
+      err.response?.data?.message || t('auth.registerFailed') || 'Registration failed. Please try again.'
   } finally {
     loading.value = false
   }
