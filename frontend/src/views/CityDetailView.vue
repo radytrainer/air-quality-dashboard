@@ -40,7 +40,7 @@
 import { ref, computed, onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import ChartsSection from '@/components/ChartsSection.vue'
-import CitySelector from '@/components/CitySelectorForCompare.vue'
+import CitySelector from '@/components/CitySelector.vue'
 import CurrentCityDisplay from '@/components/CurrentCityDisplay.vue'
 import PollutantTable from '@/components/PollutantTable.vue'
 import WeatherConditions from '@/components/WeatherConditions.vue'
