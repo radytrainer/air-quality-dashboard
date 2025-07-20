@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 relative overflow-hidden">
+  <div class="min-h-screen bg-gradient-to-br from-white-100 to-cyan-100 relative overflow-hidden">
     <!-- Floating Particles -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div v-for="i in 10" :key="i" :class="`absolute w-1 h-1 bg-white rounded-full opacity-20 animate-float`"
@@ -18,7 +18,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div class="text-gray-900">
             <h1
-              class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
+              class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
               Air Quality Analytics
             </h1>
             <p class="text-gray-600 mt-2 text-lg">Real-time pollution monitoring & insights</p>

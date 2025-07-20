@@ -1,13 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-sky-50 to-white text-gray-800">
+
     <!-- Header -->
-    <header class="bg-gradient-to-r from-sky-600 to-blue-500 text-white shadow-md py-6 px-6 ">
       <div class="max-w-7xl mx-auto">
         <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
-        <p class="text-sm text-white/80 mt-2">Monitor real-time air quality across the globe</p>
-        <p class="text-xs text-white/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
+        <p class="text-sm text-black/80 mt-2">Monitor real-time air quality across the globe</p>
+        <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
       </div>
-    </header>
+    
 
     <!-- Main Content -->
     <main class="p-6 space-y-10 max-w-7xl mx-auto">
@@ -288,7 +287,6 @@
         </div>
       </section>
     </main>
-  </div>
 </template>
 
 <script setup>
