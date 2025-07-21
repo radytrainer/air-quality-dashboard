@@ -12,20 +12,33 @@
     <main class="p-6 space-y-10 max-w-7xl mx-auto">
       <!-- Map Section -->
       <section
-        class="bg-white rounded-2xl shadow-lg h-96 flex items-center justify-center border-2 border-dashed border-sky-300 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-100 opacity-30"></div>
-        <div class="text-center text-gray-400 space-y-3 z-10">
-          <MapPinIcon class="w-16 h-16 mx-auto text-sky-400" />
-          <p class="text-xl font-semibold">Interactive Map</p>
-          <p class="text-sm text-gray-500">Real-time AQI monitoring locations</p>
-          <div class="flex justify-center space-x-4 mt-4 flex-wrap gap-2">
-            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Good (0-50)</span>
-            <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-medium">Moderate (51-100)</span>
-            <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">Unhealthy (101-150)</span>
-            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium">Very Unhealthy (151+)</span>
-          </div>
-        </div>
-      </section>
+    class="bg-white rounded-2xl shadow-lg h-[600px] relative border-2 border-dashed border-sky-300 overflow-hidden"
+  >
+    <div class="absolute inset-0 z-0">
+      <div id="map" class="w-full h-full rounded-2xl"></div>
+    </div>
+
+    <!-- Filter UI -->
+    <div class="absolute top-4 left-48 z-10 bg-white p-3 rounded-lg shadow-md space-y-2 w-60 ">
+      <h3 class="text-lg font-semibold text-sky-700">Filter by Country</h3>
+      <select
+        v-model="selectedCountry"
+        @change="onCountryChange"
+        class="w-full border border-gray-300 rounded-md p-2"
+      >
+        <option value="">🌍 All Countries</option>
+        <option
+          v-for="country in countryList"
+          :key="country.code"
+          :value="country.code"
+        >
+          {{ country.name }} ({{ country.code }})
+        </option>
+      </select>
+      <p class="text-sm text-gray-500 italic" v-if="loading">Loading AQI data...</p>
+      <p class="text-sm text-red-500 italic" v-if="!loading && noData">No AQI data found for this country.</p>
+    </div>
+  </section>
 
       <!-- AQI Card Grid -->
       <section>
@@ -291,6 +304,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import L from 'leaflet'
+import axios from 'axios'
+import 'leaflet/dist/leaflet.css'
+
 import {
   MapPin as MapPinIcon,
   Cloud as CloudIcon,
@@ -302,6 +320,121 @@ import {
   AlertTriangle,
   Leaf
 } from 'lucide-vue-next'
+// i18n (Composition API)
+const { t } = useI18n()
+const selectedCountry = ref(localStorage.getItem('selectedCountry') || '')
+const countryList = ref([])
+const loading = ref(false)
+const noData = ref(false)
+let map
+let markers = []
+let refreshInterval = null
+
+function getAqiColor(aqi) {
+  if (aqi <= 50) return 'green'
+  if (aqi <= 100) return 'yellow'
+  if (aqi <= 150) return 'orange'
+  if (aqi <= 200) return 'red'
+  return 'purple'
+}
+
+function clearMarkers() {
+  markers.forEach(marker => map.removeLayer(marker))
+  markers = []
+}
+
+async function loadMapData() {
+  clearMarkers()
+  loading.value = true
+  noData.value = false
+
+  try {
+    const { data } = await axios.get('https://api.openaq.org/v2/latest', {
+      params: {
+        parameter: 'pm25',
+        limit: 200,
+        sort: 'desc',
+        country: selectedCountry.value || undefined
+      }
+    })
+
+    const results = data.results
+    if (!results || results.length === 0) {
+      noData.value = true
+    }
+
+    results.forEach(loc => {
+      const pm25 = loc.measurements[0]?.value
+      const unit = loc.measurements[0]?.unit
+      const { latitude, longitude } = loc.coordinates || {}
+
+      if (latitude && longitude && pm25 !== undefined) {
+        const color = getAqiColor(pm25)
+
+        const marker = L.circleMarker([latitude, longitude], {
+          radius: 8,
+          fillColor: color,
+          color: '#000',
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8
+        }).addTo(map)
+
+        marker.bindPopup(`
+          <strong>${loc.city || 'Unknown'}, ${loc.country}</strong><br>
+          PM2.5: ${pm25} ${unit}<br>
+          Location: ${loc.location}
+        `)
+
+        markers.push(marker)
+      }
+    })
+  } catch (err) {
+    console.error('Failed to load AQI data:', err)
+    noData.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+async function loadCountries() {
+  try {
+    const res = await axios.get('https://api.openaq.org/v2/countries')
+    countryList.value = res.data.results.map(c => ({
+      name: c.name,
+      code: c.code
+    }))
+  } catch (e) {
+    console.error('Failed to fetch countries:', e)
+  }
+}
+
+function onCountryChange() {
+  localStorage.setItem('selectedCountry', selectedCountry.value)
+  loadMapData()
+}
+
+onMounted(async () => {
+  map = L.map('map').setView([20, 0], 2)
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & CartoDB',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map)
+
+  await loadCountries()
+  await loadMapData()
+
+  refreshInterval = setInterval(() => {
+    loadMapData()
+  }, 180000) // 3 minutes
+})
+
+onUnmounted(() => {
+  if (refreshInterval) clearInterval(refreshInterval)
+})
+
 
 // Reactive data
 const currentTime = ref(new Date())
