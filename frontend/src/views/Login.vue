@@ -1,10 +1,23 @@
 <template>
-  <div class="min-h-screen bg-cover bg-center bg-no-repeat flex" style="background-image: url('https://i.pinimg.com/originals/b6/65/67/b66567d57f9a1604e9ce0e68d76e0ee7.jpg');">
+  <div class="min-h-screen flex relative overflow-hidden">
+    <!-- Video Background -->
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      class="absolute inset-0 w-full h-full object-cover z-0"
+    >
+      <source src="https://cdn.pixabay.com/video/2021/07/21/82389-578175075_large.mp4" type="video/mp4">
+      <!-- Fallback image in case video doesn't load -->
+      <img src="https://i.pinimg.com/originals/b6/65/67/b66567d57f9a1604e9ce0e68d76e0ee7.jpg" alt="Background" class="w-full h-full object-cover">
+    </video>
+    
     <!-- Dark overlay -->
-    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 bg-black/40 z-10"></div>
     
     <!-- Left side with title -->
-    <div class="flex-1 flex flex-col justify-center px-16 relative z-10">
+    <div class="flex-1 flex flex-col justify-center px-16 relative z-20">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold text-white mb-4">Welcome Back</h1>
         <p class="text-xl text-gray-300">Please enter your details.</p>
@@ -12,7 +25,7 @@
     </div>
 
     <!-- Right side with form -->
-    <div class="flex-1 flex items-center justify-center px-8 relative z-10">
+    <div class="flex-1 flex items-center justify-center px-8 relative z-20">
       <div class="w-full max-w-md">
         <!-- Tab navigation -->
         <div class="flex mb-8 border-b border-white/20">
