@@ -131,4 +131,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH C:\Users\Ahnoch.Phengneang\Desktop\air-quality-dashboard\backend\resources\views/welcome.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\LENOVO\OneDrive\Desktop\air-quality-dashboard\backend\resources\views/welcome.blade.php ENDPATH**/ ?>
