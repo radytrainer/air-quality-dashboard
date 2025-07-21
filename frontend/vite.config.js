@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -11,7 +10,13 @@ export default defineConfig({
     vueDevTools(),
   ],
   server: {
-    // port: 3000,
+    proxy: {
+      '/weatherapi': {
+        target: 'https://api.weatherapi.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/weatherapi/, '')
+      }
+    }
   },
   resolve: {
     alias: {
