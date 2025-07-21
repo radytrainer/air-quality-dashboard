@@ -2,34 +2,19 @@
 <template>
   <div class="relative w-96">
     <!-- Search Input with Icons -->
-    <input
-      v-model="search"
-      @input="filterCities"
-      type="text"
-      placeholder="Search Location, City, State or Country"
-      class="bg-gray-100 text-gray-900 px-10 py-2.5 rounded-md w-full placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
-    />
+    <input v-model="search" @input="filterCities" type="text" placeholder="Search any Location, City, State or Country"
+      class="bg-gray-100 text-gray-900 px-8 py-1.5 rounded-md w-full placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition text-sm h-9" />
     <!-- Search Icon -->
-    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
-
+    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
     <!-- Locate Icon -->
-    <i
-      class="fas fa-crosshairs absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer hover:text-blue-600 transition"
-      title="Locate me"
-      @click="locateUser"
-    ></i>
+    <i class="fas fa-crosshairs absolute right-3 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer hover:text-blue-600 transition"
+      title="Locate me" @click="locateUser"></i>
 
     <!-- Autocomplete Dropdown -->
-    <ul
-      v-if="filteredCities.length && search"
-      class="absolute z-10 bg-white border border-gray-200 w-full mt-1 rounded shadow"
-    >
-      <li
-        v-for="city in filteredCities"
-        :key="city"
-        @click="selectCity(city)"
-        class="p-2 cursor-pointer hover:bg-gray-100"
-      >
+    <ul v-if="filteredCities.length && search"
+      class="absolute z-10 bg-white border border-gray-200 w-full mt-1 rounded shadow">
+      <li v-for="city in filteredCities" :key="city" @click="selectCity(city)"
+        class="p-2 cursor-pointer hover:bg-gray-100">
         {{ city }}
       </li>
     </ul>
