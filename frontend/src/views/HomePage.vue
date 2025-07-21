@@ -19,7 +19,7 @@
     </div>
 
     <!-- Filter UI -->
-    <div class="absolute top-4 left-48 z-10 bg-white p-3 rounded-lg shadow-md space-y-2 w-60 ">
+    <div class="absolute top-1 left-58 z-10 bg-white p-3 rounded-lg shadow-md space-y-2 w-60 ">
       <h3 class="text-lg font-semibold text-sky-700">Filter by Country</h3>
       <select
         v-model="selectedCountry"
