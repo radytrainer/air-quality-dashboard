@@ -65,6 +65,7 @@
         <i class="fas fa-sun text-yellow-500 text-sm"></i>
       </button>
 
+
       <!-- Language Switcher -->
       <div class="relative">
         <button @click="toggleLanguageDropdown"
@@ -135,10 +136,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CitySearch from '@/components/CitySearch.vue'
-import { useAuthStore } from '@/stores/airQuality'
+import { useAuthStore } from '@/stores/airQuality'  // your Pinia store path
 import { useI18n } from 'vue-i18n'
 
 const selectedCity = ref('')
@@ -155,6 +156,7 @@ function toggleLanguageDropdown() {
   languageDropdownOpen.value = !languageDropdownOpen.value
 }
 
+
 function changeLanguage(lang) {
   currentLanguage.value = lang
   locale.value = lang
@@ -168,7 +170,8 @@ function toggleMobileMenu() {
 const router = useRouter()
 const auth = useAuthStore()
 
-const isLoggedIn = ref(false)
+// Fix: make isLoggedIn reactive to auth store's isAuthenticated
+const isLoggedIn = computed(() => auth.isAuthenticated)
 
 function logout() {
   auth.logout()
