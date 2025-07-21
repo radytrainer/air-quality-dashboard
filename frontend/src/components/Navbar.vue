@@ -36,16 +36,21 @@
       </RouterLink>
 
       <RouterLink
-        to="/city-detail"
-        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="$route.path === '/city-detail' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
-      >
-        {{ $t('nav.cityDetail') }}
-        <div
-          v-if="$route.path === '/city-detail'"
-          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
-      </RouterLink>
+  :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
+  class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
+  :class="[
+    $route.path === '/city-detail' || $route.path === '/cityaqi'
+      ? 'text-blue-600 bg-blue-50'
+      : 'text-gray-700'
+  ]"
+>
+  {{ auth.userRole === 'admin' ? 'City AQI' : $t('nav.cityDetail') }}
+  <div
+    v-if="$route.path === '/city-detail' || $route.path === '/cityaqi'"
+    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
+  ></div>
+</RouterLink>
+
 
       <RouterLink
         to="/compare-cities"

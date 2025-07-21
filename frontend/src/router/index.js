@@ -11,6 +11,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 
 
 import { useAuthStore } from '@/stores/airQuality'
+import CityAQI from '@/views/CityAQI.vue'
 
 
 
@@ -47,6 +48,12 @@ const routes = [
     path: '/admin-dashboard',
     name: 'admin-dashboard',
     component: AdminDashboard,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/cityaqi',
+    name: 'cityaqi',
+    component: CityAQI,
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
