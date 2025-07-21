@@ -1,44 +1,42 @@
 <template>
 
     <!-- Header -->
-      <div class="max-w-7xl mx-auto">
+      <div class="max-w-7xl mt-10 mx-auto">
         <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
         <p class="text-sm text-black/80 mt-2">Monitor real-time air quality across the globe</p>
         <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
       </div>
-    
-
-    <!-- Main Content -->
-    <main class="p-6 space-y-10 max-w-7xl mx-auto">
-      <!-- Map Section -->
-      <section
-    class="bg-white rounded-2xl shadow-lg h-[600px] relative border-2 border-dashed border-sky-300 overflow-hidden"
-  >
-    <div class="absolute inset-0 z-0">
-      <div id="map" class="w-full h-full rounded-2xl"></div>
+      
+      <!-- Main Content -->
+    <!-- Filter Box - Now Outside of the Map Section -->
+     <div class="max-w-7xl  mx-auto mt-6 px-6 flex flex-col items-end space-y-6">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-5 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-sky-700 mb-3">🔍 Search City or Country</h3>
+        <div class="flex space-x-2">
+          <input
+            v-model="searchLocation"
+            @keydown.enter="searchLocationOnMap"
+            type="text"
+            placeholder="search by city or country"
+            class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+          />
+          <button
+            @click="searchLocationOnMap"
+            class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
+          >
+            Search
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Filter UI -->
-    <div class="absolute top-1 left-58 z-10 bg-white p-3 rounded-lg shadow-md space-y-2 w-60 ">
-      <h3 class="text-lg font-semibold text-sky-700">Filter by Country</h3>
-      <select
-        v-model="selectedCountry"
-        @change="onCountryChange"
-        class="w-full border border-gray-300 rounded-md p-2"
-      >
-        <option value="">🌍 All Countries</option>
-        <option
-          v-for="country in countryList"
-          :key="country.code"
-          :value="country.code"
-        >
-          {{ country.name }} ({{ country.code }})
-        </option>
-      </select>
-      <p class="text-sm text-gray-500 italic" v-if="loading">Loading AQI data...</p>
-      <p class="text-sm text-red-500 italic" v-if="!loading && noData">No AQI data found for this country.</p>
-    </div>
-  </section>
+
+
+
+  <!-- Main Content -->
+  <main class="p-6 space-y-10 max-w-7xl mx-auto">
+    <!-- Map Section -->
+    <div id="map" class="w-full h-screen "></div>
 
       <!-- AQI Card Grid -->
       <section>
@@ -309,6 +307,7 @@ import L from 'leaflet'
 import axios from 'axios'
 import 'leaflet/dist/leaflet.css'
 
+
 import {
   MapPin as MapPinIcon,
   Cloud as CloudIcon,
@@ -322,118 +321,57 @@ import {
 } from 'lucide-vue-next'
 // i18n (Composition API)
 const { t } = useI18n()
-const selectedCountry = ref(localStorage.getItem('selectedCountry') || '')
-const countryList = ref([])
-const loading = ref(false)
-const noData = ref(false)
-let map
-let markers = []
-let refreshInterval = null
+const searchLocation = ref('')
+let map // declare globally
 
-function getAqiColor(aqi) {
-  if (aqi <= 50) return 'green'
-  if (aqi <= 100) return 'yellow'
-  if (aqi <= 150) return 'orange'
-  if (aqi <= 200) return 'red'
-  return 'purple'
-}
+onMounted(() => {
+  map = L.map('map').setView([11.55, 104.91], 6) // Cambodia
 
-function clearMarkers() {
-  markers.forEach(marker => map.removeLayer(marker))
-  markers = []
-}
-
-async function loadMapData() {
-  clearMarkers()
-  loading.value = true
-  noData.value = false
-
-  try {
-    const { data } = await axios.get('https://api.openaq.org/v2/latest', {
-      params: {
-        parameter: 'pm25',
-        limit: 200,
-        sort: 'desc',
-        country: selectedCountry.value || undefined
-      }
-    })
-
-    const results = data.results
-    if (!results || results.length === 0) {
-      noData.value = true
-    }
-
-    results.forEach(loc => {
-      const pm25 = loc.measurements[0]?.value
-      const unit = loc.measurements[0]?.unit
-      const { latitude, longitude } = loc.coordinates || {}
-
-      if (latitude && longitude && pm25 !== undefined) {
-        const color = getAqiColor(pm25)
-
-        const marker = L.circleMarker([latitude, longitude], {
-          radius: 8,
-          fillColor: color,
-          color: '#000',
-          weight: 1,
-          opacity: 1,
-          fillOpacity: 0.8
-        }).addTo(map)
-
-        marker.bindPopup(`
-          <strong>${loc.city || 'Unknown'}, ${loc.country}</strong><br>
-          PM2.5: ${pm25} ${unit}<br>
-          Location: ${loc.location}
-        `)
-
-        markers.push(marker)
-      }
-    })
-  } catch (err) {
-    console.error('Failed to load AQI data:', err)
-    noData.value = true
-  } finally {
-    loading.value = false
-  }
-}
-
-async function loadCountries() {
-  try {
-    const res = await axios.get('https://api.openaq.org/v2/countries')
-    countryList.value = res.data.results.map(c => ({
-      name: c.name,
-      code: c.code
-    }))
-  } catch (e) {
-    console.error('Failed to fetch countries:', e)
-  }
-}
-
-function onCountryChange() {
-  localStorage.setItem('selectedCountry', selectedCountry.value)
-  loadMapData()
-}
-
-onMounted(async () => {
-  map = L.map('map').setView([20, 0], 2)
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
     attribution: '&copy; OpenStreetMap & CartoDB',
-    subdomains: 'abcd',
-    maxZoom: 19
+    subdomains: 'abcd'
   }).addTo(map)
-
-  await loadCountries()
-  await loadMapData()
-
-  refreshInterval = setInterval(() => {
-    loadMapData()
-  }, 180000) // 3 minutes
 })
 
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
-})
+const searchLocationOnMap = async () => {
+  if (!searchLocation.value.trim()) return
+
+  try {
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: searchLocation.value,
+        format: 'json',
+        limit: 1,
+      },
+    })
+
+    if (response.data.length > 0) {
+      const result = response.data[0]
+      const lat = parseFloat(result.lat)
+      const lon = parseFloat(result.lon)
+
+      map.setView([lat, lon], 9)
+
+      const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+        shadowSize: [41, 41],
+      })
+
+      const marker = L.marker([lat, lon], { icon: redIcon }).addTo(map)
+      marker.bindPopup(`📍 ${result.display_name}`).openPopup()
+    } else {
+      alert('Location not found.')
+    }
+  } catch (error) {
+    console.error('Error fetching location:', error)
+    alert('Failed to search location.')
+  }
+}
 
 
 // Reactive data

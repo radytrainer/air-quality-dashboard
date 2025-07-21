@@ -27,6 +27,7 @@ class AuthController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->role ?? 'user', 
         ]);
 
         return response()->json([
@@ -75,6 +76,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user'  => $user,
+            'role'    => $user->role,
             'token' => $user->createToken('api_token')->plainTextToken,
         ]);
     }

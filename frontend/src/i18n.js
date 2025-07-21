@@ -7,6 +7,7 @@ const messages = {
       cityDetail: 'City Detail',
       compareCities: 'Compare Cities',
       analytics: 'Analytics',
+      dashboard: 'Dashboard',
     },
     auth: {
       login: 'Login',
@@ -33,6 +34,7 @@ const messages = {
       cityDetail: 'ព័ត៌មានអំពីទីក្រុង',
       compareCities: 'ប្រៀបធៀបទីក្រុង',
       analytics: 'វិភាគទិន្នន័យ',
+      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
     },
     auth: {
       login: 'ចូលគណនី',
