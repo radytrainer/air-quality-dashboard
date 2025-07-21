@@ -1,29 +1,63 @@
-# frontend
+# 🌍 Air Quality Dashboard
 
-This template should help get you started developing with Vue 3 in Vite.
+A full-stack dashboard that displays air quality data using Laravel and Vue.js.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 🧱 Tech Stack
 
-## Customize configuration
+- **Frontend**: Vue 3 + Vite + Tailwind CSS  
+- **Backend**: Laravel 10 (REST API)  
+- **Database**: MySQL (optional)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## 📁 Project Structure
 
-```sh
+air-quality-dashboard/
+├── backend/ # Laravel REST API
+└── frontend/ # Vue.js UI (Tailwind CSS)
+
+---
+
+## 🚀 Getting Started
+
+### 🖥️ Backend (Laravel)
+
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+Make sure to update your .env file with database credentials.
+
+🌐 Frontend (Vue.js + Tailwind CSS)
+
+cd frontend
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
-```
+Make sure the Laravel API (http://localhost:8000) allows CORS from Vue (http://localhost:5173).
 
-### Compile and Minify for Production
+🔌 Example API Endpoint
 
-```sh
-npm run build
-```
+GET /api/air-quality
+Returns air quality data in JSON format.
+
+✅ Features (Planned)
+ REST API with Laravel
+
+ Vue frontend with Tailwind
+
+ Dashboard view for air quality
+
+ City/location filtering
+
+ Charts for trends (e.g., Chart.js)
+
+🧑‍💻 Author
+GitHub: https://github.com/your-username
+
+
+Let me know if you'd like a Khmer version of the README, or want to include deployment steps (e.g. H
