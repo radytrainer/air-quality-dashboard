@@ -23,7 +23,6 @@
         <p class="text-xl text-gray-300">Please enter your details.</p>
       </div>
     </div>
-
     <!-- Right side with form -->
     <div class="flex-1 flex items-center justify-center px-8 relative z-20">
       <div class="w-full max-w-md">
@@ -112,20 +111,30 @@ const loading = ref(false)
 const login = async () => {
   errorMessage.value = ''
   loading.value = true
+
   try {
     const response = await api.post('/login', {
       email: email.value,
       password: password.value,
     })
 
+    // ✅ Store token and role
     const token = response.data.token
-    auth.login(token) // save token in Pinia + localStorage
+    const role = response.data.role
+    auth.login(token, role)
 
-    router.push('/home') // redirect to home
+    // ✅ Redirect based on role
+    if (role === 'admin') {
+      router.push('/admin-dashboard') // 🧭 Your admin dashboard route
+    } else {
+      router.push('/home') // 🧭 Your normal user home page
+    }
+
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || t('auth.loginFailed')
+    errorMessage.value = error.response?.data?.message || 'Login failed.'
   } finally {
     loading.value = false
   }
 }
+
 </script>
