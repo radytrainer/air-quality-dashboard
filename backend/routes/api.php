@@ -29,8 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //For admin role
     
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::get('/admin-only', [AdminController::class, 'dashboard']);
-    });
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+});
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
