@@ -1,25 +1,38 @@
-# Node modules
-/frontend/node_modules/
-
-# Laravel vendor files
-/backend/vendor/
-
-# Environment files
-**/.env
-**/.env.*.local
-
-# Build outputs
-/frontend/dist/
-backend/storage/*.key
-backend/storage/framework/*
-backend/storage/logs/*
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@heroicons/vue": "^2.2.0",
+    "@tabler/icons-vue": "^3.34.0",
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
+    "apexcharts": "^5.2.0",
+    "axios": "^1.10.0",
+    "chart.js": "^4.5.0",
+    "leaflet": "^1.9.4",
+    "lucide-vue-next": "^0.525.0",
+    "openmeteo": "^1.2.0",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.17",
+    "vue-chartjs": "^5.3.2",
+    "vue-i18n": "^11.1.10",
+    "vue-leaflet": "^0.1.0",
+    "vue-router": "^4.5.1",
+    "vue3-apexcharts": "^1.8.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "vite": "^7.0.0",
+    "vite-plugin-vue-devtools": "^7.7.7"
+  }
+}
