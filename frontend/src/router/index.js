@@ -13,6 +13,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 import { useAuthStore } from '@/stores/airQuality'
 import CityAQI from '@/views/CityAQI.vue'
 import ContactView from '@/views/ContactView.vue'
+import ContactUser from '@/views/ContactUser.vue'
 
 
 
@@ -71,6 +72,11 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: ContactView
+  },
+  {
+    path: '/usercontact',
+    name: 'contactuser',
+    component: ContactUser
   }
 ]
 

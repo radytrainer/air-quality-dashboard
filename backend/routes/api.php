@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactController;
 use AuthController as GlobalAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+Route::prefix('admin')->group(function () {
+    Route::get('/contacts', [AdminContactController::class, 'index']);
+    Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
+});
 
