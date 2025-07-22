@@ -20,7 +20,13 @@ return [
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
         'scheme' => 'https',
     ],
-
+ 'openweather' => [
+    'api_key' => 'e206621a38fb37832cc3cb734fb477ae',
+],
+'openaq' => [
+    'base_url' => 'https://api.openaq.org/v3',
+    'api_key' => '0ebe17e1199ba32afd6de45b7337bb504d3efa4fb40e3797b594afeae64de98d', 
+],
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
