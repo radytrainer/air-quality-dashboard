@@ -9,9 +9,7 @@
       
       <!-- Main Content -->
     <!-- Filter Box - Now Outside of the Map Section -->
-     <div class="max-w-7xl  mx-auto mt-6 px-6 flex flex-col items-end space-y-6">
-      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-5 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-sky-700 mb-3">🔍 Search City or Country</h3>
+     <div class="max-w-7xl  mx-auto mt-6 px-6 flex flex-col items-end space-y-6 mb-10">
         <div class="flex space-x-2">
           <input
             v-model="searchLocation"
@@ -22,13 +20,12 @@
           />
           <button
             @click="searchLocationOnMap"
-            class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
+            class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-2 py-2 text-base font-medium"
           >
             Search
           </button>
         </div>
       </div>
-    </div>
 
 
 
@@ -36,7 +33,7 @@
   <!-- Main Content -->
   <main class="p-6 space-y-10 max-w-7xl mx-auto">
     <!-- Map Section -->
-    <div id="map" class="w-full h-screen "></div>
+    <div id="map" class="w-full h-screen"></div>
 
       <!-- AQI Card Grid -->
       <section>
