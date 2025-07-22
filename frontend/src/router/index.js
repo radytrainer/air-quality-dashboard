@@ -7,11 +7,14 @@ import CompareCitiesView from '@/views/CompareCitiesView.vue'
 import AnalyticsView from '@/views/AnalyticsView.vue'
 import Login from '@/views/Login.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
+import CityAQI from '@/views/CityAQI.vue'
+import ContactView from '@/views/ContactView.vue'
+import HealthAlert from '@/views/HealthAlert.vue'
+import UserManagement from '@/views/UserManagement.vue'
 
 
 
 import { useAuthStore } from '@/stores/airQuality'
-import CityAQI from '@/views/CityAQI.vue'
 
 
 
@@ -57,6 +60,18 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
+    path: '/health-alert',
+    name: 'health-alert',
+    component: HealthAlert,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/user-management',
+    name: 'user-management',
+    component: UserManagement,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
     path: '/login',
     name: 'login',
     component: Login,
@@ -66,6 +81,11 @@ const routes = [
     name: 'register',
     component: RegisterPage,
   },
+  {
+    path: '/contact',
+    name: 'contact',
+    component: ContactView
+  }
 ]
 
 const router = createRouter({
@@ -81,7 +101,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresAdmin && !auth.isAdmin) {
-    return next('/home') // Redirect normal user away from admin pages
+    return next('/home')
   }
 
   next()
