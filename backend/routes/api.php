@@ -27,7 +27,12 @@ Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQual
 Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
 Route::get('/countries', [AirQualityController::class, 'getCountries']);
 Route::get('/latest/{code}', [AirQualityController::class, 'getLatestByCountry']);
-Route::get('/openaq/locations/{id}', [AirQualityController::class, 'getLocation']);
+Route::get('/air-quality/locations', [AirQualityController::class, 'getLocation']);
+Route::get('/air-quality/global', [AirQualityController::class, 'getGlobalAirQuality']);
+Route::get('/air-quality/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
+
+Route::get('/iqair-air-quality', [AirQualityController::class, 'getIqAirData']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
