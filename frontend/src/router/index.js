@@ -12,6 +12,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 
 import { useAuthStore } from '@/stores/airQuality'
 import CityAQI from '@/views/CityAQI.vue'
+import ContactView from '@/views/ContactView.vue'
 
 
 
@@ -66,6 +67,11 @@ const routes = [
     name: 'register',
     component: RegisterPage,
   },
+  {
+    path: '/contact',
+    name: 'contact',
+    component: ContactView
+  }
 ]
 
 const router = createRouter({
