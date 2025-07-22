@@ -1,37 +1,47 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-sky-50 to-white text-gray-800">
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-sky-600 to-blue-500 text-white shadow-md py-6 px-6">
-      <div class="max-w-7xl mx-auto">
-        <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
-        <p class="text-sm text-white/80 mt-2">Monitor real-time air quality across the globe</p>
-        <p class="text-xs text-white/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
-      </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="p-6 space-y-10 max-w-7xl mx-auto">
-      <!-- Map Section -->
-      <section
-        class="bg-white rounded-2xl shadow-lg h-96 flex items-center justify-center border-2 border-dashed border-sky-300 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-100 opacity-30"></div>
-        <div class="text-center text-gray-400 space-y-3 z-10">
-          <MapPinIcon class="w-16 h-16 mx-auto text-sky-400" />
-          <p class="text-xl font-semibold">Interactive Map</p>
-          <p class="text-sm text-gray-500">Real-time AQI monitoring locations</p>
-          <div class="flex justify-center space-x-4 mt-4 flex-wrap gap-2">
-            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Good (0-50)</span>
-            <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-medium">Moderate (51-100)</span>
-            <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">Unhealthy (101-150)</span>
-            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium">Very Unhealthy (151+)</span>
-          </div>
+    <!-- Header -->
+      <div class="max-w-7xl mt-10 mx-auto">
+        <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
+        <p class="text-sm text-black/80 mt-2">Monitor real-time air quality across the globe</p>
+        <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
+      </div>
+      
+      <!-- Main Content -->
+    <!-- Filter Box - Now Outside of the Map Section -->
+     <div class="max-w-7xl  mx-auto mt-6 px-6 flex flex-col items-end space-y-6">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-5 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-sky-700 mb-3">🔍 Search City or Country</h3>
+        <div class="flex space-x-2">
+          <input
+            v-model="searchLocation"
+            @keydown.enter="searchLocationOnMap"
+            type="text"
+            placeholder="search by city or country"
+            class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+          />
+          <button
+            @click="searchLocationOnMap"
+            class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
+          >
+            Search
+          </button>
         </div>
-      </section>
+      </div>
+    </div>
+
+
+
+
+  <!-- Main Content -->
+  <main class="p-6 space-y-10 max-w-7xl mx-auto">
+    <!-- Map Section -->
+    <div id="map" class="w-full h-screen "></div>
 
       <!-- AQI Card Grid -->
       <section>
         <h2 class="text-3xl font-semibold mb-8 text-gray-700 flex items-center">
-          📊 Air Quality Index by Location
+          📊 Air Quality by Location
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="(city, index) in cities" :key="index" :class="[
@@ -95,7 +105,7 @@
 
       <!-- AQI Scale Reference -->
       <section class="bg-white rounded-2xl shadow-lg p-6">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Air Quality Index Scale</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Air Quality Scale</h3>
         <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
           <div class="flex items-center space-x-2">
             <div class="w-4 h-4 bg-green-500 rounded"></div>
@@ -126,236 +136,133 @@
             <h2 class="text-3xl font-bold text-gray-900 mb-2">Major Air Pollutants</h2>
             <p class="text-xl text-blue-600 font-medium">Street 96</p>
           </div>
-
-          <!-- Get AQI App Button -->
-          <button
-            class="flex items-center space-x-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <Smartphone class="h-5 w-5" />
-            <span>Get AQI App</span>
-          </button>
         </div>
 
         <!-- Pollutants Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- PM2.5 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- PM2.5 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 border-2 border-green-600 rounded-full relative">
-                        <div class="absolute inset-1 bg-green-600 rounded-full opacity-60"></div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        2.5</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-                    <p class="text-sm text-gray-600">(PM2.5)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
 
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">6</span>
-                <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- PM10 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.1s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- PM10 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-7 h-7 border-2 border-green-600 rounded-full relative">
-                        <div class="absolute inset-1 bg-green-600 rounded-full opacity-60"></div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        10</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-                    <p class="text-sm text-gray-600">(PM10)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">25</span>
-                <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- CO Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.2s;">
-            <div class="p-6 relative">
-              <!-- Warning indicator -->
-              <div
-                class="absolute top-4 right-4 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                <AlertTriangle class="h-3 w-3 text-white" />
-              </div>
-
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- CO Icon -->
-                  <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-yellow-600 rounded-full relative">
-                        <div class="absolute inset-1 border border-yellow-800 rounded-full"></div>
-                        <div class="absolute top-1 left-1 w-1 h-1 bg-yellow-800 rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-yellow-800 rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-yellow-600">
-                        CO</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
-                    <p class="text-sm text-gray-600">(CO)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-yellow-600 animate-number-pulse">34</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- SO2 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.3s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- SO2 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-lg relative">
-                        <div class="absolute top-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute top-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div
-                          class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full">
-                        </div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        SO₂</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
-                    <p class="text-sm text-gray-600">(SO2)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">9</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- NO2 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.4s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- NO2 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-lg relative">
-                        <div
-                          class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-2 border border-white rounded-full">
-                        </div>
-                        <div class="absolute bottom-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        NO₂</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
-                    <p class="text-sm text-gray-600">(NO2)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">13</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- O3 Card -->
-          <div
-            class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up group"
-            style="animation-delay: 0.5s;">
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                  <!-- O3 Icon -->
-                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-icon-float">
-                    <div class="relative">
-                      <div class="w-6 h-6 bg-green-600 rounded-full relative">
-                        <div class="absolute inset-1 border border-white rounded-full"></div>
-                        <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full">
-                        </div>
-                        <div class="absolute bottom-1 left-1 w-1 h-1 bg-white rounded-full"></div>
-                        <div class="absolute bottom-1 right-1 w-1 h-1 bg-white rounded-full"></div>
-                      </div>
-                      <div
-                        class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                        O₃</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900">Ozone</h3>
-                    <p class="text-sm text-gray-600">(O3)</p>
-                  </div>
-                </div>
-                <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </div>
-
-              <div class="flex items-end space-x-2">
-                <span class="text-3xl font-bold text-green-600 animate-number-pulse">10</span>
-                <span class="text-sm text-gray-500 mb-1">ppb</span>
-              </div>
-            </div>
+  <!-- PM2.5 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM2.5</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+            <p class="text-sm text-gray-600">(PM2.5)</p>
           </div>
         </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">6</span>
+        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM10 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM10</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+            <p class="text-sm text-gray-600">(PM10)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">25</span>
+        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CO Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-bold">CO</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
+            <p class="text-sm text-gray-600">(CO)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-yellow-600">34</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SO2 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">SO₂</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
+            <p class="text-sm text-gray-600">(SO2)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">9</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NO2 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">NO₂</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
+            <p class="text-sm text-gray-600">(NO2)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">13</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- O3 Card -->
+  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">O₃</div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Ozone</h3>
+            <p class="text-sm text-gray-600">(O3)</p>
+          </div>
+        </div>
+        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </div>
+      <div class="flex items-end space-x-2">
+        <span class="text-3xl font-bold text-green-600">10</span>
+        <span class="text-sm text-gray-500 mb-1">ppb</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
       </div>
 
       <!-- Bottom Info Section -->
@@ -391,11 +298,16 @@
         </div>
       </section>
     </main>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import L from 'leaflet'
+import axios from 'axios'
+import 'leaflet/dist/leaflet.css'
+
+
 import {
   MapPin as MapPinIcon,
   Cloud as CloudIcon,
@@ -407,6 +319,60 @@ import {
   AlertTriangle,
   Leaf
 } from 'lucide-vue-next'
+// i18n (Composition API)
+const { t } = useI18n()
+const searchLocation = ref('')
+let map // declare globally
+
+onMounted(() => {
+  map = L.map('map').setView([11.55, 104.91], 6) // Cambodia
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap & CartoDB',
+    subdomains: 'abcd'
+  }).addTo(map)
+})
+
+const searchLocationOnMap = async () => {
+  if (!searchLocation.value.trim()) return
+
+  try {
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: searchLocation.value,
+        format: 'json',
+        limit: 1,
+      },
+    })
+
+    if (response.data.length > 0) {
+      const result = response.data[0]
+      const lat = parseFloat(result.lat)
+      const lon = parseFloat(result.lon)
+
+      map.setView([lat, lon], 9)
+
+      const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+        shadowSize: [41, 41],
+      })
+
+      const marker = L.marker([lat, lon], { icon: redIcon }).addTo(map)
+      marker.bindPopup(`📍 ${result.display_name}`).openPopup()
+    } else {
+      alert('Location not found.')
+    }
+  } catch (error) {
+    console.error('Error fetching location:', error)
+    alert('Failed to search location.')
+  }
+}
+
 
 // Reactive data
 const currentTime = ref(new Date())
