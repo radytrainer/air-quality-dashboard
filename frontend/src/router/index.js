@@ -10,6 +10,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 import CityAQI from '@/views/CityAQI.vue'
 import ContactView from '@/views/ContactView.vue'
 import HealthAlert from '@/views/HealthAlert.vue'
+import UserManagement from '@/views/UserManagement.vue'
 
 
 
@@ -62,6 +63,12 @@ const routes = [
     path: '/health-alert',
     name: 'health-alert',
     component: HealthAlert,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/user-management',
+    name: 'user-management',
+    component: UserManagement,
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
