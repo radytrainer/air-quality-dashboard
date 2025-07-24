@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AirQualityController;
 use App\Http\Controllers\Api\AqiEuropeController;
+use App\Http\Controllers\Api\AqiAmericasController;
+use App\Http\Controllers\Api\AqiAsiaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +42,11 @@ Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentrat
 
 //Europe countries
 Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, 'getAllCitiesAirQuality']);
+//Americas countries
+Route::get('/air-quality/americas-countrie-cities', [AqiAmericasController::class, 'getAlliAmericasCitiesAirQuality']);
+//Asia countries
+Route::get('/air-quality/Asia-countrie-cities', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
+
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
