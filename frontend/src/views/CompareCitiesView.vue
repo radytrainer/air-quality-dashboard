@@ -50,7 +50,7 @@
     <span class="text-purple-600 text-3xl">🔍</span>
     Select Cities to Compare
   </h2>
-
+ 
   <!-- City Selectors -->
   <div class="grid md:grid-cols-2 gap-6 mb-10">
     <!-- Primary City -->
@@ -61,7 +61,7 @@
         <img v-if="city1Flag" :src="city1Flag" alt="flag" class="w-6 h-4 rounded-sm object-cover" />
         <span class="font-mono text-purple-700 text-lg">{{ city1TimeDisplay }}</span>
       </div>
-      <CitySelector v-model="selectedCity1" :cities="cities" placeholder="Choose your first city..." />
+      <CitySelectorforcompare v-model="selectedCity1" :cities="cities" placeholder="Choose your first city..." />
     </div>
 
     <!-- Secondary City -->
@@ -72,7 +72,7 @@
         <img v-if="city2Flag" :src="city2Flag" alt="flag" class="w-6 h-4 rounded-sm object-cover" />
         <span class="font-mono text-purple-700 text-lg">{{ city2TimeDisplay }}</span>
       </div>
-      <CitySelector v-model="selectedCity2" :cities="cities" placeholder="Choose your second city..." />
+      <CitySelectorforcompare v-model="selectedCity2" :cities="cities" placeholder="Choose your second city..." />
     </div>
   </div>
 
@@ -151,9 +151,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import CitySelectorForCompare from '@/components/CitySelectorForCompare.vue'
 import CityCard from '@/components/CityCard.vue'
 import CompareBarChart from '@/components/CompareBarChart.vue'
+import CitySelectorforcompare from '@/components/CitySelectorForCompare.vue'
+
+
 const cities = [
   { name: 'Phnom Penh', flag: 'https://flagcdn.com/kh.svg', country: 'Cambodia' },
   { name: 'New Delhi', flag: 'https://flagcdn.com/in.svg', country: 'India' },
