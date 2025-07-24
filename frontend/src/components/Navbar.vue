@@ -51,14 +51,18 @@
         ></div>
       </RouterLink>
 
-      <RouterLink
-        to="/health-alert"
+            <RouterLink
+        :to="auth.userRole === 'admin' ? '/health-alert' : '/compare-cities'"
         class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="$route.path === '/health-alert' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
+        :class="[
+          $route.path === '/compare-cities' || $route.path === '/health-alert'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-gray-700'
+        ]"
       >
-        {{ $t('nav.healthAlert') }}
+        {{ auth.userRole === 'admin' ? $t('nav.healthAlert') : $t('nav.compareCities') }}
         <div
-          v-if="$route.path === '/health-alert'"
+          v-if="$route.path === '/compare-cities' || $route.path === '/health-alert'"
           class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
         ></div>
       </RouterLink>
@@ -183,11 +187,11 @@
           {{ $t('nav.cityDetail') }}
         </RouterLink>
         <RouterLink
-          to="/health-alert"
+          to="/compare-cities"
           class="block px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
           @click="mobileMenuOpen = false"
         >
-          {{ $t('nav.healthAlert') }}
+          {{ $t('nav.compareCities') }}
         </RouterLink>
         <RouterLink
           to="/analytics"
