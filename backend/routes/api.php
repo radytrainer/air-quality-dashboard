@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\AirQualityController;
 use App\Http\Controllers\Api\AqiEuropeController;
 use App\Http\Controllers\Api\AqiAmericasController;
 use App\Http\Controllers\Api\AqiAsiaController;
+use App\Http\Controllers\Api\AqiAfricanController;
+use App\Http\Controllers\Api\AqiOceaniaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,7 +48,10 @@ Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, '
 Route::get('/air-quality/americas-countrie-cities', [AqiAmericasController::class, 'getAlliAmericasCitiesAirQuality']);
 //Asia countries
 Route::get('/air-quality/Asia-countrie-cities', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
-
+// African countries
+Route::get('/air-quality/African-countrie-cities', [AqiAfricanController::class, 'getAllAfricanCitiesAirQuality']);
+//Oceania countries
+Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class, 'getAllOceaniaCitiesAirQuality']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
