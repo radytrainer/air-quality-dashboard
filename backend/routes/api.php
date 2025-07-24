@@ -27,13 +27,16 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
 Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
-Route::get('/countries', [AirQualityController::class, 'getCountries']);
-Route::get('/latest/{code}', [AirQualityController::class, 'getLatestByCountry']);
-Route::get('/air-quality/locations', [AirQualityController::class, 'getLocation']);
+Route::get('/air-quality/locations', [AirQualityController::class, 'getLocations']);
 Route::get('/air-quality/global', [AirQualityController::class, 'getGlobalAirQuality']);
+Route::get('/air-quality/latest', [AirQualityController::class, 'getLatestAirQuality']);
+Route::get('/air-quality/countries', [AirQualityController::class, 'getCountries']);
 Route::get('/air-quality/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
+Route::get('/air-quality/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
+Route::get('/air-quality/iqair', [AirQualityController::class, 'getIqAirData']);
+Route::get('/air-quality/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
+Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentration']);
 
-Route::get('/iqair-air-quality', [AirQualityController::class, 'getIqAirData']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
