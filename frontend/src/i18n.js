@@ -8,6 +8,9 @@ const messages = {
       compareCities: 'Compare Cities',
       analytics: 'Analytics',
       dashboard: 'Dashboard',
+      healthAlert: 'Health Alert',
+      cityAQI: 'City AQI',
+      userManagement: 'User Management',
     },
     auth: {
       login: 'Login',
@@ -35,6 +38,10 @@ const messages = {
       compareCities: 'ប្រៀបធៀបទីក្រុង',
       analytics: 'វិភាគទិន្នន័យ',
       dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+      healthAlert: 'ការព្រមានសុខភាព',
+      cityAQI: 'ព័ត៌មានអាកាសនៃទីក្រុង',
+      userManagement: 'ការគ្រប់គ្រងអ្នកប្រើប្រាស់',
+      
     },
     auth: {
       login: 'ចូលគណនី',
