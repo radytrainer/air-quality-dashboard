@@ -7,6 +7,7 @@ use AuthController as GlobalAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AirQualityController;
+use App\Http\Controllers\Api\AqiEuropeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,6 +38,8 @@ Route::get('/air-quality/iqair', [AirQualityController::class, 'getIqAirData']);
 Route::get('/air-quality/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
 Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentration']);
 
+//Europe countries
+Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, 'getAllCitiesAirQuality']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
