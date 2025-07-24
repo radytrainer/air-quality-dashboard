@@ -9,31 +9,27 @@
       
       <!-- Main Content -->
     <!-- Filter Box - Now Outside of the Map Section -->
-     <div class="max-w-7xl  mx-auto mt-6 px-6 flex flex-col items-end space-y-6 mb-10">
-        <div class="flex space-x-2">
-          <input
-            v-model="searchLocation"
-            @keydown.enter="searchLocationOnMap"
-            type="text"
-            placeholder="search by city or country"
-            class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
-          <button
-            @click="searchLocationOnMap"
-            class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-2 py-2 text-base font-medium"
-          >
-            Search
-          </button>
-        </div>
-      </div>
+    <div class="max-w-7xl mx-auto mt-4 px-6 flex flex-col items-end space-y-6 mb-10">
+    <div class="flex space-x-2 w-full max-w-md">
+      <input
+        v-model="searchQuery"
+        @keydown.enter="searchCountry"
+        type="text"
+        placeholder="Search by city or country"
+        class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+      />
+      <button
+        @click="searchCountry"
+        class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
+      >
+        Search
+      </button>
+    </div>
+    </div>
 
+    <main class="p-6 space-y-10 max-w-7xl mx-auto">
+      <div id="map" class="h-[500px] w-full rounded-xl shadow-md border"></div>
 
-
-
-  <!-- Main Content -->
-  <main class="p-6 space-y-10 max-w-7xl mx-auto">
-    <!-- Map Section -->
-    <div id="map" class="w-full h-screen"></div>
 
       <!-- AQI Card Grid -->
       <section>
@@ -318,57 +314,179 @@ import {
 } from 'lucide-vue-next'
 // i18n (Composition API)
 const { t } = useI18n()
-const searchLocation = ref('')
-let map // declare globally
+const pollutants = ref({})
+const searchQuery = ref('')
+const selectedCity = ref('')
+const countryInfo = ref(null)
+let map
+let marker = null
+
+function getPollutantColor(key, value) {
+  const num = parseInt(value)
+  if (key === 'PM25' || key === 'PM2_5') return num > 35 ? 'red' : 'green'
+  if (key === 'PM10') return num > 50 ? 'red' : 'green'
+  if (key === 'CO') return num > 4 ? 'red' : 'green'
+  if (key === 'NO2') return num > 100 ? 'red' : 'green'
+  if (key === 'SO2') return num > 50 ? 'red' : 'green'
+  if (key === 'O3') return num > 180 ? 'red' : 'green'
+  return 'black'
+}
+
+function getPollutantIcon(key) {
+  const icons = {
+    PM2_5: '🌫',
+    PM10: '🌁',
+    CO: '🟤',
+    NO2: '🟠',
+    SO2: '🟡',
+    O3: '🟢',
+    Temperature: '🌡️',
+    Humidity: '💧',
+    Wind: '🌬️'
+  }
+  return icons[key] || '📍'
+}
+
+const fetchPollutants = async (lat, lon, name) => {
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500)) // Simulate delay
+
+    const values = {
+      PM2_5: `${Math.floor(Math.random() * 80 + 5)} μg/m³`,
+      PM10: `${Math.floor(Math.random() * 100 + 10)} μg/m³`,
+      CO: `${(Math.random() * 3 + 0.1).toFixed(2)} ppm`,
+      NO2: `${Math.floor(Math.random() * 60 + 5)} ppb`,
+      SO2: `${Math.floor(Math.random() * 40 + 2)} ppb`,
+      O3: `${Math.floor(Math.random() * 70 + 10)} ppb`,
+      Temperature: `${Math.floor(Math.random() * 15 + 20)} °C`,
+      Humidity: `${Math.floor(Math.random() * 50 + 30)}%`,
+      Wind: `${Math.floor(Math.random() * 20 + 3)} km/h`
+    }
+
+    selectedCity.value = name
+    pollutants.value = values
+  } catch (err) {
+    console.error('Simulated fetch error:', err)
+    pollutants.value = { Error: 'Failed to load data' }
+  }
+}
+
+const fetchCountryFlag = async (countryName) => {
+  try {
+    const res = await axios.get(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`)
+    const data = res.data[0]
+    countryInfo.value = {
+      name: data.name.common,
+      flag: data.flags.svg
+    }
+  } catch (error) {
+    console.error('Error fetching country flag:', error)
+    countryInfo.value = null
+  }
+}
+
+const searchCountry = async () => {
+  if (!searchQuery.value.trim()) return
+
+  try {
+    const res = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: searchQuery.value,
+        format: 'json',
+        limit: 1
+      }
+    })
+
+    if (res.data.length === 0) {
+      alert('Location not found')
+      return
+    }
+
+    const redIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    })
+
+    L.Marker.prototype.options.icon = redIcon
+
+    const place = res.data[0]
+    const lat = parseFloat(place.lat)
+    const lon = parseFloat(place.lon)
+    const displayName = place.display_name
+
+    // Extract country from display name
+    const countryMatch = displayName.split(',').pop()?.trim()
+    if (countryMatch) {
+      await fetchCountryFlag(countryMatch)
+    }
+
+    if (map) map.setView([lat, lon], 10)
+    if (marker) map.removeLayer(marker)
+
+    marker = L.marker([lat, lon]).addTo(map)
+    marker.bindPopup('Fetching pollutant data...').openPopup()
+
+    await fetchPollutants(lat, lon, displayName)
+
+    if (marker) {
+      let html = `<strong><span style="color:Blue">${selectedCity.value}</span></strong><br/>`
+      if (countryInfo.value?.flag) {
+        html += `<img src="${countryInfo.value.flag}" alt="${countryInfo.value.name} flag" width="40" height="25" style="margin-bottom: 4px"/><br/>`
+      }
+
+      for (const [key, val] of Object.entries(pollutants.value)) {
+        const num = parseInt(val)
+        const color = getPollutantColor(key, num)
+        const icon = getPollutantIcon(key)
+        html += `${icon} <strong>${key}</strong>: <span style="color:${color}">${val}</span><br/>`
+      }
+      marker.setPopupContent(html).openPopup()
+    }
+  } catch (error) {
+    console.error('Error searching location:', error)
+    alert('Failed to search location')
+  }
+}
 
 onMounted(() => {
-  map = L.map('map').setView([11.55, 104.91], 6) // Cambodia
+  map = L.map('map').setView([11.55, 104.91], 6)
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap & CartoDB',
     subdomains: 'abcd'
   }).addTo(map)
-})
 
-const searchLocationOnMap = async () => {
-  if (!searchLocation.value.trim()) return
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng
+    const name = `Lat: ${lat.toFixed(2)}, Lng: ${lng.toFixed(2)}`
+    countryInfo.value = null // reset flag when clicking manually
 
-  try {
-    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-      params: {
-        q: searchLocation.value,
-        format: 'json',
-        limit: 1,
-      },
-    })
+    if (marker) map.removeLayer(marker)
+    marker = L.marker([lat, lng]).addTo(map)
+    marker.bindPopup('Fetching pollutant data...').openPopup()
 
-    if (response.data.length > 0) {
-      const result = response.data[0]
-      const lat = parseFloat(result.lat)
-      const lon = parseFloat(result.lon)
+    await fetchPollutants(lat, lng, name)
 
-      map.setView([lat, lon], 9)
-
-      const redIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-        shadowSize: [41, 41],
-      })
-
-      const marker = L.marker([lat, lon], { icon: redIcon }).addTo(map)
-      marker.bindPopup(`📍 ${result.display_name}`).openPopup()
-    } else {
-      alert('Location not found.')
+    if (marker) {
+      let html = `<strong>${selectedCity.value}</strong><br/>`
+      for (const [key, val] of Object.entries(pollutants.value)) {
+        const num = parseInt(val)
+        const color = getPollutantColor(key, num)
+        const icon = getPollutantIcon(key)
+        html += `${icon} <strong>${key}</strong>: <span style="color:${color}">${val}</span><br/>`
+      }
+      marker.setPopupContent(html).openPopup()
     }
-  } catch (error) {
-    console.error('Error fetching location:', error)
-    alert('Failed to search location.')
-  }
-}
+  })
+})
+// Your generatePopupHTML function looks good as is, no changes needed.
+
+
 
 
 // Reactive data
