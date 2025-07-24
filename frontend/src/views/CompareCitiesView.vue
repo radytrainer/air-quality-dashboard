@@ -151,10 +151,9 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import CitySelector from '@/components/CitySelectorForCompare.vue'
+import CitySelectorForCompare from '@/components/CitySelectorForCompare.vue'
 import CityCard from '@/components/CityCard.vue'
 import CompareBarChart from '@/components/CompareBarChart.vue'
-
 const cities = [
   { name: 'Phnom Penh', flag: 'https://flagcdn.com/kh.svg', country: 'Cambodia' },
   { name: 'New Delhi', flag: 'https://flagcdn.com/in.svg', country: 'India' },
