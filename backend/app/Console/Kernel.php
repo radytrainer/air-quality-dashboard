@@ -10,9 +10,12 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(\Illuminate\Console\Scheduling\Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+        $schedule->command('airquality:fetch')->hourly();
+
+    })->everyTenMinutes();
     }
 
     /**
