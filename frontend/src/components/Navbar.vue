@@ -36,50 +36,56 @@
       </RouterLink>
 
       <RouterLink
-  :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
+        :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
+        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
+        :class="[
+          $route.path === '/city-detail' || $route.path === '/cityaqi'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-gray-700'
+        ]"
+      >
+        {{ auth.userRole === 'admin' ? $t('nav.cityAQI') : $t('nav.cityDetail') }}
+        <div
+          v-if="$route.path === '/city-detail' || $route.path === '/cityaqi'"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
+        ></div>
+      </RouterLink>
+
+            <RouterLink
+        :to="auth.userRole === 'admin' ? '/health-alert' : '/compare-cities'"
+        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
+        :class="[
+          $route.path === '/compare-cities' || $route.path === '/health-alert'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-gray-700'
+        ]"
+      >
+        {{ auth.userRole === 'admin' ? $t('nav.healthAlert') : $t('nav.compareCities') }}
+        <div
+          v-if="$route.path === '/compare-cities' || $route.path === '/health-alert'"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
+        ></div>
+      </RouterLink>
+
+      <RouterLink
+  :to="auth.userRole === 'admin' ? '/user-management' : '/analytics'"
   class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
   :class="[
-    $route.path === '/city-detail' || $route.path === '/cityaqi'
-      ? 'text-blue-600 bg-blue-50'
-      : 'text-gray-700'
+    ($route.path === '/analytics' || $route.path === '/user-management') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
   ]"
 >
-  {{ auth.userRole === 'admin' ? 'City AQI' : $t('nav.cityDetail') }}
+  {{ auth.userRole === 'admin' ? $t('nav.userManagement') : $t('nav.analytics') }}
   <div
-    v-if="$route.path === '/city-detail' || $route.path === '/cityaqi'"
+    v-if="$route.path === '/analytics' || $route.path === '/user-management'"
     class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
   ></div>
 </RouterLink>
 
-
-      <RouterLink
-        to="/compare-cities"
-        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="$route.path === '/compare-cities' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
-      >
-        {{ $t('nav.compareCities') }}
-        <div
-          v-if="$route.path === '/compare-cities'"
-          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
-      </RouterLink>
-
-      <RouterLink
-        to="/analytics"
-        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="$route.path === '/analytics' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
-      >
-        {{ $t('nav.analytics') }}
-        <div
-          v-if="$route.path === '/analytics'"
-          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
-      </RouterLink>
     </div>
 
-    <!-- Right Section: AQI Standard, Language, Theme, Login -->
+    <!-- Right Section -->
     <div class="flex items-center gap-2 relative">
-      <!-- AQI Standard - Fixed size button -->
+      <!-- AQI Standard -->
       <button
         class="flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-200 w-[100px]"
         title="Change AQI Standard"
@@ -92,7 +98,7 @@
         <span class="text-xs font-medium select-none truncate">AQI-US</span>
       </button>
 
-      <!-- Theme Toggle - Fixed size button -->
+      <!-- Theme -->
       <button
         class="flex items-center justify-center p-2 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-200 w-10 h-9"
         aria-label="Toggle theme"
@@ -101,7 +107,7 @@
         <i class="fas fa-sun text-yellow-500 text-sm"></i>
       </button>
 
-      <!-- Language Switcher -->
+      <!-- Language -->
       <div class="relative">
         <button
           @click="toggleLanguageDropdown"
@@ -133,16 +139,14 @@
         </div>
       </div>
 
-      <!-- Login / Logout - Fixed size button -->
+      <!-- Auth -->
       <button
         v-if="!isLoggedIn"
         class="flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-blue-600 hover:bg-blue-100 transition-all duration-200 border border-blue-200 w-[90px]"
         @click="$router.push('/login')"
       >
         <i class="fas fa-sign-in-alt text-blue-500 text-sm flex-shrink-0"></i>
-        <span class="text-xs font-medium select-none truncate">{{
-          $t('auth.login')
-        }}</span>
+        <span class="text-xs font-medium select-none truncate">{{ $t('auth.login') }}</span>
       </button>
       <button
         v-else
@@ -150,9 +154,7 @@
         @click="logout"
       >
         <i class="fas fa-sign-out-alt text-red-500 text-sm flex-shrink-0"></i>
-        <span class="text-xs font-medium select-none truncate">{{
-          $t('auth.logout')
-        }}</span>
+        <span class="text-xs font-medium select-none truncate">{{ $t('auth.logout') }}</span>
       </button>
     </div>
 
@@ -198,6 +200,13 @@
         >
           {{ $t('nav.analytics') }}
         </RouterLink>
+        <RouterLink
+          to="/user-management"
+          class="block px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
+          @click="mobileMenuOpen = false"
+        >
+          {{ $t('nav.userManagement') }}
+        </RouterLink>
       </div>
     </div>
   </nav>
@@ -207,7 +216,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import CitySearch from '@/components/CitySearch.vue'
-import { useAuthStore } from '@/stores/airQuality' // your Pinia store path
+import { useAuthStore } from '@/stores/airQuality'
 import { useI18n } from 'vue-i18n'
 
 const selectedCity = ref('')
@@ -238,10 +247,8 @@ function toggleMobileMenu() {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
-// Reactive login status
 const isLoggedIn = computed(() => auth.isAuthenticated)
 
-// Dynamic label for Home/Dashboard link based on user role only
 const homeLabel = computed(() => {
   return auth.userRole === 'admin' ? t('nav.dashboard') : t('nav.home')
 })
@@ -252,33 +259,26 @@ function logout() {
 }
 </script>
 
-<style>
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-</style>
-
 <style scoped>
-/* Custom scrollbar for dropdown */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
 .overflow-hidden::-webkit-scrollbar {
   width: 4px;
 }
-
 .overflow-hidden::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 2px;
 }
 
-/* Fade transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
 }
-
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
 }
 
-/* Ensure text truncation works */
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
