@@ -9,6 +9,11 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Api\AqiEuropeController;
+use App\Http\Controllers\Api\AqiAmericasController;
+use App\Http\Controllers\Api\AqiAsiaController;
+use App\Http\Controllers\Api\AqiAfricanController;
+use App\Http\Controllers\Api\AqiOceaniaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,19 +32,28 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
 Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
-Route::get('/countries', [AirQualityController::class, 'getCountries']);
-Route::get('/latest/{code}', [AirQualityController::class, 'getLatestByCountry']);
-Route::get('/openaq/locations/{id}', [AirQualityController::class, 'getLocation']);
+Route::get('/air-quality/locations', [AirQualityController::class, 'getLocations']);
+Route::get('/air-quality/global', [AirQualityController::class, 'getGlobalAirQuality']);
+Route::get('/air-quality/latest', [AirQualityController::class, 'getLatestAirQuality']);
+Route::get('/air-quality/countries', [AirQualityController::class, 'getCountries']);
+Route::get('/air-quality/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
+Route::get('/air-quality/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
+Route::get('/air-quality/iqair', [AirQualityController::class, 'getIqAirData']);
+Route::get('/air-quality/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
+Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentration']);
 
-Route::get('/users', [UserController::class, 'index']);
+//Europe countries
+Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, 'getAllCitiesAirQuality']);
+//Americas countries
+Route::get('/air-quality/americas-countrie-cities', [AqiAmericasController::class, 'getAlliAmericasCitiesAirQuality']);
+//Asia countries
+Route::get('/air-quality/Asia-countrie-cities', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
+// African countries
+Route::get('/air-quality/African-countrie-cities', [AqiAfricanController::class, 'getAllAfricanCitiesAirQuality']);
+//Oceania countries
+Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class, 'getAllOceaniaCitiesAirQuality']);
 
-// Admin contacts (no middleware applied here)
-Route::prefix('admin')->group(function () {
-    Route::get('/contacts', [AdminContactController::class, 'index']);
-    Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
-});
-
-// Routes requiring authentication
+// Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
     // User routes

@@ -24,8 +24,12 @@ return [
     'api_key' => 'e206621a38fb37832cc3cb734fb477ae',
 ],
 'openaq' => [
-    'base_url' => 'https://api.openaq.org/v3',
-    'api_key' => '0ebe17e1199ba32afd6de45b7337bb504d3efa4fb40e3797b594afeae64de98d', 
+    'base_url' => 'https://api.openaq.org',
+    'api_key' => '8570a81988caeddc953c8f0520e01574154d07440e2af72da906871f613545ff', 
+],
+'iqair' => [
+    'api_key' => '2acd56eb-8186-40aa-b9e9-29b2c4e87f47',
+    'base_url' => 'https://api.airvisual.com/v2',
 ],
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

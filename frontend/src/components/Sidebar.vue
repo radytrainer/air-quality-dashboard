@@ -37,26 +37,26 @@
         {{ auth.userRole === 'admin' ? 'City AQI' : $t('nav.cityDetail') }}
       </RouterLink>
 
-      <!-- Compare Cities -->
+      <!-- Health Alert -->
       <RouterLink
-        to="/compare-cities"
+        to="/health-alert"
         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-100 hover:text-blue-600"
-        :class="$route.path === '/compare-cities' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700'"
+        :class="$route.path === '/health-alert' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700'"
         @click="mobileMenuOpen = false"
       >
-        <RefreshCcw class="w-5 h-5" />
-        {{ $t('nav.compareCities') }}
+        <HeartPulse class="w-5 h-5" />
+        Health Alert
       </RouterLink>
 
-      <!-- Analytics -->
+      <!-- User Management -->
       <RouterLink
-        to="/analytics"
+        to="/user-management"
         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-100 hover:text-blue-600"
-        :class="$route.path === '/analytics' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700'"
+        :class="$route.path === '/user-management' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700'"
         @click="mobileMenuOpen = false"
       >
-        <BarChart2 class="w-5 h-5" />
-        {{ $t('nav.analytics') }}
+        <Users2 class="w-5 h-5" />
+        User Management
       </RouterLink>
     </nav>
   </aside>
@@ -71,8 +71,8 @@ import { useAuthStore } from '@/stores/airQuality'
 import {
   LayoutDashboard,
   Landmark,
-  RefreshCcw,
-  BarChart2
+  HeartPulse,
+  Users2
 } from 'lucide-vue-next'
 
 const auth = useAuthStore()
