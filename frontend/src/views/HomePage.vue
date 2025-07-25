@@ -10,118 +10,123 @@
       <!-- Main Content -->
     <!-- Filter Box - Now Outside of the Map Section -->
     <div class="max-w-7xl mx-auto mt-4 px-6 flex flex-col items-end space-y-6 mb-10">
-    <div class="flex space-x-2 w-full max-w-md">
-      <input
-        v-model="searchQuery"
-        @keydown.enter="searchCountry"
-        type="text"
-        placeholder="Search by city or country"
-        class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
-      />
-      <button
-        @click="searchCountry"
-        class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
-      >
-        Search
-      </button>
-    </div>
+      <div class="flex space-x-2 w-full max-w-md">
+        <input
+          v-model="searchQuery"
+          @keydown.enter="searchCountry"
+          type="text"
+          placeholder="Search by city or country"
+          class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+        />
+        <button
+          @click="searchCountry"
+          class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
+        >
+          Search
+        </button>
+      </div>
     </div>
 
     <main class="p-6 space-y-10 max-w-7xl mx-auto">
-      <div id="map" class="h-[500px] w-full rounded-xl shadow-md border"></div>
 
+      <!-- Map Section -->
+    <div id="map" class="relative h-[600px] w-full rounded-xl shadow-md border">
 
+      <!-- AQI Legend -->
+      <div
+        class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-x-4 gap-y-2 p-3 bg-white rounded-md shadow-md text-xs z-[999] pointer-events-none"
+      >
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#8BC34A]"></span>Good</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ffff00]"></span>Moderate</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ff7e00]"></span>Unhealthy for sensitive groups</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ff0000]"></span>Unhealthy</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#8f3f97]"></span>Very unhealthy</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#7e0023]"></span>Hazardous</div>
+      </div>
+    </div>
+
+      
       <!-- AQI Card Grid -->
-      <section>
-        <h2 class="text-3xl font-semibold mb-8 text-gray-700 flex items-center">
-          📊 Air Quality by Location
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="(city, index) in cities" :key="index" :class="[
-            'hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br border-0 rounded-lg shadow-md overflow-hidden',
-            getBackgroundColor(city.aqi)
-          ]">
-            <!-- Card Header -->
-            <div class="p-4 pb-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-800">{{ city.name }}</h3>
-                <span :class="['text-white px-2 py-1 rounded-full text-sm font-medium', getBadgeColor(city.aqi)]">
-                  {{ city.aqi }} AQI
-                </span>
-              </div>
-            </div>
+      <div class="max-w-7xl mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">🌍 Global Air Quality Overview</h2>
 
-            <!-- Card Content -->
-            <div class="px-4 pb-4 space-y-4">
-              <div class="text-center">
-                <p :class="['text-6xl font-extrabold', getColor(city.aqi)]">{{ city.aqi }}</p>
-                <p class="text-sm text-gray-600 mt-1 font-medium">{{ getStatus(city.aqi) }}</p>
-              </div>
+        <div class="flex flex-row flex-wrap gap-6 justify-center">
+          <!-- Top Polluted Cities -->
+          <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
+            <h3 class="text-lg font-semibold mb-4 text-red-600">🏆 Top 10 Most Polluted Cities</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
+                <thead class="bg-red-50 text-red-800 uppercase text-xs">
+                  <tr>
+                    <th class="px-4 py-2">Rank</th>
+                    <th class="px-4 py-2">City</th>
+                    <th class="px-4 py-2">Country</th>
+                    <th class="px-4 py-2">AQI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(city, index) in pollutedCitiesSorted"
+                    :key="index"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-red-50/20'"
+                    class="transition hover:bg-red-100/40"
+                  >
+                    <td class="px-4 py-2 font-medium">{{ index + 1 }}</td>
+                    <td class="px-4 py-2">{{ city.city }}</td>
+                    <td class="px-4 py-2">{{ city.country }}</td>
+                    <td class="px-4 py-2">
+                      <span
+                        :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'"
+                      >
+                        {{ city.aqi }}
+                      </span>
+                  </td>
 
-              <!-- PM Readings -->
-              <div v-if="city.pm10 && city.pm25" class="grid grid-cols-2 gap-3 text-xs">
-                <div class="bg-white/50 rounded-lg p-2 text-center">
-                  <p class="font-semibold text-gray-700">PM10</p>
-                  <p class="text-gray-600">{{ city.pm10 }} μg/m³</p>
-                </div>
-                <div class="bg-white/50 rounded-lg p-2 text-center">
-                  <p class="font-semibold text-gray-700">PM2.5</p>
-                  <p class="text-gray-600">{{ city.pm25 }} μg/m³</p>
-                </div>
-              </div>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-              <!-- Weather Info -->
-              <div v-if="city.temperature" class="flex items-center justify-between text-sm bg-white/30 rounded-lg p-3">
-                <div class="flex items-center space-x-2">
-                  <CloudIcon class="w-4 h-4 text-blue-500" />
-                  <span>{{ city.temperature }}°C</span>
-                </div>
-                <div class="flex items-center space-x-4 text-xs">
-                  <div v-if="city.humidity" class="flex items-center space-x-1">
-                    <DropletsIcon class="w-3 h-3 text-blue-400" />
-                    <span>{{ city.humidity }}%</span>
-                  </div>
-                  <div v-if="city.windSpeed" class="flex items-center space-x-1">
-                    <WindIcon class="w-3 h-3 text-gray-500" />
-                    <span>{{ city.windSpeed }} km/h</span>
-                  </div>
-                  <div v-if="city.uvIndex" class="flex items-center space-x-1">
-                    <SunIcon class="w-3 h-3 text-yellow-500" />
-                    <span>UV {{ city.uvIndex }}</span>
-                  </div>
-                </div>
-              </div>
+          <!-- Cleanest Cities -->
+          <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
+            <h3 class="text-lg font-semibold mb-4 text-green-600">🌿Top 10 Least Polluted Cities</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
+                <thead class="bg-green-50 text-green-800 uppercase text-xs">
+                  <tr>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2">City</th>
+                    <th class="px-4 py-2">Country</th>
+                    <th class="px-4 py-2">AQI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(city, index) in cleanestCitiesSorted"
+                    :key="index"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-green-50/20'"
+                    class="transition hover:bg-green-100/40"
+                  >
+                    <td class="px-4 py-2">Live</td>
+                    <td class="px-4 py-2">{{ city.city }}</td>
+                    <td class="px-4 py-2">{{ city.country }}</td>
+                    <td class="px-4 py-2">
+                  <span
+                    :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'"
+                  >
+                    {{ city.aqi }}
+                  </span>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- AQI Scale Reference -->
-      <section class="bg-white rounded-2xl shadow-lg p-6">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Air Quality Scale</h3>
-        <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-green-500 rounded"></div>
-            <span class="text-sm">Good (0-50)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-yellow-500 rounded"></div>
-            <span class="text-sm">Moderate (51-100)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-orange-500 rounded"></div>
-            <span class="text-sm">Unhealthy for Sensitive (101-150)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-red-500 rounded"></div>
-            <span class="text-sm">Unhealthy (151-200)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 bg-purple-600 rounded"></div>
-            <span class="text-sm">Very Unhealthy (201+)</span>
-          </div>
-        </div>
-      </section>
+      </div>
+      
       <!-- Major Air Pollutants Section -->
       <div class="mb-8">
         <div class="flex items-center justify-between mb-8">
@@ -294,12 +299,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import L from 'leaflet'
 import axios from 'axios'
 import 'leaflet/dist/leaflet.css'
-
 
 import {
   MapPin as MapPinIcon,
@@ -312,14 +316,27 @@ import {
   AlertTriangle,
   Leaf
 } from 'lucide-vue-next'
-// i18n (Composition API)
+
 const { t } = useI18n()
+
 const pollutants = ref({})
 const searchQuery = ref('')
 const selectedCity = ref('')
 const countryInfo = ref(null)
 let map
 let marker = null
+
+// Live current time reactive ref
+const currentTime = ref(new Date())
+let timer = null
+onMounted(() => {
+  timer = setInterval(() => {
+    currentTime.value = new Date()
+  }, 1000)
+})
+onUnmounted(() => {
+  clearInterval(timer)
+})
 
 function getPollutantColor(key, value) {
   const num = parseInt(value)
@@ -349,7 +366,7 @@ function getPollutantIcon(key) {
 
 const fetchPollutants = async (lat, lon, name) => {
   try {
-    await new Promise(resolve => setTimeout(resolve, 500)) // Simulate delay
+    await new Promise(resolve => setTimeout(resolve, 500))
 
     const values = {
       PM2_5: `${Math.floor(Math.random() * 80 + 5)} μg/m³`,
@@ -411,8 +428,6 @@ const searchCountry = async () => {
       shadowSize: [41, 41]
     })
 
-    L.Marker.prototype.options.icon = redIcon
-
     const place = res.data[0]
     const lat = parseFloat(place.lat)
     const lon = parseFloat(place.lon)
@@ -453,7 +468,9 @@ const searchCountry = async () => {
 }
 
 onMounted(() => {
-  map = L.map('map').setView([11.55, 104.91], 6)
+  map = L.map('map', {
+    scrollWheelZoom: false
+  }).setView([11.55, 104.91], 6)
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
@@ -461,10 +478,34 @@ onMounted(() => {
     subdomains: 'abcd'
   }).addTo(map)
 
+  // Enable Ctrl + Scroll zoom ONLY on map
+  let hintShown = false
+
+  const mapContainer = map.getContainer()
+
+  mapContainer.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) {
+      e.preventDefault() // Prevent page scroll
+      map.scrollWheelZoom.enable()
+
+      clearTimeout(map._scrollTimeout)
+      map._scrollTimeout = setTimeout(() => {
+        map.scrollWheelZoom.disable()
+      }, 1000)
+    } else {
+      if (!hintShown) {
+        hintShown = true
+        console.log('Hold Ctrl + scroll to zoom the map') // Replace with toast if needed
+        setTimeout(() => (hintShown = false), 3000)
+      }
+    }
+  }, { passive: false }) // <- Important to allow e.preventDefault()
+
+  // Map click behavior (your existing code)
   map.on('click', async (e) => {
     const { lat, lng } = e.latlng
     const name = `Lat: ${lat.toFixed(2)}, Lng: ${lng.toFixed(2)}`
-    countryInfo.value = null // reset flag when clicking manually
+    countryInfo.value = null
 
     if (marker) map.removeLayer(marker)
     marker = L.marker([lat, lng]).addTo(map)
@@ -484,121 +525,97 @@ onMounted(() => {
     }
   })
 })
-// Your generatePopupHTML function looks good as is, no changes needed.
 
 
 
-
-// Reactive data
-const currentTime = ref(new Date())
-const cities = ref([
-  {
-    name: 'Phnom Penh',
-    aqi: 42,
-    pm10: 22,
-    pm25: 5,
-    temperature: 34,
-    humidity: 56,
-    windSpeed: 26,
-    uvIndex: 3
-  },
-  {
-    name: 'Bangkok',
-    aqi: 91,
-    pm10: 45,
-    pm25: 18,
-    temperature: 32,
-    humidity: 68,
-    windSpeed: 12,
-    uvIndex: 8
-  },
-  {
-    name: 'New Delhi',
-    aqi: 175,
-    pm10: 89,
-    pm25: 65,
-    temperature: 28,
-    humidity: 45,
-    windSpeed: 8,
-    uvIndex: 6
-  },
-  {
-    name: 'Tokyo',
-    aqi: 37,
-    pm10: 18,
-    pm25: 8,
-    temperature: 24,
-    humidity: 52,
-    windSpeed: 15,
-    uvIndex: 4
-  },
-  {
-    name: 'Beijing',
-    aqi: 129,
-    pm10: 67,
-    pm25: 42,
-    temperature: 22,
-    humidity: 38,
-    windSpeed: 18,
-    uvIndex: 5
-  },
-  {
-    name: 'Jakarta',
-    aqi: 78,
-    pm10: 35,
-    pm25: 22,
-    temperature: 31,
-    humidity: 72,
-    windSpeed: 9,
-    uvIndex: 9
-  }
+const pollutedCities = ref([
+  { city: "Delhi", country: "India", aqi: 350 },
+  { city: "Beijing", country: "China", aqi: 180 },
+  { city: "Los Angeles", country: "USA", aqi: 75 },
+  { city: "Paris", country: "France", aqi: 55 },
+  { city: "London", country: "UK", aqi: 130 },
+  { city: "Tokyo", country: "Japan", aqi: 210 },
+  { city: "Bangkok", country: "Thailand", aqi: 190 },
+  { city: "Moscow", country: "Russia", aqi: 300 },
+  { city: "Cairo", country: "Egypt", aqi: 400 },
+  { city: "Jakarta", country: "Indonesia", aqi: 250 }
 ])
 
-let timeInterval = null
+const cleanestCities = ref([
+  { city: "Reykjavik", country: "Iceland", aqi: 12 },
+  { city: "Wellington", country: "New Zealand", aqi: 45 },
+  { city: "Helsinki", country: "Finland", aqi: 55 },
+  { city: "Zurich", country: "Switzerland", aqi: 80 },
+  { city: "Sydney", country: "Australia", aqi: 150 },
+  { city: "Bangkok", country: "Thailand", aqi: 190 },
+  { city: "Vancouver", country: "Canada", aqi: 60 },
+  { city: "Oslo", country: "Norway", aqi: 30 },
+  { city: "Copenhagen", country: "Denmark", aqi: 40 },
+  { city: "Dublin", country: "Ireland", aqi: 70 }
+])
 
-onMounted(() => {
-  timeInterval = setInterval(() => {
-    currentTime.value = new Date()
-  }, 60000)
-})
+const AQICategories = [
+  { label: "Good", min: 0, max: 50 },
+  { label: "Moderate", min: 51, max: 100 },
+  { label: "Unhealthy for Sensitive Groups", min: 101, max: 150 },
+  { label: "Unhealthy", min: 151, max: 200 },
+  { label: "Very Unhealthy", min: 201, max: 300 },
+  { label: "Hazardous", min: 301, max: 500 },
+]
 
-onUnmounted(() => {
-  if (timeInterval) {
-    clearInterval(timeInterval)
+function getAQICategory(aqi) {
+  const num = Number(aqi)
+  for (const cat of AQICategories) {
+    if (num >= cat.min && num <= cat.max) {
+      return cat.label
+    }
   }
-})
-
-function getStatus(aqi) {
-  if (aqi <= 50) return 'Good 🌿'
-  if (aqi <= 100) return 'Moderate 😐'
-  if (aqi <= 150) return 'Unhealthy for Sensitive Groups 😷'
-  if (aqi <= 200) return 'Unhealthy 😷'
-  return 'Very Unhealthy 🔥'
+  return "Unknown"
 }
 
 function getColor(aqi) {
-  if (aqi <= 50) return 'text-green-500'
-  if (aqi <= 100) return 'text-yellow-500'
-  if (aqi <= 150) return 'text-orange-500'
-  if (aqi <= 200) return 'text-red-500'
-  return 'text-purple-600'
+  const num = Number(aqi)
+  if (num <= 50) return "bg-green-400"
+  if (num <= 100) return "bg-yellow-400"
+  if (num <= 150) return "bg-orange-400"
+  if (num <= 200) return "bg-red-400"
+  if (num <= 300) return "bg-purple-400"
+  if (num <= 500) return "bg-red-800"
 }
+const orderTable1 = [
+  "Hazardous",
+  "Very Unhealthy",
+  "Unhealthy",
+  "Unhealthy for Sensitive Groups",
+  "Moderate",
+  "Good",
+]
 
-function getBadgeColor(aqi) {
-  if (aqi <= 50) return 'bg-green-500'
-  if (aqi <= 100) return 'bg-yellow-500'
-  if (aqi <= 150) return 'bg-orange-500'
-  if (aqi <= 200) return 'bg-red-500'
-  return 'bg-purple-600'
-}
+const orderTable2 = [
+  
+  "Good",
+  "Moderate",
+  "Unhealthy for Sensitive Groups",
+  "Unhealthy",
+  "Very Unhealthy",
+  "Hazardous",
+]
 
-function getBackgroundColor(aqi) {
-  if (aqi <= 50) return 'bg-gradient-to-br from-green-50 to-green-100'
-  if (aqi <= 100) return 'bg-gradient-to-br from-yellow-50 to-yellow-100'
-  if (aqi <= 150) return 'bg-gradient-to-br from-orange-50 to-orange-100'
-  if (aqi <= 200) return 'bg-gradient-to-br from-red-50 to-red-100'
-  return 'bg-gradient-to-br from-purple-50 to-purple-100'
-}
+const pollutedCitiesSorted = computed(() => {
+  return pollutedCities.value
+    .filter(city => orderTable1.includes(getAQICategory(city.aqi)))
+    .sort((a, b) =>
+      orderTable1.indexOf(getAQICategory(a.aqi)) - orderTable1.indexOf(getAQICategory(b.aqi))
+    )
+})
+
+const cleanestCitiesSorted = computed(() => {
+  return cleanestCities.value
+    .filter(city => orderTable2.includes(getAQICategory(city.aqi)))
+    .sort((a, b) =>
+      orderTable2.indexOf(getAQICategory(a.aqi)) - orderTable2.indexOf(getAQICategory(b.aqi))
+    )
+})
 </script>
 
 
