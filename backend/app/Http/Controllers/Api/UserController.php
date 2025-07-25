@@ -5,78 +5,369 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of all users.
      */
     public function index()
     {
-        return User::all();
+        $users = User::select('id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at', 'role', 'profile_image', 'phone', 'bio')
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                    ->map(function ($user) {
+                        $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
+                        return $user;
+                    });
+        
+        return response()->json($users);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user.
      */
-         public function store(Request $request)
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6'
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'string|nullable|in:admin,user',
+            'phone' => 'nullable|string|max:20',
+            'bio' => 'nullable|string|max:1000',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
         ]);
 
-        $data['password'] = Hash::make($data['password']);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        $user = User::create($data);
-        return response()->json($user, 201);
+        try {
+            $data = $validator->validated();
+            $data['password'] = Hash::make($data['password']);
+            $data['role'] = $data['role'] ?? 'user';
+
+            // Handle profile image upload
+            if ($request->hasFile('profile_image')) {
+                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $data['profile_image'] = $imagePath;
+            }
+
+            $user = User::create($data);
+            
+            // Return user with image URL
+            $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
+
+            return response()->json([
+                'message' => 'User created successfully',
+                'user' => $user
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-    
 
     /**
-     * Display the specified resource.
+     * Show a specific user by ID.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        // $user = User::find($id);
-        // $user = new ShowUserResource($user);
-        // return response()->json([
-        //     "message" => "Get User Successfully",
-        //     "data" => $user,
-        // ]);
-    }
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-                $user = User::findOrFail($id);
-
-        $data = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users,email,'.$id,
-        ]);
-
-        $user->update($data);
+        // Add full image URL
+        $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
 
         return response()->json($user);
-
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update user info by ID.
      */
-    public function destroy(string $id)
-{
-    $user = User::findOrFail($id);  
-    $user->delete();
-    return response()->json([
-        'message' => 'User deleted successfully',
-    ]);
-}
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => [
+                'sometimes',
+                'required',
+                'string',
+                'email',
+                Rule::unique('users')->ignore($id),
+            ],
+            'role' => 'sometimes|string|nullable|in:admin,user',
+            'password' => 'sometimes|nullable|string|min:6|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'bio' => 'nullable|string|max:1000',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $data = $validator->validated();
+
+            // Handle profile image upload
+            if ($request->hasFile('profile_image')) {
+                // Delete old image if exists
+                if ($user->profile_image) {
+                    Storage::delete($user->profile_image);
+                }
+                
+                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $data['profile_image'] = $imagePath;
+            }
+
+            // Handle password
+            if (!empty($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
+            }
+
+            $user->update($data);
+            
+            // Return user with image URL
+            $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
+
+            return response()->json([
+                'message' => 'User updated successfully',
+                'user' => $user
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update user',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete user by ID.
+     */
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        try {
+            // Delete profile image if exists
+            if ($user->profile_image) {
+                Storage::delete($user->profile_image);
+            }
+
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete user',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Return authenticated user's info.
+     */
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'bio' => $user->bio,
+            'role' => $user->role ?? 'user',
+            'profile_image' => $user->profile_image ? Storage::url($user->profile_image) : null,
+            'email_verified_at' => $user->email_verified_at,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ]);
+    }
+
+    /**
+     * Get current user's role only
+     */
+    public function role(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        return response()->json([
+            'role' => $user->role ?? 'user'
+        ]);
+    }
+
+    /**
+     * Update current user's profile
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'phone' => 'nullable|string|max:20',
+            'bio' => 'nullable|string|max:1000',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            'current_password' => 'nullable|string|min:6',
+            'new_password' => 'nullable|string|min:6|confirmed',
+            'new_password_confirmation' => 'nullable|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Check current password if trying to change password
+        // if ($request->filled('current_password')) {
+        //     if (!Hash::check($request->current_password, $user->password)) {
+        //         return response()->json([
+        //             'message' => 'Current password is incorrect',
+        //             'errors' => ['current_password' => ['Current password is incorrect']]
+        //         ], 422);
+        //     }
+
+        //     if (!$request->filled('new_password')) {
+        //         return response()->json([
+        //             'message' => 'New password is required',
+        //             'errors' => ['new_password' => ['New password is required']]
+        //         ], 422);
+        //     }
+        // }
+
+        try {
+            // Handle profile image upload
+            if ($request->hasFile('profile_image')) {
+                // Delete old image if exists
+                if ($user->profile_image) {
+                    Storage::delete($user->profile_image);
+                }
+                
+                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $user->profile_image = $imagePath;
+            }
+
+            // Update user data
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->bio = $request->bio;
+
+            // Update password if provided
+            if ($request->filled('new_password')) {
+                $user->password = Hash::make($request->new_password);
+            }
+
+            $user->save();
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'bio' => $user->bio,
+                    'role' => $user->role,
+                    'profile_image' => $user->profile_image ? Storage::url($user->profile_image) : null,
+                    'email_verified_at' => $user->email_verified_at,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove profile image
+     */
+    public function removeProfileImage(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        try {
+            // Delete image file if exists
+            if ($user->profile_image) {
+                Storage::delete($user->profile_image);
+                $user->profile_image = null;
+                $user->save();
+            }
+
+            return response()->json([
+                'message' => 'Profile image removed successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'bio' => $user->bio,
+                    'role' => $user->role,
+                    'profile_image' => null,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to remove profile image',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
