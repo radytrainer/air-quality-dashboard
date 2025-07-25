@@ -3,10 +3,11 @@
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ContactController;
-use AuthController as GlobalAuthController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Api\AirQualityController;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,24 +24,39 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-// Route::get('/users', [UserController::class, 'index']);
-// Route::get('/users/{id}', [UserController::class, 'show']);
 
-// Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
+Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
+Route::get('/countries', [AirQualityController::class, 'getCountries']);
+Route::get('/latest/{code}', [AirQualityController::class, 'getLatestByCountry']);
+Route::get('/openaq/locations/{id}', [AirQualityController::class, 'getLocation']);
 
-    //For admin role
-    
-    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-});
+Route::get('/users', [UserController::class, 'index']);
 
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
-
+// Admin contacts (no middleware applied here)
 Route::prefix('admin')->group(function () {
     Route::get('/contacts', [AdminContactController::class, 'index']);
     Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
 });
 
+// Routes requiring authentication
+Route::middleware('auth:sanctum')->group(function () {
+
+    // User routes
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    
+    // Profile routes (combined into one group)
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/profile/image', [ProfileController::class, 'uploadImage']);
+    Route::post('/profile/update', [UserController::class, 'updateProfile']); // kept as is
+
+    // Logout route
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Admin-only routes nested inside auth:sanctum
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    });
+
+});

@@ -14,6 +14,8 @@ import { useAuthStore } from '@/stores/airQuality'
 import CityAQI from '@/views/CityAQI.vue'
 import ContactView from '@/views/ContactView.vue'
 import ContactUser from '@/views/ContactUser.vue'
+import Profile from '@/views/Profile.vue'
+import Message from '@/views/Message.vue'
 
 
 
@@ -77,7 +79,17 @@ const routes = [
     path: '/usercontact',
     name: 'contactuser',
     component: ContactUser
-  }
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile
+  },
+  {
+    path: '/message',
+    name: 'message',
+    component: Message
+  },
 ]
 
 const router = createRouter({
