@@ -31,7 +31,6 @@
     <main class="p-6 space-y-10">
       <!-- Global AQI Map -->
       <section>
-        <h2 class="text-3xl font-semibold mb-4 text-gray-700">🌍 Global Air Quality Map</h2>
         <div v-if="loading" class="text-center text-gray-600">Loading map and data...</div>
         <div v-if="error" class="text-center text-red-600">{{ error }}</div>
         <div id="map" class="h-[600px] w-full rounded shadow border"></div>
