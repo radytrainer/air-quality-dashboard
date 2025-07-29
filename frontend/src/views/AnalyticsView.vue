@@ -1,105 +1,79 @@
 <template>
-  <div class="p-6 max-w-xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md space-y-8">
-    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
-      🌤️ ASEAN Cities Weather + AQI
-    </h1>
+  <div class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">🌍 Global Air Quality Index</h1>
 
-    <div v-if="weatherData.length">
+    <div v-if="loading" class="text-center text-gray-600">Loading data...</div>
+    <div v-if="error" class="text-center text-red-600">{{ error }}</div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
-        v-for="(weather, i) in weatherData"
-        :key="weather.location.name"
-        class="space-y-2 text-center border-b pb-4"
+        v-for="(data, index) in aqiList"
+        :key="index"
+        class="bg-white shadow-md rounded p-4 border-l-4"
+        :class="getAQIColor(data.overall_aqi)"
       >
-        <img :src="weather.current.condition.icon" class="mx-auto" />
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-          {{ weather.location.name }}, {{ weather.location.country }}
-        </h2>
-        <p class="text-gray-700 dark:text-gray-200">🌡️ Temp: {{ weather.current.temp_c }}°C</p>
-        <p class="text-gray-700 dark:text-gray-200">💧 Humidity: {{ weather.current.humidity }}%</p>
-        <p class="text-gray-700 dark:text-gray-200">🌬️ Wind: {{ weather.current.wind_kph }} kph</p>
-        <p class="text-gray-700 dark:text-gray-200">☁️ Condition: {{ weather.current.condition.text }}</p>
-        <p class="text-gray-700 dark:text-gray-200">
-          🏭 AQI (EU): 
-          <span :class="getAqiColor(aqiData[i]?.aqi)">
-            {{ aqiData[i]?.aqi ?? 'N/A' }}
-          </span>
-        </p>
-        <p class="text-gray-500 text-sm">Last Updated: {{ weather.current.last_updated }}</p>
+        <h2 class="text-xl font-semibold mb-2">🌆 {{ data.city }}</h2>
+        <ul class="text-sm space-y-1">
+          <li><strong>AQI:</strong> {{ data.overall_aqi }}</li>
+          <li><strong>CO:</strong> {{ data.CO }}</li>
+          <li><strong>NO2:</strong> {{ data.NO2 }}</li>
+          <li><strong>OZONE:</strong> {{ data.OZONE }}</li>
+          <li><strong>PM10:</strong> {{ data.PM10 }}</li>
+          <li><strong>PM2.5:</strong> {{ data.PM25 }}</li>
+          <li><strong>SO2:</strong> {{ data.SO2 }}</li>
+        </ul>
       </div>
     </div>
-
-    <div v-else class="text-center text-gray-500">Loading data...</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const cities = [
-  { name: 'Phnom Penh', lat: 11.5564, lon: 104.9282 },
-  { name: 'Bangkok', lat: 13.7563, lon: 100.5018 },
-  { name: 'Jakarta', lat: -6.2088, lon: 106.8456 },
-  { name: 'Hanoi', lat: 21.0285, lon: 105.8542 },
-  { name: 'Kuala Lumpur', lat: 3.139, lon: 101.6869 },
-  { name: 'Singapore', lat: 1.3521, lon: 103.8198 },
-  { name: 'Manila', lat: 14.5995, lon: 120.9842 },
-  { name: 'Vientiane', lat: 17.9757, lon: 102.6331 },
-  { name: 'Yangon', lat: 16.8409, lon: 96.1735 },
-  { name: 'Brunei', lat: 4.5353, lon: 114.7277 }
+  'London', 'Paris', 'Berlin', 'Madrid', 'Rome', 'Lisbon', 'Vienna', 'Warsaw', 'Budapest', 'Prague',
+  'Athens', 'Amsterdam', 'Brussels', 'Dublin', 'Oslo', 'Stockholm', 'Helsinki', 'Copenhagen', 'Zurich', 'Belgrade',
+  'Moscow', 'Istanbul', 'Cairo', 'Lagos', 'Nairobi', 'Cape Town', 'Johannesburg', 'Dubai', 'Doha', 'Tehran',
+  'Delhi', 'Mumbai', 'Bangalore', 'Beijing', 'Shanghai', 'Tokyo', 'Seoul', 'Bangkok', 'Jakarta', 'Kuala Lumpur',
+  'Singapore', 'Manila', 'Hanoi', 'Phnom Penh', 'Ho Chi Minh', 'Mexico City', 'New York', 'Los Angeles', 'Toronto', 'Buenos Aires'
 ]
 
-const weatherData = ref([])
-const aqiData = ref([])
+const aqiList = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-const fetchData = async () => {
-  try {
-    const weatherPromises = cities.map(city =>
-      axios.get('https://api.weatherapi.com/v1/current.json', {
-        params: { key: 'f41466962858499381473152252107', q: city.name }
-      })
-    )
-    const aqiPromises = cities.map(city =>
-      axios.get('https://air-quality-api.open-meteo.com/v1/air-quality', {
-        params: {
-          latitude: city.lat,
-          longitude: city.lon,
-          hourly: 'pm2_5',
-          current: 'european_aqi'
+const fetchAllAQI = async () => {
+  for (const city of cities) {
+    try {
+      const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${city}`, {
+        headers: {
+          'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
         }
       })
-    )
-
-    const [weatherRes, aqiRes] = await Promise.all([
-      Promise.all(weatherPromises),
-      Promise.all(aqiPromises)
-    ])
-
-    weatherData.value = weatherRes.map(r => r.data)
-    aqiData.value = aqiRes.map(r => ({
-      aqi: r.data?.current?.european_aqi ?? null
-    }))
-  } catch (err) {
-    console.error('Error fetching API data', err)
+      aqiList.value.push({ ...response.data, city })
+    } catch (err) {
+      console.error(`Failed to fetch AQI for ${city}`, err)
+    }
   }
+  loading.value = false
+}
+
+const getAQIColor = (aqi) => {
+  if (aqi <= 50) return 'border-green-500'
+  if (aqi <= 100) return 'border-yellow-500'
+  if (aqi <= 150) return 'border-orange-500'
+  if (aqi <= 200) return 'border-red-500'
+  return 'border-purple-700'
 }
 
 onMounted(() => {
-  fetchData()
-  const interval = setInterval(fetchData, 60_000)
-  onUnmounted(() => clearInterval(interval))
+  fetchAllAQI()
 })
-
-function getAqiColor(aqi) {
-  if (aqi == null) return 'text-gray-500'
-  if (aqi <= 20) return 'text-green-600'
-  if (aqi <= 40) return 'text-yellow-500'
-  if (aqi <= 60) return 'text-orange-500'
-  if (aqi <= 80) return 'text-red-500'
-  return 'text-purple-600'
-}
 </script>
 
 <style scoped>
-img { width: 64px; height: 64px; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 </style>
