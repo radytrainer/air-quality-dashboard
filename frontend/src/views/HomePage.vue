@@ -30,7 +30,8 @@
     <main class="p-6 space-y-10 max-w-7xl mx-auto">
 
       <!-- Map Section -->
-    <div id="map" class="relative h-[600px] w-full rounded-xl shadow-md border">
+       <div class="pt-16"> 
+        <div id="map" class="relative h-[600px] w-full rounded-xl shadow-md border">
 
       <!-- AQI Legend -->
       <div
@@ -45,7 +46,7 @@
       </div>
     </div>
 
-      
+      </div>
       <!-- AQI Card Grid -->
       <div class="max-w-7xl mx-auto p-6">
         <h2 class="text-2xl font-bold mb-6 text-center">🌍 Global Air Quality Overview</h2>
@@ -441,8 +442,7 @@ const searchCountry = async () => {
 
     if (map) map.setView([lat, lon], 10)
     if (marker) map.removeLayer(marker)
-
-    marker = L.marker([lat, lon]).addTo(map)
+    marker = L.marker([lat, lon], { icon: redIcon }).addTo(map)
     marker.bindPopup('Fetching pollutant data...').openPopup()
 
     await fetchPollutants(lat, lon, displayName)
