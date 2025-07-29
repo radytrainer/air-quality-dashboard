@@ -55,7 +55,7 @@
   <div class="grid md:grid-cols-2 gap-6 mb-10">
     <!-- Primary City -->
     <div class="bg-white p-6 rounded-xl shadow">
-      <label class="font-semibold text-gray-700 text-xl text-base mb-1 block">Primary City</label>
+      <label class="font-semibold text-gray-700  mb-1 block">Primary City</label>
       <p class="text-sm text-gray-500 mb-3">Choose your first comparison point</p>
       <div class="flex items-center gap-3 mb-4">
         <img v-if="city1Flag" :src="city1Flag" alt="flag" class="w-6 h-4 rounded-sm object-cover" />
@@ -66,7 +66,7 @@
 
     <!-- Secondary City -->
     <div class="bg-white p-6 rounded-xl shadow">
-      <label class="font-semibold text-gray-700 text-xl text-base mb-1 block">Secondary City</label>
+      <label class="font-semibold text-gray-700  mb-1 block">Secondary City</label>
       <p class="text-sm text-gray-500 mb-3">Choose your second comparison point</p>
       <div class="flex items-center gap-3 mb-4">
         <img v-if="city2Flag" :src="city2Flag" alt="flag" class="w-6 h-4 rounded-sm object-cover" />
