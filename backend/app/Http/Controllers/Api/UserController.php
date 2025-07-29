@@ -266,7 +266,6 @@ class UserController extends Controller
             ], 422);
         }
 
-
         try {
             // Handle profile image upload
             if ($request->hasFile('profile_image')) {
