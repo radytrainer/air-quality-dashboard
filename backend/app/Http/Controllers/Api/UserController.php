@@ -266,22 +266,6 @@ class UserController extends Controller
             ], 422);
         }
 
-        // Check current password if trying to change password
-        // if ($request->filled('current_password')) {
-        //     if (!Hash::check($request->current_password, $user->password)) {
-        //         return response()->json([
-        //             'message' => 'Current password is incorrect',
-        //             'errors' => ['current_password' => ['Current password is incorrect']]
-        //         ], 422);
-        //     }
-
-        //     if (!$request->filled('new_password')) {
-        //         return response()->json([
-        //             'message' => 'New password is required',
-        //             'errors' => ['new_password' => ['New password is required']]
-        //         ], 422);
-        //     }
-        // }
 
         try {
             // Handle profile image upload
