@@ -1,85 +1,72 @@
 <template>
 
-    <!-- Header -->
-      <div class="max-w-7xl mt-10 mx-auto">
-        <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
-        <p class="text-sm text-black/80 mt-2">Monitor real-time air quality across the globe</p>
-        <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
-      </div>
-      
-      <!-- Main Content -->
-    <!-- Filter Box - Now Outside of the Map Section -->
-    <div class="max-w-7xl mx-auto mt-4 px-6 flex flex-col items-end space-y-6 mb-10">
-      <div class="flex space-x-2 w-full max-w-md">
-        <input
-          v-model="searchQuery"
-          @keydown.enter="searchCountry"
-          type="text"
-          placeholder="Search by city or country"
-          class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
-        />
-        <button
-          @click="searchCountry"
-          class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
-        >
-          Search
-        </button>
-      </div>
+  <!-- Header -->
+  <div class="max-w-7xl mt-10 mx-auto">
+    <h1 class="text-4xl font-bold tracking-wide">🌍 Air Quality Dashboard</h1>
+    <p class="text-sm text-black/80 mt-2">Monitor real-time air quality across the globe</p>
+    <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
+  </div>
+
+  <!-- Main Content -->
+  <!-- Filter Box - Now Outside of the Map Section -->
+  <div class="max-w-7xl mx-auto mt-4 px-6 flex flex-col items-end space-y-6 mb-10">
+    <div class="flex space-x-2 w-full max-w-md">
+      <input v-model="searchQuery" @keydown.enter="searchCountry" type="text" placeholder="Search by city or country"
+        class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400" />
+      <button @click="searchCountry"
+        class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium">
+        Search
+      </button>
     </div>
+  </div>
 
-    <main class="p-6 space-y-10 max-w-7xl mx-auto">
+  <main class="p-6 space-y-10 max-w-7xl mx-auto">
 
-      <!-- Map Section -->
+    <!-- Map Section -->
     <div id="map" class="relative h-[600px] w-full rounded-xl shadow-md border">
-
+      <WeatherMap />
       <!-- AQI Legend -->
       <div
-        class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-x-4 gap-y-2 p-3 bg-white rounded-md shadow-md text-xs z-[999] pointer-events-none"
-      >
+        class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-x-4 gap-y-2 p-3 bg-white rounded-md shadow-md text-xs z-[999] pointer-events-none">
         <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#8BC34A]"></span>Good</div>
         <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ffff00]"></span>Moderate</div>
-        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ff7e00]"></span>Unhealthy for sensitive groups</div>
+        <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ff7e00]"></span>Unhealthy for
+          sensitive groups</div>
         <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ff0000]"></span>Unhealthy</div>
         <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#8f3f97]"></span>Very unhealthy</div>
         <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#7e0023]"></span>Hazardous</div>
       </div>
     </div>
 
-      
-      <!-- AQI Card Grid -->
-      <div class="max-w-7xl mx-auto p-6">
-        <h2 class="text-2xl font-bold mb-6 text-center">🌍 Global Air Quality Overview</h2>
 
-        <div class="flex flex-row flex-wrap gap-6 justify-center">
-          <!-- Top Polluted Cities -->
-          <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
-            <h3 class="text-lg font-semibold mb-4 text-red-600">🏆 Top 10 Most Polluted Cities</h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
-                <thead class="bg-red-50 text-red-800 uppercase text-xs">
-                  <tr>
-                    <th class="px-4 py-2">Rank</th>
-                    <th class="px-4 py-2">City</th>
-                    <th class="px-4 py-2">Country</th>
-                    <th class="px-4 py-2">AQI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(city, index) in pollutedCitiesSorted"
-                    :key="index"
-                    :class="index % 2 === 0 ? 'bg-white' : 'bg-red-50/20'"
-                    class="transition hover:bg-red-100/40"
-                  >
-                    <td class="px-4 py-2 font-medium">{{ index + 1 }}</td>
-                    <td class="px-4 py-2">{{ city.city }}</td>
-                    <td class="px-4 py-2">{{ city.country }}</td>
-                    <td class="px-4 py-2">
-                      <span
-                        :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'"
-                      >
-                        {{ city.aqi }}
-                      </span>
+    <!-- AQI Card Grid -->
+    <div class="max-w-7xl mx-auto p-6">
+      <h2 class="text-2xl font-bold mb-6 text-center">🌍 Global Air Quality Overview</h2>
+
+      <div class="flex flex-row flex-wrap gap-6 justify-center">
+        <!-- Top Polluted Cities -->
+        <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
+          <h3 class="text-lg font-semibold mb-4 text-red-600">🏆 Top 10 Most Polluted Cities</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
+              <thead class="bg-red-50 text-red-800 uppercase text-xs">
+                <tr>
+                  <th class="px-4 py-2">Rank</th>
+                  <th class="px-4 py-2">City</th>
+                  <th class="px-4 py-2">Country</th>
+                  <th class="px-4 py-2">AQI</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(city, index) in pollutedCitiesSorted" :key="index"
+                  :class="index % 2 === 0 ? 'bg-white' : 'bg-red-50/20'" class="transition hover:bg-red-100/40">
+                  <td class="px-4 py-2 font-medium">{{ index + 1 }}</td>
+                  <td class="px-4 py-2">{{ city.city }}</td>
+                  <td class="px-4 py-2">{{ city.country }}</td>
+                  <td class="px-4 py-2">
+                    <span :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'">
+                      {{ city.aqi }}
+                    </span>
                   </td>
 
                 </tr>
@@ -88,214 +75,226 @@
           </div>
         </div>
 
-          <!-- Cleanest Cities -->
-          <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
-            <h3 class="text-lg font-semibold mb-4 text-green-600">🌿Top 10 Least Polluted Cities</h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
-                <thead class="bg-green-50 text-green-800 uppercase text-xs">
-                  <tr>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">City</th>
-                    <th class="px-4 py-2">Country</th>
-                    <th class="px-4 py-2">AQI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(city, index) in cleanestCitiesSorted"
-                    :key="index"
-                    :class="index % 2 === 0 ? 'bg-white' : 'bg-green-50/20'"
-                    class="transition hover:bg-green-100/40"
-                  >
-                    <td class="px-4 py-2">Live</td>
-                    <td class="px-4 py-2">{{ city.city }}</td>
-                    <td class="px-4 py-2">{{ city.country }}</td>
-                    <td class="px-4 py-2">
-                  <span
-                    :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'"
-                  >
-                    {{ city.aqi }}
-                  </span>
-                </td>
+        <!-- Cleanest Cities -->
+        <div class="w-full md:w-[48%] bg-white shadow rounded-xl p-4 border border-gray-200">
+          <h3 class="text-lg font-semibold mb-4 text-green-600">🌿Top 10 Least Polluted Cities</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
+              <thead class="bg-green-50 text-green-800 uppercase text-xs">
+                <tr>
+                  <th class="px-4 py-2">Status</th>
+                  <th class="px-4 py-2">City</th>
+                  <th class="px-4 py-2">Country</th>
+                  <th class="px-4 py-2">AQI</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(city, index) in cleanestCitiesSorted" :key="index"
+                  :class="index % 2 === 0 ? 'bg-white' : 'bg-green-50/20'" class="transition hover:bg-green-100/40">
+                  <td class="px-4 py-2">Live</td>
+                  <td class="px-4 py-2">{{ city.city }}</td>
+                  <td class="px-4 py-2">{{ city.country }}</td>
+                  <td class="px-4 py-2">
+                    <span :class="getColor(city.aqi) + ' text-white px-2 py-1 rounded-full text-xs font-semibold'">
+                      {{ city.aqi }}
+                    </span>
+                  </td>
 
-              </tr>
-            </tbody>
-          </table>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Major Air Pollutants Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Major Air Pollutants</h2>
+          <p class="text-xl text-blue-600 font-medium">Street 96</p>
+        </div>
+      </div>
+
+      <!-- Pollutants Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- PM2.5 Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  PM2.5</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+                  <p class="text-sm text-gray-600">(PM2.5)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Major Air Pollutants Section -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Major Air Pollutants</h2>
-            <p class="text-xl text-blue-600 font-medium">Street 96</p>
-          </div>
-        </div>
-
-        <!-- Pollutants Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-  <!-- PM2.5 Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM2.5</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-            <p class="text-sm text-gray-600">(PM2.5)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-green-600">6</span>
-        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- PM10 Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">PM10</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
-            <p class="text-sm text-gray-600">(PM10)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-green-600">25</span>
-        <span class="text-sm text-gray-500 mb-1">μg/m³</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- CO Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-bold">CO</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
-            <p class="text-sm text-gray-600">(CO)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-yellow-600">34</span>
-        <span class="text-sm text-gray-500 mb-1">ppb</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SO2 Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">SO₂</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
-            <p class="text-sm text-gray-600">(SO2)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-green-600">9</span>
-        <span class="text-sm text-gray-500 mb-1">ppb</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- NO2 Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">NO₂</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
-            <p class="text-sm text-gray-600">(NO2)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-green-600">13</span>
-        <span class="text-sm text-gray-500 mb-1">ppb</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- O3 Card -->
-  <div class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">O₃</div>
-          <div>
-            <h3 class="font-semibold text-gray-900">Ozone</h3>
-            <p class="text-sm text-gray-600">(O3)</p>
-          </div>
-        </div>
-        <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
-      <div class="flex items-end space-x-2">
-        <span class="text-3xl font-bold text-green-600">10</span>
-        <span class="text-sm text-gray-500 mb-1">ppb</span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-      </div>
-
-      <!-- Bottom Info Section -->
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <!-- Air Quality Ranking -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Leaf class="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <h4 class="font-semibold text-gray-900">Air Quality Ranking</h4>
-              <p class="text-sm text-gray-600">
-                Currently, Phnom Penh ranks among the cities with the best air quality worldwide.
-              </p>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-green-600">6</span>
+              <span class="text-sm text-gray-500 mb-1">μg/m³</span>
             </div>
           </div>
         </div>
 
-        <!-- AQI Comparison -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <span class="text-2xl font-bold text-yellow-600">1×</span>
+        <!-- PM10 Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  PM10</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Particulate Matter</h3>
+                  <p class="text-sm text-gray-600">(PM10)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </div>
-            <div>
-              <h4 class="font-semibold text-gray-900">AQI Comparison</h4>
-              <p class="text-sm text-gray-600">
-                The AQI level on Street 96 is currently the same as in Phnom Penh, showing no difference.
-              </p>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-green-600">25</span>
+              <span class="text-sm text-gray-500 mb-1">μg/m³</span>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+
+        <!-- CO Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-yellow-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  CO</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Carbon Monoxide</h3>
+                  <p class="text-sm text-gray-600">(CO)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-yellow-600">34</span>
+              <span class="text-sm text-gray-500 mb-1">ppb</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SO2 Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  SO₂</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Sulfur Dioxide</h3>
+                  <p class="text-sm text-gray-600">(SO2)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-green-600">9</span>
+              <span class="text-sm text-gray-500 mb-1">ppb</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NO2 Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  NO₂</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Nitrogen Dioxide</h3>
+                  <p class="text-sm text-gray-600">(NO2)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-green-600">13</span>
+              <span class="text-sm text-gray-500 mb-1">ppb</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- O3 Card -->
+        <div
+          class="bg-white rounded-2xl shadow-lg border-l-4 border-green-500 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  O₃</div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Ozone</h3>
+                  <p class="text-sm text-gray-600">(O3)</p>
+                </div>
+              </div>
+              <ChevronRight class="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div class="flex items-end space-x-2">
+              <span class="text-3xl font-bold text-green-600">10</span>
+              <span class="text-sm text-gray-500 mb-1">ppb</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Info Section -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      <!-- Air Quality Ranking -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <Leaf class="h-5 w-5 text-green-600" />
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-900">Air Quality Ranking</h4>
+            <p class="text-sm text-gray-600">
+              Currently, Phnom Penh ranks among the cities with the best air quality worldwide.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AQI Comparison -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <span class="text-2xl font-bold text-yellow-600">1×</span>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-900">AQI Comparison</h4>
+            <p class="text-sm text-gray-600">
+              The AQI level on Street 96 is currently the same as in Phnom Penh, showing no difference.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -304,6 +303,7 @@ import { useI18n } from 'vue-i18n'
 import L from 'leaflet'
 import axios from 'axios'
 import 'leaflet/dist/leaflet.css'
+import WeatherMap from '@/components/WeatherMap.vue'
 
 import {
   MapPin as MapPinIcon,
@@ -592,7 +592,7 @@ const orderTable1 = [
 ]
 
 const orderTable2 = [
-  
+
   "Good",
   "Moderate",
   "Unhealthy for Sensitive Groups",
