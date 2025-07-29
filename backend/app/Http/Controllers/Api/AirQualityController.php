@@ -288,4 +288,7 @@ public function getAllCitiesAirQuality(): JsonResponse
         'cities_air_quality' => $results,
     ]);
 }
+
+
+
 }
