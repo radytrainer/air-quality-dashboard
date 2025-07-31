@@ -27,30 +27,82 @@
     </div>
   </div>
 
-    <!-- Main Content -->
-    <main class="p-6 space-y-10">
-      <!-- Global AQI Map -->
-      <section>
-        <div v-if="loading" class="text-center text-gray-600">Loading map and data...</div>
-        <div v-if="error" class="text-center text-red-600">{{ error }}</div>
-        <div id="map" class="h-[600px] w-full rounded shadow border"></div>
-      </section>
+  <!-- Main Content -->
+  <main class="p-6 space-y-10">
+    <!-- Global AQI Map -->
+    <section>
+      <div v-if="loading" class="text-center text-gray-600">Loading map and data...</div>
+      <div v-if="error" class="text-center text-red-600">{{ error }}</div>
+      <div id="map" class="h-[600px] w-full rounded shadow border"></div>
+    </section>
 
-      <!-- AQI Card Grid -->
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Air Quality Data</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <div
-            v-for="city in cities"
-            :key="city"
-            class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
-          >
-            <h3 class="text-lg font-semibold mb-2">{{ city }}</h3>
-            <p class="text-sm text-gray-600">AQI: <span class="font-bold">{{ aqiByCity[city] || 'N/A' }}</span></p>
-          </div>
+    <!-- AQI Card Grid -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Air Quality Data</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div
+          v-for="city in cities"
+          :key="city"
+          class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
+        >
+          <h3 class="text-lg font-semibold mb-2">{{ city }}</h3>
+          <p class="text-sm text-gray-600">AQI: <span class="font-bold">{{ aqiByCity[city] || 'N/A' }}</span></p>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto p-6">
+      <h2 class="text-2xl font-bold mb-6 text-center">🌍 Global Air Quality Overview</h2>
+
+      <div class="flex flex-wrap gap-6 justify-center">
+        <!-- Top Polluted Cities -->
+        <div class="w-full md:w-[49%] bg-white shadow rounded-xl p-6 border border-red-200">
+          <h3 class="text-lg font-semibold text-red-600 mb-4">🏆 Most Polluted Cities</h3>
+          <table class="w-full text-sm border border-gray-300 rounded">
+            <thead class="bg-red-50 text-red-800 uppercase text-xs">
+              <tr>
+                <th class="px-3 py-2">#</th>
+                <th class="px-3 py-2">City</th>
+                <th class="px-3 py-2">AQI</th>
+                <th class="px-3 py-2">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, i) in pollutedCities" :key="i" class="hover:bg-red-100">
+                <td class="px-3 py-2">{{ i + 1 }}</td>
+                <td class="px-3 py-2">{{ city.city.aqi }}</td>
+                <td class="px-3 py-2 font-bold" :class="getColor(city.aqi)">{{ city.aqi }}</td>
+                <td class="px-3 py-2 italic">{{ getCategory(city.aqi) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cleanest Cities -->
+        <div class="w-full md:w-[49%] bg-white shadow rounded-xl p-6 border border-green-200">
+          <h3 class="text-lg font-semibold text-green-600 mb-4">🍃 Cleanest Cities</h3>
+          <table class="w-full text-sm border border-gray-300 rounded">
+            <thead class="bg-green-50 text-green-800 uppercase text-xs">
+              <tr>
+                <th class="px-3 py-2">#</th>
+                <th class="px-3 py-2">City</th>
+                <th class="px-3 py-2">AQI</th>
+                <th class="px-3 py-2">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, i) in cleanestCities" :key="i" class="hover:bg-green-100">
+                <td class="px-3 py-2">{{ i + 1 }}</td>
+                <td class="px-3 py-2">{{ city.city }}</td>
+                <td class="px-3 py-2 font-bold" :class="getColor(city.aqi)">{{ city.aqi }}</td>
+                <td class="px-3 py-2 italic">{{ getCategory(city.aqi) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -58,7 +110,11 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import WeatherMap from '@/components/WeatherMap.vue'
+
+const currentTime = ref(new Date())
+setInterval(() => {
+  currentTime.value = new Date()
+}, 1000 * 60) // Update every 1 minute
 
 const cities = [
   'London', 'Paris', 'Berlin', 'Madrid', 'Rome', 'Lisbon', 'Vienna', 'Warsaw', 'Budapest', 'Prague',
@@ -71,8 +127,10 @@ const cities = [
 const loading = ref(true)
 const error = ref(null)
 const searchQuery = ref('')
-const currentTime = ref(new Date())
 const aqiByCity = ref({})
+const pollutedCities = ref([])
+const cleanestCities = ref([])
+const map = ref(null)
 
 const getMarkerColor = (aqi) => {
   if (aqi <= 50) return 'green'
@@ -82,29 +140,76 @@ const getMarkerColor = (aqi) => {
   return 'purple'
 }
 
+const getCategory = (aqi) => {
+  if (aqi <= 50) return 'Good'
+  if (aqi <= 100) return 'Moderate'
+  if (aqi <= 150) return 'Unhealthy for Sensitive'
+  if (aqi <= 200) return 'Unhealthy'
+  if (aqi <= 300) return 'Very Unhealthy'
+  return 'Hazardous'
+}
+
+const getColor = (aqi) => {
+  if (aqi <= 50) return 'text-green-600'
+  if (aqi <= 100) return 'text-yellow-600'
+  if (aqi <= 150) return 'text-orange-500'
+  if (aqi <= 200) return 'text-red-600'
+  if (aqi <= 300) return 'text-purple-600'
+  return 'text-rose-800'
+}
+
+const fetchCities = async () => {
+  const results = []
+
+  for (const item of cities) {
+    try {
+      const res = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${encodeURIComponent(item.city)}`, {
+        headers: {
+          'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
+        }
+      })
+
+      if (res.data && res.data.overall_aqi !== undefined) {
+        results.push({
+          city: item.city,
+          country: item.country,
+          aqi: res.data.overall_aqi
+        })
+      } else {
+        console.warn("No AQI data for:", item.city)
+      }
+    } catch (err) {
+      console.error(`Failed to fetch AQI for ${item.city}:`, err.message)
+    }
+  }
+
+  pollutedCities.value = [...results].sort((a, b) => b.aqi - a.aqi).slice(0, 10)
+  cleanestCities.value = [...results].sort((a, b) => a.aqi - b.aqi).slice(0, 10)
+
+}
+
 const fetchAndShowAQI = async () => {
   try {
-    const map = L.map('map').setView([20, 0], 2)
-
+    map.value = L.map('map').setView([20, 0], 2)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
       subdomains: 'abcd',
       maxZoom: 19
-    }).addTo(map);
-
+    }).addTo(map.value)
 
     for (const city of cities) {
       try {
         const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${encodeURIComponent(city)}`, {
           headers: { 'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo' }
         })
+
         const aqiData = response.data
         if (!aqiData.overall_aqi) continue
 
         const geo = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`)
         if (!geo.data.length) continue
-        const { lat, lon } = geo.data[0]
 
+        const { lat, lon } = geo.data[0]
         const aqi = aqiData.overall_aqi
         const color = getMarkerColor(aqi)
 
@@ -113,15 +218,13 @@ const fetchAndShowAQI = async () => {
           color,
           fillColor: color,
           fillOpacity: 0.8,
-        }).addTo(map)
+        }).addTo(map.value)
 
-        marker.bindPopup(`
-          <strong>${city}</strong><br/>
-          AQI: ${aqi}
-        `)
-
+        marker.bindPopup(`<strong>${city}</strong><br/>AQI: ${aqi}`)
         aqiByCity.value[city] = aqi
-      } catch {}
+      } catch (err) {
+        console.warn(`Failed for ${city}:`, err)
+      }
     }
   } catch (err) {
     error.value = 'Failed to load map or AQI data.'
@@ -136,14 +239,16 @@ const searchCountry = async () => {
   const result = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery.value)}&format=json&limit=1`)
   if (result.data.length) {
     const { lat, lon } = result.data[0]
-    const map = L.map('map').setView([lat, lon], 5)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map)
+    map.value.setView([lat, lon], 5)
   }
 }
 
-onMounted(fetchAndShowAQI)
+onMounted(() => {
+  fetchAndShowAQI()
+  fetchCities()
+  setInterval(fetchCities, 5 * 60 * 1000) // Refresh every 5 mins
+  
+})
 </script>
 
 <style scoped>
