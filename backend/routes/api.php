@@ -4,8 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
-use App\Http\Controllers\Api\AirQualityController;
-use App\Http\Controllers\Api\AirQualityDataController;
+use App\Http\Controllers\AirQualityController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +14,7 @@ use App\Http\Controllers\Api\AqiAmericasController;
 use App\Http\Controllers\Api\AqiAsiaController;
 use App\Http\Controllers\Api\AqiAfricanController;
 use App\Http\Controllers\Api\AqiOceaniaController;
+use App\Http\Controllers\Api\OpenAQController;
 use App\Http\Controllers\Api\WeatherAqiController;
 
 /*
@@ -33,17 +33,9 @@ Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
-Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
-Route::get('/air-quality/locations', [AirQualityController::class, 'getLocations']);
-Route::get('/air-quality/global', [AirQualityController::class, 'getGlobalAirQuality']);
-Route::get('/air-quality/latest', [AirQualityController::class, 'getLatestAirQuality']);
-Route::get('/air-quality/countries', [AirQualityController::class, 'getCountries']);
-Route::get('/air-quality/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
-Route::get('/air-quality/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
-Route::get('/air-quality/iqair', [AirQualityController::class, 'getIqAirData']);
-Route::get('/air-quality/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
-Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentration']);
+
+
+Route::get('/air-quality/worldwide', [OpenAQController::class, 'fetchWorldwideData']);
 
 //Europe countries
 Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, 'getAllCitiesAirQuality']);
@@ -70,6 +62,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::post('/profile/image', [ProfileController::class, 'uploadImage']);
     Route::post('/profile/update', [UserController::class, 'updateProfile']); // kept as is
+
+     Route::get('/air-quality/worldwide', [AirQualityController::class, 'fetchWorldwideData']);
+    Route::get('/air-quality/location', [AirQualityController::class, 'fetchByLocation']);
+    Route::get('/air-quality/parameters', [AirQualityController::class, 'getParameters']);
+    Route::get('/air-quality/countries', [AirQualityController::class, 'getCountries']);
+    
 
     // Logout route
     Route::post('/logout', [AuthController::class, 'logout']);

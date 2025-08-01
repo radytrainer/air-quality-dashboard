@@ -1,294 +1,201 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
+use App\Models\AirQualityData;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use App\Services\AirQualityService;
-use Carbon\Carbon;
 
 class AirQualityController extends Controller
 {
-    private string $openWeatherKey;
-    private string $openAqKey;
-    private string $openAqBaseUrl;
-    protected AirQualityService $airQualityService;
-
-    public function __construct(AirQualityService $airQualityService)
+    protected $openAQClient;
+    
+    public function __construct()
     {
-        $this->openWeatherKey = config('services.openweather.api_key');
-        $this->openAqKey = config('services.openaq.api_key');
-        $this->openAqBaseUrl = config('services.openaq.base_url', 'https://api.openaq.org/v3');
-        $this->airQualityService = $airQualityService;
-    }
-
-    public function getAirQuality(float $lat, float $lon): JsonResponse
-    {
-        $response = Http::get('https://api.openweathermap.org/data/2.5/air_pollution', [
-            'lat' => $lat,
-            'lon' => $lon,
-            'appid' => $this->openWeatherKey,
-        ]);
-
-        if (!$response->successful()) {
-            Log::error('OpenWeather API failed', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            return response()->json([
-                'error' => 'Failed to fetch air quality data',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        $data = $response->json();
-        $aqi = $data['list'][0]['main']['aqi'] ?? null;
-        $components = $data['list'][0]['components'] ?? [];
-
-        return response()->json([
-            'aqi' => $aqi,
-            'components' => $components,
-            'raw' => $data,
+        $this->openAQClient = new Client([
+            'base_uri' => 'https://api.openaq.org/v2/',
+            'headers' => ['Accept' => 'application/json'],
+            'timeout' => 15,
         ]);
     }
-
-    public function getPhnomPenhAirQuality(): JsonResponse
+    
+    /**
+     * Fetch worldwide air quality data
+     */
+    public function fetchWorldwideData(Request $request)
     {
-        return $this->getAirQuality(11.5564, 104.9282);
-    }
-
-    public function getCountries(): JsonResponse
-    {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->openAqKey,
-        ])->get("{$this->openAqBaseUrl}/countries");
-
-        if (!$response->successful()) {
-            return response()->json([
-                'error' => 'Failed to fetch countries',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        return response()->json($response->json()['results']);
-    }
-
-    public function getLatestByCountry(string $countryCode, int $limit = 10): JsonResponse
-    {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->openAqKey,
-        ])->get("{$this->openAqBaseUrl}/measurements", [
-            'country' => $countryCode,
-            'order_by' => 'datetime',
-            'sort' => 'desc',
-            'limit' => $limit,
-        ]);
-
-        if (!$response->successful()) {
-            return response()->json([
-                'error' => 'Failed to fetch latest measurements',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        return response()->json($response->json()['results']);
-    }
-
-    public function getGlobalAirQuality(int $limit = 10): JsonResponse
-    {
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->openAqKey,
-        ])->get("{$this->openAqBaseUrl}/measurements", [
-            'order_by' => 'datetime',
-            'sort' => 'desc',
-            'limit' => $limit,
-        ]);
-
-        if (!$response->successful()) {
-            return response()->json([
-                'error' => 'Failed to fetch global air quality data',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        return response()->json($response->json()['results']);
-    }
-
-    public function getAllCountriesMeasurementCounts(): JsonResponse
-    {
-        set_time_limit(300);
-
-        $locationsResponse = Http::withHeaders([
-            'X-API-Key' => $this->openAqKey,
-        ])->get("{$this->openAqBaseUrl}/locations", [
-            'limit' => 1000,
-        ]);
-
-        if (!$locationsResponse->ok()) {
-            return response()->json([
-                'error' => 'Failed to fetch locations to extract countries',
-                'status' => $locationsResponse->status(),
-                'body' => $locationsResponse->body(),
-            ], 500);
-        }
-
-        $locations = $locationsResponse->json()['results'];
-        $countries = collect($locations)->pluck('country')->unique()->values()->all();
-        $limitedCountries = array_slice($countries, 0, 20);
-        $result = [];
-
-        foreach ($limitedCountries as $code) {
-            $pm10Count = $this->getMeasurementCount('pm10', $code);
-            $pm25Count = $this->getMeasurementCount('pm25', $code);
-
-            $result[] = [
-                'country' => $code,
-                'pm10_count' => $pm10Count,
-                'pm25_count' => $pm25Count,
-            ];
-        }
-
-        $worldwidePm10 = $this->getMeasurementCount('pm10');
-        $worldwidePm25 = $this->getMeasurementCount('pm25');
-
-        return response()->json([
-            'worldwide' => [
-                'pm10_count' => $worldwidePm10,
-                'pm25_count' => $worldwidePm25,
-            ],
-            'countries' => $result,
-        ]);
-    }
-
-    private function getMeasurementCount(string $parameter, ?string $country = null): int
-    {
-        $query = [
-            'parameter' => $parameter,
-            'limit' => 1,
-        ];
-
-        if ($country) {
-            $query['country'] = $country;
-        }
-
-        $response = Http::withHeaders([
-            'X-API-Key' => $this->openAqKey,
-        ])->get("{$this->openAqBaseUrl}/measurements", $query);
-
-        if ($response->ok()) {
-            return $response->json()['meta']['found'] ?? 0;
-        }
-
-        Log::error('OpenAQ API failed', [
-            'parameter' => $parameter,
-            'country' => $country,
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ]);
-
-        return 0;
-    }
-
-    public function getLocations(): JsonResponse
-    {
-        $response = Http::get("https://api.openaq.org/v3/locations", [
-            'limit' => 100,
-        ]);
-
-        if (!$response->successful()) {
-            return response()->json([
-                'error' => 'Failed to fetch locations',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        return response()->json($response->json()['results']);
-    }
-
-    public function getIqAirData(Request $request): JsonResponse
-    {
-        $lat = $request->query('lat');
-        $lon = $request->query('lon');
-
-        if (!$lat || !$lon) {
-            return response()->json(['error' => 'Missing lat or lon'], 400);
-        }
-
-        $apiKey = config('services.iqair.api_key');
-        $baseUrl = config('services.iqair.base_url');
-
-        $response = Http::get("$baseUrl/nearest_city", [
-            'lat' => $lat,
-            'lon' => $lon,
-            'key' => $apiKey,
-        ]);
-
-        if (!$response->successful()) {
-            return response()->json([
-                'error' => 'Failed to fetch IQAir data',
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ], $response->status());
-        }
-
-        return response()->json($response->json());
-    }
-public function getAllCitiesAirQuality(): JsonResponse
-{
-    $country = 'Cambodia';
-    $targetCities = [
-        ['state' => 'Phnom Penh', 'city' => 'Phnom Penh'],
-        ['state' => 'Siem Reap', 'city' => 'Siem Reap'],
-    ];
-
-    $results = Cache::remember('air_quality_selected_cities', 1800, function () use ($targetCities, $country) {
-        $allData = [];
-
-        foreach ($targetCities as $entry) {
+        $cacheKey = 'air_quality_worldwide_' . md5(json_encode($request->all()));
+        
+        $data = Cache::remember($cacheKey, now()->addHours(1), function() use ($request) {
             try {
-                sleep(1); // Add delay between calls
-
-                $data = app(AirQualityService::class)->fetchCityAirQuality(
-                    $country,
-                    $entry['state'],
-                    $entry['city']
-                );
-
-                $pollution = $data['data']['current']['pollution'];
-                $utcTime = $pollution['ts'];
-
-                $localTime = \Carbon\Carbon::parse($utcTime)
-                    ->timezone('Asia/Phnom_Penh')
-                    ->format('Y-m-d H:i:s');
-
-                $data['data']['current']['pollution']['ts_local'] = $localTime . ' (Asia/Phnom_Penh)';
-                $allData[] = $data['data'];
+                $response = $this->openAQClient->get('latest', [
+                    'query' => [
+                        'limit' => $request->limit ?? 100,
+                        'page' => $request->page ?? 1,
+                        'sort' => 'desc',
+                        'order_by' => 'lastUpdated',
+                    ]
+                ]);
+                
+                $result = json_decode($response->getBody(), true);
+                
+                // Cache individual measurements
+                $this->cacheMeasurements($result['results']);
+                
+                return $result['results'];
             } catch (\Exception $e) {
-                Log::warning("Failed: {$entry['city']}, {$entry['state']} — " . $e->getMessage());
-                continue;
+                // Fallback to cached data if API fails
+                return AirQualityData::query()
+                    ->orderBy('last_updated', 'desc')
+                    ->limit($request->limit ?? 100)
+                    ->get()
+                    ->map(function($item) {
+                        return [
+                            'location' => $item->location,
+                            'city' => $item->city,
+                            'country' => $item->country,
+                            'parameter' => $item->parameter,
+                            'value' => $item->value,
+                            'unit' => $item->unit,
+                            'lastUpdated' => $item->last_updated,
+                            'source' => 'cache'
+                        ];
+                    })
+                    ->toArray();
             }
+        });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+    
+    /**
+     * Fetch data by location
+     */
+    public function fetchByLocation(Request $request)
+    {
+        $request->validate([
+            'location' => 'required|string'
+        ]);
+        
+        $cacheKey = 'air_quality_location_' . md5($request->location);
+        
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function() use ($request) {
+            try {
+                $response = $this->openAQClient->get('latest/' . urlencode($request->location));
+                
+                $result = json_decode($response->getBody(), true);
+                
+                // Cache individual measurements
+                $this->cacheMeasurements($result['results']);
+                
+                return $result['results'];
+            } catch (\Exception $e) {
+                // Fallback to cached data if API fails
+                return AirQualityData::query()
+                    ->where('location', 'like', '%' . $request->location . '%')
+                    ->orWhere('city', 'like', '%' . $request->location . '%')
+                    ->orWhere('country', 'like', '%' . $request->location . '%')
+                    ->orderBy('last_updated', 'desc')
+                    ->limit(100)
+                    ->get()
+                    ->map(function($item) {
+                        return [
+                            'location' => $item->location,
+                            'city' => $item->city,
+                            'country' => $item->country,
+                            'parameter' => $item->parameter,
+                            'value' => $item->value,
+                            'unit' => $item->unit,
+                            'lastUpdated' => $item->last_updated,
+                            'source' => 'cache'
+                        ];
+                    })
+                    ->toArray();
+            }
+        });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+    
+    /**
+     * Get available parameters
+     */
+    public function getParameters()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'pm25' => 'PM2.5 - Fine particulate matter',
+                'pm10' => 'PM10 - Coarse particulate matter',
+                'no2' => 'Nitrogen Dioxide',
+                'so2' => 'Sulfur Dioxide',
+                'o3' => 'Ozone',
+                'co' => 'Carbon Monoxide'
+            ]
+        ]);
+    }
+    
+    /**
+     * Get countries list
+     */
+    public function getCountries()
+    {
+        $cacheKey = 'air_quality_countries';
+        
+        $data = Cache::remember($cacheKey, now()->addDays(1), function() {
+            try {
+                $response = $this->openAQClient->get('countries', [
+                    'query' => ['limit' => 200]
+                ]);
+                
+                $result = json_decode($response->getBody(), true);
+                
+                return collect($result['results'])
+                    ->pluck('name', 'code')
+                    ->toArray();
+            } catch (\Exception $e) {
+                // Fallback to distinct countries from cached data
+                return AirQualityData::query()
+                    ->distinct()
+                    ->pluck('country', 'country')
+                    ->toArray();
+            }
+        });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+    
+    /**
+     * Cache measurements in database
+     */
+    protected function cacheMeasurements(array $measurements)
+    {
+        foreach ($measurements as $measurement) {
+            AirQualityData::updateOrCreate(
+                [
+                    'location_id' => $measurement['location'],
+                    'parameter' => $measurement['parameter'],
+                    'last_updated' => $measurement['lastUpdated'],
+                ],
+                [
+                    'location' => $measurement['location'],
+                    'city' => $measurement['city'] ?? null,
+                    'country' => $measurement['country'],
+                    'value' => $measurement['value'],
+                    'unit' => $measurement['unit'],
+                    'raw_data' => json_encode($measurement),
+                ]
+            );
         }
-
-        return $allData;
-    });
-
-    return response()->json([
-        'status' => 'success',
-        'country' => $country,
-        'cities_air_quality' => $results,
-    ]);
-}
-
-
-
+    }
 }
