@@ -23,10 +23,10 @@
         @click="mobileMenuOpen = false"
       >
         <LayoutDashboard class="w-5 h-5" />
-        {{ homeLabel }}
+        {{ auth.userRole === 'admin' ? $t('nav.dashboard') : $t('nav.home') }}
       </RouterLink>
 
-      <!-- City AQI -->
+      <!-- City AQI / City Detail -->
       <RouterLink
         :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-100 hover:text-blue-600"
@@ -34,7 +34,7 @@
         @click="mobileMenuOpen = false"
       >
         <Landmark class="w-5 h-5" />
-        {{ auth.userRole === 'admin' ? 'City AQI' : $t('nav.cityDetail') }}
+        {{ auth.userRole === 'admin' ? $t('nav.cityAQI') : $t('nav.cityDetail') }}
       </RouterLink>
 
       <!-- Health Alert -->
@@ -45,7 +45,7 @@
         @click="mobileMenuOpen = false"
       >
         <HeartPulse class="w-5 h-5" />
-        Health Alert
+        {{ $t('nav.healthAlert') }}
       </RouterLink>
 
       <!-- User Management -->
@@ -56,18 +56,16 @@
         @click="mobileMenuOpen = false"
       >
         <Users2 class="w-5 h-5" />
-        User Management
+        {{ $t('nav.userManagement') }}
       </RouterLink>
     </nav>
   </aside>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/airQuality'
-
-// Lucide icons
 import {
   LayoutDashboard,
   Landmark,
@@ -79,8 +77,4 @@ const auth = useAuthStore()
 const route = useRoute()
 
 const mobileMenuOpen = ref(false)
-
-const homeLabel = computed(() => {
-  return auth.userRole === 'admin' ? 'Dashboard' : 'Home'
-})
 </script>
