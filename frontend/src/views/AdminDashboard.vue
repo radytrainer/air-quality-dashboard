@@ -205,6 +205,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import axios from 'axios'
 import {
   Wind,
   Bell,
@@ -220,41 +221,34 @@ import {
   XCircle
 } from 'lucide-vue-next'
 
+// City coordinates mapping
+const cityCoordinates = {
+  'New York': { lat: 40.7128, lng: -74.0060 },
+  'Los Angeles': { lat: 34.0522, lng: -118.2437 },
+  'London': { lat: 51.5074, lng: -0.1278 },
+  'Tokyo': { lat: 35.6762, lng: 139.6503 },
+  'Delhi': { lat: 28.7041, lng: 77.1025 },
+  'Beijing': { lat: 39.9042, lng: 116.4074 },
+  'Mumbai': { lat: 19.0760, lng: 72.8777 },
+  'Sydney': { lat: -33.8688, lng: 151.2093 }
+}
+
 // Reactive data
 const summaryData = reactive({
-  totalCities: 247,
+  totalCities: 0,
   apiStatus: 'Operational',
   mostPollutedCity: {
-    name: 'Delhi',
-    aqi: 187,
-    level: 'Unhealthy'
+    name: '',
+    aqi: 0,
+    level: ''
   }
 })
 
-const cityData = ref([
-  { name: 'New York', aqi: 45, level: 'Good', lat: 40.7128, lng: -74.006 },
-  { name: 'Los Angeles', aqi: 78, level: 'Moderate', lat: 34.0522, lng: -118.2437 },
-  { name: 'London', aqi: 52, level: 'Moderate', lat: 51.5074, lng: -0.1278 },
-  { name: 'Tokyo', aqi: 67, level: 'Moderate', lat: 35.6762, lng: 139.6503 },
-  { name: 'Delhi', aqi: 187, level: 'Unhealthy', lat: 28.7041, lng: 77.1025 },
-  { name: 'Beijing', aqi: 156, level: 'Unhealthy', lat: 39.9042, lng: 116.4074 },
-  { name: 'Mumbai', aqi: 134, level: 'Unhealthy for Sensitive Groups', lat: 19.076, lng: 72.8777 },
-  { name: 'Sydney', aqi: 38, level: 'Good', lat: -33.8688, lng: 151.2093 }
-])
-
-const systemLogs = ref([
-  { time: '14:32:15', type: 'info', message: 'API sync completed for 247 cities' },
-  { time: '14:30:42', type: 'warning', message: 'High AQI detected in Delhi (187)' },
-  { time: '14:28:33', type: 'success', message: 'Cache refreshed successfully' },
-  { time: '14:25:17', type: 'info', message: 'Data validation completed' },
-  { time: '14:22:08', type: 'error', message: 'Timeout for Mumbai API endpoint' },
-  { time: '14:20:45', type: 'info', message: 'Scheduled backup completed' },
-  { time: '14:18:22', type: 'success', message: 'Database optimization finished' }
-])
-
+const cityData = ref([])
+const systemLogs = ref([])
 const cacheData = reactive({
   hitRate: '94.2%',
-  lastRefresh: '2 min ago',
+  lastRefresh: 'Just now',
   status: 'Active'
 })
 
@@ -273,11 +267,19 @@ let realTimeInterval = null
 // Computed properties
 const mostPollutedCity = computed(() => {
   return cityData.value.reduce((max, city) => 
-    city.aqi > max.aqi ? city : max
-  )
+    city.aqi > max.aqi ? city : max, { aqi: 0 })
 })
 
 // Utility functions
+const getAQILevel = (aqi) => {
+  if (aqi <= 50) return 'Good'
+  if (aqi <= 100) return 'Moderate'
+  if (aqi <= 150) return 'Unhealthy for Sensitive Groups'
+  if (aqi <= 200) return 'Unhealthy'
+  if (aqi <= 300) return 'Very Unhealthy'
+  return 'Hazardous'
+}
+
 const getAQIClass = (aqi) => {
   if (aqi <= 50) return 'aqi-good'
   if (aqi <= 100) return 'aqi-moderate'
@@ -304,6 +306,60 @@ const getToastIcon = (type) => {
     info: Info
   }
   return icons[type] || CheckCircle
+}
+
+// API fetching
+const cities = Object.keys(cityCoordinates)
+const fetchAllAQI = async () => {
+  isLoading.value = true
+  cityData.value = []
+  const newLogs = []
+
+  for (const city of cities) {
+    try {
+      const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${city}`, {
+        headers: {
+          'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
+        }
+      })
+
+      const aqi = response.data.overall_aqi
+      cityData.value.push({
+        name: city,
+        aqi: aqi,
+        level: getAQILevel(aqi),
+        lat: cityCoordinates[city].lat,
+        lng: cityCoordinates[city].lng
+      })
+
+      newLogs.push({
+        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+        type: 'success',
+        message: `AQI data fetched for ${city} (AQI: ${aqi})`
+      })
+    } catch (err) {
+      console.error(`Failed to fetch AQI for ${city}`, err)
+      newLogs.push({
+        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+        type: 'error',
+        message: `Failed to fetch AQI for ${city}`
+      })
+    }
+  }
+
+  // Update summary data
+  summaryData.totalCities = cityData.value.length
+  const newMostPolluted = mostPollutedCity.value
+  summaryData.mostPollutedCity = {
+    name: newMostPolluted.name,
+    aqi: newMostPolluted.aqi,
+    level: newMostPolluted.level
+  }
+
+  // Update logs
+  systemLogs.value = [...newLogs, ...systemLogs.value].slice(0, 10)
+  isLoading.value = false
+  showToast('AQI data refreshed successfully', 'success')
 }
 
 // Methods
@@ -339,61 +395,14 @@ const viewPollutedCity = () => {
 
 const refreshMapData = async () => {
   isRefreshing.value = true
-  
-  try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Update city data with slight variations
-    cityData.value = cityData.value.map(city => ({
-      ...city,
-      aqi: Math.max(10, city.aqi + Math.floor(Math.random() * 21) - 10)
-    }))
-    
-    // Update most polluted city
-    const newMostPolluted = mostPollutedCity.value
-    summaryData.mostPollutedCity = {
-      name: newMostPolluted.name,
-      aqi: newMostPolluted.aqi,
-      level: newMostPolluted.level
-    }
-    
-    showToast('Map data refreshed successfully', 'success')
-  } catch (error) {
-    showToast('Failed to refresh map data', 'error')
-  } finally {
-    isRefreshing.value = false
-  }
+  await fetchAllAQI()
+  isRefreshing.value = false
 }
 
 const refreshAllData = async () => {
   isLoading.value = true
-  
-  try {
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Update summary data
-    summaryData.totalCities += Math.floor(Math.random() * 3)
-    
-    // Add new log entry
-    const newLog = {
-      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      type: 'success',
-      message: 'All data refreshed successfully'
-    }
-    systemLogs.value.unshift(newLog)
-    
-    // Keep only last 10 logs
-    if (systemLogs.value.length > 10) {
-      systemLogs.value = systemLogs.value.slice(0, 10)
-    }
-    
-    showToast('All data refreshed successfully', 'success')
-  } catch (error) {
-    showToast('Failed to refresh data', 'error')
-  } finally {
-    isLoading.value = false
-  }
+  await fetchAllAQI()
+  isLoading.value = false
 }
 
 const clearCache = async () => {
@@ -401,11 +410,8 @@ const clearCache = async () => {
   
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Update cache data
     cacheData.lastRefresh = 'Just now'
     
-    // Add log entry
     const newLog = {
       time: new Date().toLocaleTimeString('en-US', { hour12: false }),
       type: 'success',
@@ -422,16 +428,35 @@ const clearCache = async () => {
 }
 
 const addNewCity = async () => {
-  const cityNames = ['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai']
-  const randomCity = cityNames[Math.floor(Math.random() * cityNames.length)]
+  const availableCities = ['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai']
+  const randomCity = availableCities[Math.floor(Math.random() * availableCities.length)]
   
+  if (cities.includes(randomCity)) {
+    showToast(`${randomCity} is already being monitored`, 'warning')
+    return
+  }
+
   isLoading.value = true
   
   try {
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${randomCity}`, {
+      headers: {
+        'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
+      }
+    })
+
+    const aqi = response.data.overall_aqi
+    cityData.value.push({
+      name: randomCity,
+      aqi: aqi,
+      level: getAQILevel(aqi),
+      lat: cityCoordinates[randomCity]?.lat || 0,
+      lng: cityCoordinates[randomCity]?.lng || 0
+    })
+
+    cities.push(randomCity)
     summaryData.totalCities++
-    
+
     const newLog = {
       time: new Date().toLocaleTimeString('en-US', { hour12: false }),
       type: 'info',
@@ -460,7 +485,9 @@ const hideCityTooltip = () => {
 }
 
 const startRealTimeUpdates = () => {
-  realTimeInterval = setInterval(() => {
+  realTimeInterval = setInterval(async () => {
+    await fetchAllAQI()
+    
     // Update cache refresh time
     const minutes = Math.floor(Math.random() * 5) + 1
     cacheData.lastRefresh = `${minutes} min ago`
@@ -485,11 +512,12 @@ const startRealTimeUpdates = () => {
         systemLogs.value.pop()
       }
     }
-  }, 30000)
+  }, 300000) // Update every 5 minutes
 }
 
 // Lifecycle hooks
 onMounted(() => {
+  fetchAllAQI()
   startRealTimeUpdates()
 })
 

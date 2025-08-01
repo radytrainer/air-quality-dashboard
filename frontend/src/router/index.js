@@ -15,6 +15,9 @@ import UserManagement from '@/views/UserManagement.vue'
 
 
 import { useAuthStore } from '@/stores/airQuality'
+import ContactUser from '@/views/ContactUser.vue'
+import Profile from '@/views/Profile.vue'
+import Message from '@/views/Message.vue'
 
 
 
@@ -85,7 +88,22 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: ContactView
-  }
+  },
+  {
+    path: '/usercontact',
+    name: 'contactuser',
+    component: ContactUser
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile
+  },
+  {
+    path: '/message',
+    name: 'message',
+    component: Message
+  },
 ]
 
 const router = createRouter({

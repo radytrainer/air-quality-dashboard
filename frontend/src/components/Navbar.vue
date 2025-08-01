@@ -5,19 +5,18 @@
     <!-- Left Section: Logo and Search -->
     <div class="flex items-center gap-8">
       <!-- Logo -->
-      <div class="w-16 h-16 rounded-2xl ">
+      <div class="w-16 h-16 rounded-2xl">
         <img
           src="../assets/images/Logo.png"
           alt="Air Quality Icon"
           class="w-full h-full object-cover"
         />
       </div>
+
       <!-- Search Bar -->
       <div class="relative hidden lg:block">
-        <div>
-          <CitySearch @city-selected="handleCitySelected" />
-          <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
-        </div>
+        <CitySearch @city-selected="handleCitySelected" />
+        <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
       </div>
     </div>
 
@@ -32,58 +31,47 @@
         <div
           v-if="$route.path === '/home' || $route.path === '/admin-dashboard'"
           class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
+        />
       </RouterLink>
 
       <RouterLink
         :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
         class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="[
-          $route.path === '/city-detail' || $route.path === '/cityaqi'
-            ? 'text-blue-600 bg-blue-50'
-            : 'text-gray-700'
-        ]"
+        :class="[$route.path === '/city-detail' || $route.path === '/cityaqi' ? 'text-blue-600 bg-blue-50' : 'text-gray-700']"
       >
-        {{ auth.userRole === 'admin' ? $t('nav.cityAQI') : $t('nav.cityDetail') }}
+        {{ auth.userRole === 'admin' ? 'City AQI' : $t('nav.cityDetail') }}
         <div
           v-if="$route.path === '/city-detail' || $route.path === '/cityaqi'"
           class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
-      </RouterLink>
-
-            <RouterLink
-        :to="auth.userRole === 'admin' ? '/health-alert' : '/compare-cities'"
-        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-        :class="[
-          $route.path === '/compare-cities' || $route.path === '/health-alert'
-            ? 'text-blue-600 bg-blue-50'
-            : 'text-gray-700'
-        ]"
-      >
-        {{ auth.userRole === 'admin' ? $t('nav.healthAlert') : $t('nav.compareCities') }}
-        <div
-          v-if="$route.path === '/compare-cities' || $route.path === '/health-alert'"
-          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-        ></div>
+        />
       </RouterLink>
 
       <RouterLink
-  :to="auth.userRole === 'admin' ? '/user-management' : '/analytics'"
-  class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
-  :class="[
-    ($route.path === '/analytics' || $route.path === '/user-management') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-  ]"
->
-  {{ auth.userRole === 'admin' ? $t('nav.userManagement') : $t('nav.analytics') }}
-  <div
-    v-if="$route.path === '/analytics' || $route.path === '/user-management'"
-    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-  ></div>
-</RouterLink>
+        to="/compare-cities"
+        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
+        :class="$route.path === '/compare-cities' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
+      >
+        {{ $t('nav.compareCities') }}
+        <div
+          v-if="$route.path === '/compare-cities'"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
+        />
+      </RouterLink>
 
+      <RouterLink
+        to="/analytics"
+        class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
+        :class="$route.path === '/analytics' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'"
+      >
+        {{ $t('nav.analytics') }}
+        <div
+          v-if="$route.path === '/analytics'"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
+        />
+      </RouterLink>
     </div>
 
-    <!-- Right Section -->
+    <!-- Right Section: AQI, Language, Theme, Login/Profile -->
     <div class="flex items-center gap-2 relative">
       <!-- AQI Standard -->
       <button
@@ -98,7 +86,7 @@
         <span class="text-xs font-medium select-none truncate">AQI-US</span>
       </button>
 
-      <!-- Theme -->
+      <!-- Theme Toggle -->
       <button
         class="flex items-center justify-center p-2 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-200 w-10 h-9"
         aria-label="Toggle theme"
@@ -107,7 +95,7 @@
         <i class="fas fa-sun text-yellow-500 text-sm"></i>
       </button>
 
-      <!-- Language -->
+      <!-- Language Switcher -->
       <div class="relative">
         <button
           @click="toggleLanguageDropdown"
@@ -139,23 +127,90 @@
         </div>
       </div>
 
-      <!-- Auth -->
-      <button
-        v-if="!isLoggedIn"
-        class="flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-blue-600 hover:bg-blue-100 transition-all duration-200 border border-blue-200 w-[90px]"
-        @click="$router.push('/login')"
-      >
-        <i class="fas fa-sign-in-alt text-blue-500 text-sm flex-shrink-0"></i>
-        <span class="text-xs font-medium select-none truncate">{{ $t('auth.login') }}</span>
-      </button>
-      <button
-        v-else
-        class="flex items-center justify-center gap-2 px-3 py-2 bg-red-50 rounded-lg text-red-600 hover:bg-red-100 transition-all duration-200 border border-red-200 w-[90px]"
-        @click="logout"
-      >
-        <i class="fas fa-sign-out-alt text-red-500 text-sm flex-shrink-0"></i>
-        <span class="text-xs font-medium select-none truncate">{{ $t('auth.logout') }}</span>
-      </button>
+      <!-- Login / Profile -->
+      <div v-if="!isLoggedIn">
+        <button
+          class="flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-blue-600 hover:bg-blue-100 transition-all duration-200 border border-blue-200 w-[90px]"
+          @click="$router.push('/login')"
+        >
+          <i class="fas fa-sign-in-alt text-blue-500 text-sm flex-shrink-0"></i>
+          <span class="text-xs font-medium select-none truncate">
+            {{ $t('auth.login') }}
+          </span>
+        </button>
+      </div>
+
+      <div v-else class="relative">
+        <button
+          @click="toggleProfileDropdown"
+          class="flex items-center justify-center gap-2 px-3 py-2 bg-green-50 rounded-lg text-green-600 hover:bg-green-100 transition-all duration-200 border border-green-200 min-w-[120px] max-w-[150px]"
+          title="User Profile"
+          :disabled="loadingProfile"
+        >
+          <i v-if="loadingProfile" class="fas fa-spinner fa-spin text-green-500 text-sm flex-shrink-0"></i>
+          <img
+            v-else-if="profile.profile_image"
+            :src="profile.profile_image"
+            alt="Profile Image"
+            class="w-6 h-6 rounded-full object-cover flex-shrink-0"
+          />
+          <i v-else class="fas fa-user-circle text-green-500 text-sm flex-shrink-0"></i>
+
+          <span class="text-xs font-medium select-none truncate">
+            {{ displayUserName }}
+          </span>
+          <i
+            class="fas fa-chevron-down text-green-500 text-xs flex-shrink-0 transition-transform duration-200"
+            :class="{ 'rotate-180': profileDropdownOpen }"
+          ></i>
+        </button>
+
+        <div
+          v-if="profileDropdownOpen"
+          class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
+        >
+          <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+            <div v-if="loadingProfile" class="animate-pulse">
+              <div class="h-4 bg-gray-300 rounded mb-2"></div>
+            </div>
+            <div v-else>
+              <p class="text-sm font-medium text-gray-900">
+                {{ profile.name || 'User' }}
+                <span class="text-blue-600">({{ profile.role || 'Role not set' }})</span>
+              </p>
+              <p class="text-xs text-gray-500 truncate">{{ profile.email || 'No email' }}</p>
+            </div>
+          </div>
+
+          <div class="py-1">
+            <button
+              @click="navigateToProfile"
+              class="flex items-center w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+            >
+              <i class="fas fa-user text-gray-400 text-sm w-4 mr-3"></i>
+              Profile
+            </button>
+
+            <button
+              @click="navigateToMessages"
+              class="flex items-center w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+            >
+              <i class="fas fa-envelope text-gray-400 text-sm w-4 mr-3"></i>
+              Messages
+            </button>
+
+            <div class="border-t border-gray-100 my-1"></div>
+
+            <button
+              @click="handleLogout"
+              class="flex items-center w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+            >
+              <i class="fas fa-sign-out-alt text-red-500 text-sm w-4 mr-3"></i>
+              {{ $t('auth.logout') }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Mobile Menu Button -->
@@ -200,34 +255,59 @@
         >
           {{ $t('nav.analytics') }}
         </RouterLink>
-        <RouterLink
-          to="/user-management"
-          class="block px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
-          @click="mobileMenuOpen = false"
-        >
-          {{ $t('nav.userManagement') }}
-        </RouterLink>
+
+        <!-- Mobile Profile Section -->
+        <div v-if="isLoggedIn" class="border-t border-gray-200 pt-2 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-600">
+            {{ profile.name || auth.userName || 'User' }}
+            <span class="text-blue-600">({{ profile.role || auth.userRole || 'Loading...' }})</span>
+            <p class="text-xs text-gray-500 truncate">{{ profile.email || 'No email' }}</p>
+          </div>
+          <button
+            @click="navigateToProfile(); mobileMenuOpen = false"
+            class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
+          >
+            Profile
+          </button>
+          <button
+            @click="navigateToMessages(); mobileMenuOpen = false"
+            class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
+          >
+            Messages
+          </button>
+          <button
+            @click="handleLogout(); mobileMenuOpen = false"
+            class="block w-full text-left px-4 py-2 rounded-lg hover:bg-red-50 hover:text-red-600"
+          >
+            {{ $t('auth.logout') }}
+          </button>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import CitySearch from '@/components/CitySearch.vue'
 import { useAuthStore } from '@/stores/airQuality'
 import { useI18n } from 'vue-i18n'
+import api from '@/services/api'
 
 const selectedCity = ref('')
 const { locale, t } = useI18n()
 const currentLanguage = ref(locale.value)
 const languageDropdownOpen = ref(false)
+const profileDropdownOpen = ref(false)
 const mobileMenuOpen = ref(false)
-
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
+
+const profile = ref({})
+const loadingProfile = ref(false)
+const profileError = ref(null)
 
 function handleCitySelected(city) {
   selectedCity.value = city
@@ -235,6 +315,12 @@ function handleCitySelected(city) {
 
 function toggleLanguageDropdown() {
   languageDropdownOpen.value = !languageDropdownOpen.value
+  profileDropdownOpen.value = false
+}
+
+function toggleProfileDropdown() {
+  profileDropdownOpen.value = !profileDropdownOpen.value
+  languageDropdownOpen.value = false
 }
 
 function changeLanguage(lang) {
@@ -247,21 +333,89 @@ function toggleMobileMenu() {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
+async function fetchUserProfile() {
+  if (!auth.token) return
+  loadingProfile.value = true
+  profileError.value = null
+  try {
+    const response = await api.get('/profile')
+    profile.value = response.data
+    auth.userName = profile.value.name || ''
+    auth.userRole = profile.value.role || ''
+    localStorage.setItem('user_name', auth.userName)
+    localStorage.setItem('user_role', auth.userRole)
+  } catch (error) {
+    profileError.value = error.response?.data?.message || 'Failed to fetch profile.'
+    console.error('Failed to fetch profile:', error)
+    if (error.response?.status === 401) {
+      auth.logout()
+      router.push('/login')
+    }
+  } finally {
+    loadingProfile.value = false
+  }
+}
+
+// Close dropdowns when clicking outside
+function handleClickOutside(event) {
+  // Close if click outside dropdown buttons or dropdown containers
+  if (
+    !event.target.closest('.relative') &&
+    !event.target.closest('button')
+  ) {
+    languageDropdownOpen.value = false
+    profileDropdownOpen.value = false
+  }
+}
+
+function navigateToProfile() {
+  profileDropdownOpen.value = false
+  router.push('/profile')
+}
+
+function navigateToMessages() {
+  profileDropdownOpen.value = false
+  router.push('/messages')
+}
+
+function handleLogout() {
+  profileDropdownOpen.value = false
+  auth.logout()
+  router.push('/login')
+}
+
 const isLoggedIn = computed(() => auth.isAuthenticated)
+
+const displayUserName = computed(() => {
+  if (loadingProfile.value) return 'Loading...'
+  return profile.value.name || auth.userName || 'User'
+})
 
 const homeLabel = computed(() => {
   return auth.userRole === 'admin' ? t('nav.dashboard') : t('nav.home')
 })
 
-function logout() {
-  auth.logout()
-  router.push('/login')
-}
+watch(() => auth.isAuthenticated, (newVal) => {
+  if (newVal) fetchUserProfile()
+  else profile.value = {}
+})
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  if (auth.isAuthenticated) fetchUserProfile()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
-<style scoped>
+<style>
 @import '@fortawesome/fontawesome-free/css/all.min.css';
+</style>
 
+<style scoped>
+/* Custom scrollbar for dropdown */
 .overflow-hidden::-webkit-scrollbar {
   width: 4px;
 }
@@ -270,6 +424,7 @@ function logout() {
   border-radius: 2px;
 }
 
+/* Fade transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
@@ -279,9 +434,36 @@ function logout() {
   opacity: 0;
 }
 
+/* Ensure text truncation works */
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Smooth rotation for chevron */
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Loading animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.fa-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse animation for loading states */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
 }
 </style>

@@ -1,105 +1,204 @@
 <template>
-  <div class="p-6 max-w-xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md space-y-8">
-    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
-      🌤️ ASEAN Cities Weather + AQI
-    </h1>
-
-    <div v-if="weatherData.length">
-      <div
-        v-for="(weather, i) in weatherData"
-        :key="weather.location.name"
-        class="space-y-2 text-center border-b pb-4"
-      >
-        <img :src="weather.current.condition.icon" class="mx-auto" />
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-          {{ weather.location.name }}, {{ weather.location.country }}
-        </h2>
-        <p class="text-gray-700 dark:text-gray-200">🌡️ Temp: {{ weather.current.temp_c }}°C</p>
-        <p class="text-gray-700 dark:text-gray-200">💧 Humidity: {{ weather.current.humidity }}%</p>
-        <p class="text-gray-700 dark:text-gray-200">🌬️ Wind: {{ weather.current.wind_kph }} kph</p>
-        <p class="text-gray-700 dark:text-gray-200">☁️ Condition: {{ weather.current.condition.text }}</p>
-        <p class="text-gray-700 dark:text-gray-200">
-          🏭 AQI (EU): 
-          <span :class="getAqiColor(aqiData[i]?.aqi)">
-            {{ aqiData[i]?.aqi ?? 'N/A' }}
-          </span>
-        </p>
-        <p class="text-gray-500 text-sm">Last Updated: {{ weather.current.last_updated }}</p>
+  <div class="container mx-auto p-4">
+    <div class="map-wrapper relative mb-6">
+      <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden"></div>
+    </div>
+    <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
+        <ul class="text-white">
+          <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
+            {{ station.name }}: <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2">
+          </li>
+        </ul>
+      </div>
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
+        <ul class="text-white">
+          <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
+            {{ station.name }}: <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2">
+          </li>
+        </ul>
+      </div>
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg col-span-2">
+        <h2 class="text-xl font-bold mb-2 text-white">AQI Trend Graph</h2>
+        <canvas id="aqiChart"></canvas>
       </div>
     </div>
-
-    <div v-else class="text-center text-gray-500">Loading data...</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
+import Chart from 'chart.js/auto'
 
-const cities = [
-  { name: 'Phnom Penh', lat: 11.5564, lon: 104.9282 },
-  { name: 'Bangkok', lat: 13.7563, lon: 100.5018 },
-  { name: 'Jakarta', lat: -6.2088, lon: 106.8456 },
-  { name: 'Hanoi', lat: 21.0285, lon: 105.8542 },
-  { name: 'Kuala Lumpur', lat: 3.139, lon: 101.6869 },
-  { name: 'Singapore', lat: 1.3521, lon: 103.8198 },
-  { name: 'Manila', lat: 14.5995, lon: 120.9842 },
-  { name: 'Vientiane', lat: 17.9757, lon: 102.6331 },
-  { name: 'Yangon', lat: 16.8409, lon: 96.1735 },
-  { name: 'Brunei', lat: 4.5353, lon: 114.7277 }
-]
-
-const weatherData = ref([])
+const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
+const top10HighAQI = ref([])
+const top10LowAQI = ref([])
+let aqiChart = null
+let map = null
+let markers = []
 
-const fetchData = async () => {
+const getColor = (aqi) => {
+  if (aqi <= 50) return '#00e400'
+  if (aqi <= 100) return '#ffff00'
+  if (aqi <= 150) return '#ff7e00'
+  if (aqi <= 200) return '#ff0000'
+  if (aqi <= 300) return '#99004c'
+  return '#7e0023'
+}
+
+const updateTop10 = () => {
+  const sorted = [...aqiData.value].filter(s => !isNaN(parseInt(s.aqi))).sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+  top10HighAQI.value = sorted.slice(0, 10)
+  top10LowAQI.value = sorted.slice(-10).reverse()
+}
+
+const updateChart = () => {
+  const ctx = document.getElementById('aqiChart').getContext('2d')
+  if (aqiChart) aqiChart.destroy()
+
+  aqiChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: aqiData.value.map(station => station.station.name),
+      datasets: [{
+        label: 'AQI Levels',
+        data: aqiData.value.map(station => parseInt(station.aqi)),
+        backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi))),
+        borderColor: '#000',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  })
+}
+
+const renderMarkers = () => {
+  markers.forEach(marker => marker.remove())
+  markers = []
+
+  aqiData.value.forEach(station => {
+    const { lat, lon, aqi } = station
+    const color = getColor(parseInt(aqi))
+
+    const marker = L.circleMarker([lat, lon], {
+      radius: 6,
+      fillColor: color,
+      color: '#000',
+      weight: 0.8,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).addTo(map)
+
+    marker.bindPopup(`
+      <div style="font-family: Arial; font-size: 13px;">
+        <b>${station.station.name}</b><br/>
+        AQI: <strong style="color: ${color}">${aqi}</strong>
+      </div>
+    `)
+
+    markers.push(marker)
+  })
+}
+
+const fetchAQIData = async () => {
   try {
-    const weatherPromises = cities.map(city =>
-      axios.get('https://api.weatherapi.com/v1/current.json', {
-        params: { key: 'f41466962858499381473152252107', q: city.name }
-      })
-    )
-    const aqiPromises = cities.map(city =>
-      axios.get('https://air-quality-api.open-meteo.com/v1/air-quality', {
-        params: {
-          latitude: city.lat,
-          longitude: city.lon,
-          hourly: 'pm2_5',
-          current: 'european_aqi'
-        }
-      })
-    )
+    const bounds = '-85,-180,85,180'
+    const url = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${TOKEN}`
+    const { data } = await axios.get(url)
 
-    const [weatherRes, aqiRes] = await Promise.all([
-      Promise.all(weatherPromises),
-      Promise.all(aqiPromises)
-    ])
+    if (data.status === 'ok') {
+      aqiData.value = data.data.map(station => ({
+        ...station,
+        name: station.station.name.split(',')[1]?.trim() || station.station.name,
+        flag: `https://flagcdn.com/w160/${station.station.name.split(',')[1]?.trim().toLowerCase() || 'unknown'}.png`
+      }))
 
-    weatherData.value = weatherRes.map(r => r.data)
-    aqiData.value = aqiRes.map(r => ({
-      aqi: r.data?.current?.european_aqi ?? null
-    }))
+      updateTop10()
+      renderMarkers()
+      updateChart()
+    }
   } catch (err) {
-    console.error('Error fetching API data', err)
+    console.error('Failed to fetch AQI:', err)
   }
 }
 
-onMounted(() => {
-  fetchData()
-  const interval = setInterval(fetchData, 60_000)
-  onUnmounted(() => clearInterval(interval))
-})
+const initMap = () => {
+  map = L.map('map', {
+    center: [20, 100],
+    zoom: 4,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+  })
 
-function getAqiColor(aqi) {
-  if (aqi == null) return 'text-gray-500'
-  if (aqi <= 20) return 'text-green-600'
-  if (aqi <= 40) return 'text-yellow-500'
-  if (aqi <= 60) return 'text-orange-500'
-  if (aqi <= 80) return 'text-red-500'
-  return 'text-purple-600'
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map)
+
+  map.on('focus', () => map.scrollWheelZoom.enable())
+  map.on('blur', () => map.scrollWheelZoom.disable())
+  map.on('mousewheel', (e) => {
+    if (!e.originalEvent.ctrlKey) {
+      map.scrollWheelZoom.disable()
+      e.originalEvent.preventDefault()
+    } else {
+      map.scrollWheelZoom.enable()
+    }
+  })
 }
+
+onMounted(() => {
+  initMap()
+  fetchAQIData()
+  setInterval(fetchAQIData, 30000) // update every 30 seconds
+})
 </script>
 
 <style scoped>
-img { width: 64px; height: 64px; }
+.container {
+  margin-top: 60px;
+}
+
+.map-wrapper {
+  height: 500px;
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 0;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.stats-grid {
+  margin-top: 20px;
+}
+
+.stats-card {
+  border-radius: 0.75rem;
+}
+
+#aqiChart {
+  max-height: 300px;
+}
 </style>
