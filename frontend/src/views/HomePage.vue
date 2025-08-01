@@ -27,7 +27,6 @@
     <main class="p-6 space-y-10">
       <!-- Pollutant Filters -->
       <section>
-        <h2 class="text-3xl font-semibold mb-4 text-gray-700">🌍 Global Air Quality Map</h2>
         <div class="flex flex-wrap gap-4 mb-4 items-center text-sm text-gray-700">
           <label v-for="pollutant in pollutants" :key="pollutant.value" class="flex items-center gap-2">
             <input
@@ -45,24 +44,6 @@
         <div v-if="error" class="text-center text-red-600">{{ error }}</div>
         <div class="map-wrapper">
           <div id="map"></div>
-        </div>
-      </section>
-
-      <!-- AQI Grid -->
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Data</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <div
-            v-for="station in aqiData"
-            :key="station.uid"
-            class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
-          >
-            <h3 class="text-lg font-semibold mb-2">{{ station.station.name }}</h3>
-            <p class="text-sm text-gray-600 capitalize">
-              {{ selectedPollutant.toUpperCase() }}: <span class="font-bold">{{ station.value }}</span>
-            </p>
-            <p class="text-xs text-gray-500 mt-1">Status: {{ getStatusLabel(station.value) }}</p>
-          </div>
         </div>
       </section>
     </main>
@@ -102,23 +83,14 @@ const initMap = async () => {
     zoom: 3,
     zoomControl: true,
     scrollWheelZoom: false
-  })
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap & CARTO',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(map)
-
-  map.on('mousewheel', (e) => {
-    if (!e.originalEvent.ctrlKey) {
-      map.scrollWheelZoom.disable()
-      e.originalEvent.preventDefault()
-    } else {
-      map.scrollWheelZoom.enable()
-    }
-  })
+  });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
 }
+
 
 const updateMap = async () => {
   loading.value = true
