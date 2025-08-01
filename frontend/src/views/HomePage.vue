@@ -7,50 +7,66 @@
       <p class="text-xs text-black/70 mt-1">Last updated: {{ currentTime.toLocaleString() }}</p>
     </div>
 
-    <!-- Search Box -->
+    <!-- Search -->
     <div class="px-6 mt-4 flex flex-col items-end space-y-6 mb-10">
       <div class="flex space-x-2 w-full max-w-md">
         <input
           v-model="searchQuery"
-          @keydown.enter="searchCountry"
+          @keydown.enter="searchLocation"
           type="text"
           placeholder="Search by city or country"
-          class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+          class="flex-1 border border-gray-300 rounded-md px-3 py-2"
         />
-        <button
-          @click="searchCountry"
-          class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2 text-base font-medium"
-        >
+        <button @click="searchLocation" class="bg-sky-500 hover:bg-sky-600 text-white rounded-md px-4 py-2">
           Search
         </button>
       </div>
     </div>
-  </div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="p-6 space-y-10">
-      <!-- Global AQI Map -->
+      <!-- Pollutant Filters -->
       <section>
+        <h2 class="text-3xl font-semibold mb-4 text-gray-700">🌍 Global Air Quality Map</h2>
+        <div class="flex flex-wrap gap-4 mb-4 items-center text-sm text-gray-700">
+          <label v-for="pollutant in pollutants" :key="pollutant.value" class="flex items-center gap-2">
+            <input
+              type="radio"
+              name="pollutant"
+              :value="pollutant.value"
+              v-model="selectedPollutant"
+              @change="updateMap"
+            />
+            {{ pollutant.label }}
+          </label>
+        </div>
+
         <div v-if="loading" class="text-center text-gray-600">Loading map and data...</div>
         <div v-if="error" class="text-center text-red-600">{{ error }}</div>
-        <div id="map" class="h-[600px] w-full rounded shadow border"></div>
+        <div class="map-wrapper">
+          <div id="map"></div>
+        </div>
       </section>
 
-      <!-- AQI Card Grid -->
+      <!-- AQI Grid -->
       <section>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Air Quality Data</h2>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Data</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <div
-            v-for="city in cities"
-            :key="city"
+            v-for="station in aqiData"
+            :key="station.uid"
             class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
           >
-            <h3 class="text-lg font-semibold mb-2">{{ city }}</h3>
-            <p class="text-sm text-gray-600">AQI: <span class="font-bold">{{ aqiByCity[city] || 'N/A' }}</span></p>
+            <h3 class="text-lg font-semibold mb-2">{{ station.station.name }}</h3>
+            <p class="text-sm text-gray-600 capitalize">
+              {{ selectedPollutant.toUpperCase() }}: <span class="font-bold">{{ station.value }}</span>
+            </p>
+            <p class="text-xs text-gray-500 mt-1">Status: {{ getStatusLabel(station.value) }}</p>
           </div>
         </div>
       </section>
     </main>
+  </div>
 </template>
 
 <script setup>
@@ -58,98 +74,167 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import WeatherMap from '@/components/WeatherMap.vue'
 
-const cities = [
-  'London', 'Paris', 'Berlin', 'Madrid', 'Rome', 'Lisbon', 'Vienna', 'Warsaw', 'Budapest', 'Prague',
-  'Athens', 'Amsterdam', 'Brussels', 'Dublin', 'Oslo', 'Stockholm', 'Helsinki', 'Copenhagen', 'Zurich', 'Belgrade',
-  'Moscow', 'Istanbul', 'Cairo', 'Lagos', 'Nairobi', 'Cape Town', 'Johannesburg', 'Dubai', 'Doha', 'Tehran',
-  'Delhi', 'Mumbai', 'Bangalore', 'Beijing', 'Shanghai', 'Tokyo', 'Seoul', 'Bangkok', 'Jakarta', 'Kuala Lumpur',
-  'Singapore', 'Manila', 'Hanoi', 'Phnom Penh', 'Ho Chi Minh', 'Mexico City', 'New York', 'Los Angeles', 'Toronto', 'Buenos Aires'
-]
-
+const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
+const aqiData = ref([])
 const loading = ref(true)
 const error = ref(null)
 const searchQuery = ref('')
 const currentTime = ref(new Date())
-const aqiByCity = ref({})
 
-const getMarkerColor = (aqi) => {
-  if (aqi <= 50) return 'green'
-  if (aqi <= 100) return 'yellow'
-  if (aqi <= 150) return 'orange'
-  if (aqi <= 200) return 'red'
-  return 'purple'
+let map = null
+const markers = ref([])
+
+const pollutants = ref([
+  { label: 'AQI', value: 'aqi' },
+  { label: 'PM₂.₅', value: 'pm25' },
+  { label: 'PM₁₀', value: 'pm10' },
+  { label: 'Ozone (O₃)', value: 'o3' },
+  { label: 'NO₂', value: 'no2' },
+  { label: 'SO₂', value: 'so2' },
+  { label: 'CO', value: 'co' },
+])
+const selectedPollutant = ref('aqi')
+
+const initMap = async () => {
+  map = L.map('map', {
+    center: [20, 100],
+    zoom: 3,
+    zoomControl: true,
+    scrollWheelZoom: false
+  })
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map)
+
+  map.on('mousewheel', (e) => {
+    if (!e.originalEvent.ctrlKey) {
+      map.scrollWheelZoom.disable()
+      e.originalEvent.preventDefault()
+    } else {
+      map.scrollWheelZoom.enable()
+    }
+  })
 }
 
-const fetchAndShowAQI = async () => {
+const updateMap = async () => {
+  loading.value = true
+  aqiData.value = []
+  markers.value.forEach(marker => map.removeLayer(marker))
+  markers.value = []
+
   try {
-    const map = L.map('map').setView([20, 0], 2)
+    const bounds = '-85,-180,85,180'
+    const boundsURL = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${TOKEN}`
+    const { data } = await axios.get(boundsURL)
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
-      subdomains: 'abcd',
-      maxZoom: 19
-    }).addTo(map);
+    if (data.status === 'ok') {
+      const stations = data.data.slice(0, 100)
+      const results = []
 
+      for (const s of stations) {
+        const detailUrl = `https://api.waqi.info/feed/geo:${s.lat};${s.lon}/?token=${TOKEN}`
+        const res = await axios.get(detailUrl)
+        const detail = res.data.data
 
-    for (const city of cities) {
-      try {
-        const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${encodeURIComponent(city)}`, {
-          headers: { 'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo' }
-        })
-        const aqiData = response.data
-        if (!aqiData.overall_aqi) continue
+        const value = selectedPollutant.value === 'aqi'
+          ? detail.aqi
+          : detail.iaqi?.[selectedPollutant.value]?.v
 
-        const geo = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`)
-        if (!geo.data.length) continue
-        const { lat, lon } = geo.data[0]
+        if (value !== undefined && value !== '-') {
+          results.push({ ...s, value })
 
-        const aqi = aqiData.overall_aqi
-        const color = getMarkerColor(aqi)
+          const marker = L.circleMarker([s.lat, s.lon], {
+            radius: 6,
+            fillColor: getColor(value),
+            color: '#000',
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          }).addTo(map)
 
-        const marker = L.circleMarker([lat, lon], {
-          radius: 8,
-          color,
-          fillColor: color,
-          fillOpacity: 0.8,
-        }).addTo(map)
+          marker.bindPopup(`
+            <div style="font-family: Arial; font-size: 13px;">
+              <b>${s.station.name}</b><br/>
+              ${selectedPollutant.value.toUpperCase()}: <strong>${value}</strong><br/>
+              Status: <span style="color:${getColor(value)}">${getStatusLabel(value)}</span>
+            </div>
+          `)
 
-        marker.bindPopup(`
-          <strong>${city}</strong><br/>
-          AQI: ${aqi}
-        `)
+          markers.value.push(marker)
+        }
+      }
 
-        aqiByCity.value[city] = aqi
-      } catch {}
+      aqiData.value = results
+    } else {
+      error.value = 'Failed to load station data.'
     }
   } catch (err) {
-    error.value = 'Failed to load map or AQI data.'
     console.error(err)
+    error.value = 'Error loading data.'
   } finally {
     loading.value = false
+    currentTime.value = new Date()
   }
 }
 
-const searchCountry = async () => {
+const searchLocation = async () => {
   if (!searchQuery.value) return
-  const result = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery.value)}&format=json&limit=1`)
-  if (result.data.length) {
-    const { lat, lon } = result.data[0]
-    const map = L.map('map').setView([lat, lon], 5)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map)
+  try {
+    const result = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery.value)}&format=json&limit=1`)
+    if (result.data.length) {
+      const { lat, lon } = result.data[0]
+      map.setView([parseFloat(lat), parseFloat(lon)], 8)
+    } else {
+      alert('Location not found')
+    }
+  } catch (e) {
+    alert('Error searching location')
   }
 }
 
-onMounted(fetchAndShowAQI)
+const getColor = (value) => {
+  const v = parseInt(value)
+  if (v <= 50) return '#00e400'     // Good
+  if (v <= 100) return '#ffff00'    // Moderate
+  if (v <= 150) return '#ff7e00'    // Unhealthy for sensitive groups
+  if (v <= 200) return '#ff0000'    // Unhealthy
+  if (v <= 300) return '#99004c'    // Very Unhealthy
+  return '#7e0023'                  // Hazardous
+}
+
+const getStatusLabel = (value) => {
+  const v = parseInt(value)
+  if (v <= 50) return 'Good'
+  if (v <= 100) return 'Moderate'
+  if (v <= 150) return 'Unhealthy for Sensitive Groups'
+  if (v <= 200) return 'Unhealthy'
+  if (v <= 300) return 'Very Unhealthy'
+  return 'Hazardous'
+}
+
+onMounted(async () => {
+  await initMap()
+  await updateMap()
+})
 </script>
 
 <style scoped>
-#map {
+.map-wrapper {
   height: 600px;
   width: 100%;
+  padding: 0 1rem;
+  position: relative;
   z-index: 0;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 </style>

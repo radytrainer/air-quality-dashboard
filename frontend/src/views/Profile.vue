@@ -1,14 +1,14 @@
 <template>
-  <div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-    <h1 class="text-2xl font-bold mb-6">My Profile</h1>
+  <div class="max-w-xl mx-auto mt-10 p-5 bg-white rounded-xl shadow">
+    <h1 class="text-xl font-semibold mb-4 text-gray-800">Edit Profile</h1>
 
     <div v-if="loading" class="text-center py-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-      <p class="mt-2 text-gray-600">Loading profile...</p>
+      <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+      <p class="mt-2 text-sm text-gray-500">Loading profile...</p>
     </div>
 
     <div v-else>
-      <div v-if="error" class="bg-red-50 text-red-600 p-4 rounded mb-6">
+      <div v-if="error" class="bg-red-50 text-red-600 text-sm p-3 rounded mb-4">
         <ul v-if="error.errors">
           <li v-for="(errs, field) in error.errors" :key="field">
             {{ field }}: {{ errs.join(', ') }}
@@ -17,20 +17,20 @@
         <p v-else>{{ error }}</p>
       </div>
 
-      <form @submit.prevent="updateProfile" class="space-y-6">
-        <!-- Profile Image Section -->
-        <div class="flex flex-col items-center space-y-4">
+      <form @submit.prevent="updateProfile" class="space-y-4 text-sm text-gray-700">
+        <!-- Profile Image -->
+        <div class="flex justify-center mb-4">
           <div class="relative">
             <img
               :src="form.profile_image_url || '/default-avatar.png'"
-              alt="Profile Image"
-              class="w-32 h-32 rounded-full object-cover border-4 border-white shadow"
+              class="w-24 h-24 rounded-full object-cover border shadow"
+              alt="Profile"
             />
             <button
               type="button"
               @click="openFileInput"
-              class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
-              title="Change profile picture"
+              class="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full text-xs hover:bg-blue-700"
+              title="Change profile image"
             >
               <i class="fas fa-camera"></i>
             </button>
@@ -42,113 +42,68 @@
               @change="handleImageUpload"
             />
           </div>
-          <!-- <button
-            v-if="form.profile_image_url"
-            type="button"
-            @click="removeProfileImage"
-            class="text-sm text-red-500 hover:text-red-700"
-          >
-            Remove Profile Image
-          </button> -->
         </div>
 
-        <!-- Full Name -->
+        <!-- Name -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input
-            type="text"
-            v-model="form.name"
-            class="w-full px-4 py-2 border rounded-lg"
-            required
-          />
+          <label class="block mb-1">Name</label>
+          <input type="text" v-model="form.name" class="w-full px-3 py-1.5 border rounded" required />
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-          <input
-            type="email"
-            v-model="form.email"
-            class="w-full px-4 py-2 border rounded-lg"
-            required
-          />
+          <label class="block mb-1">Email</label>
+          <input type="email" v-model="form.email" class="w-full px-3 py-1.5 border rounded" required />
         </div>
 
         <!-- Phone -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input
-            type="text"
-            v-model="form.phone"
-            class="w-full px-4 py-2 border rounded-lg"
-            placeholder="Optional phone number"
-          />
+          <label class="block mb-1">Phone</label>
+          <input type="text" v-model="form.phone" class="w-full px-3 py-1.5 border rounded" />
         </div>
 
         <!-- Bio -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-          <textarea
-            v-model="form.bio"
-            rows="3"
-            class="w-full px-4 py-2 border rounded-lg"
-            placeholder="Tell us about yourself"
-          ></textarea>
+          <label class="block mb-1">Bio</label>
+          <textarea v-model="form.bio" rows="2" class="w-full px-3 py-1.5 border rounded"></textarea>
         </div>
 
-        <!-- Change Password -->
-        <div class="border-t pt-6">
-          <h3 class="text-lg font-medium mb-4">Change Password</h3>
-
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-            <input
-              type="password"
-              v-model="form.current_password"
-              class="w-full px-4 py-2 border rounded-lg"
-              placeholder="Enter current password"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <input
-              type="password"
-              v-model="form.new_password"
-              class="w-full px-4 py-2 border rounded-lg"
-              placeholder="Enter new password"
-            />
-          </div>
+        <!-- Password Section -->
+        <div class="border-t pt-4">
+          <h3 class="text-sm font-medium mb-2">Change Password</h3>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-            <input
-              type="password"
-              v-model="form.new_password_confirmation"
-              class="w-full px-4 py-2 border rounded-lg"
-              placeholder="Confirm new password"
-            />
+            <label class="block mb-1">Current Password</label>
+            <input type="password" v-model="form.current_password" class="w-full px-3 py-1.5 border rounded" />
+          </div>
+
+          <div class="mt-2">
+            <label class="block mb-1">New Password</label>
+            <input type="password" v-model="form.new_password" class="w-full px-3 py-1.5 border rounded" />
+          </div>
+
+          <div class="mt-2">
+            <label class="block mb-1">Confirm Password</label>
+            <input type="password" v-model="form.new_password_confirmation" class="w-full px-3 py-1.5 border rounded" />
           </div>
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-end space-x-4 pt-4">
+        <div class="flex justify-end gap-2 pt-4">
           <button
             type="button"
             @click="resetForm"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             :disabled="updating"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+            class="px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
           >
-            <span v-if="updating">
-              <i class="fas fa-spinner fa-spin mr-2"></i> Saving...
-            </span>
-            <span v-else>Save Changes</span>
+            <span v-if="updating"><i class="fas fa-spinner fa-spin mr-1"></i> Saving...</span>
+            <span v-else>Save</span>
           </button>
         </div>
       </form>
