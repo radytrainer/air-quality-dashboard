@@ -53,7 +53,7 @@ class AqiAfricanController extends Controller
                 $data['data']['current']['pollution']['ts_local'] = $localTime . ' (' . $timezone . ')';
                 $allData[] = $data['data'];
             } catch (\Exception $e) {
-                \Log::warning("Failed: {$entry['city']}, {$entry['state']} — " . $e->getMessage());
+                Log::warning("Failed: {$entry['city']}, {$entry['state']} — " . $e->getMessage());
                 continue;
             }
         }

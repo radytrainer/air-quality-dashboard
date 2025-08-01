@@ -50,7 +50,7 @@ class AqiEuropeController extends Controller
                 $data['data']['current']['pollution']['ts_local'] = $localTime . ' (' . self::getTimezoneByCountry($entry['country']) . ')';
                 $allData[] = $data['data'];
             } catch (\Exception $e) {
-                \Log::warning("Failed: {$entry['city']}, {$entry['state']} — " . $e->getMessage());
+                Log::warning("Failed: {$entry['city']}, {$entry['state']} — " . $e->getMessage());
                 continue;
             }
         }
