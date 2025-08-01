@@ -57,7 +57,8 @@
             :key="station.uid"
             class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
           >
-            <h3 class="text-lg font-semibold mb-2">{{ station.station.name }}</h3>
+            <!-- Station is a string now -->
+            <h3 class="text-lg font-semibold mb-2">{{ station.station }}</h3>
             <p class="text-sm text-gray-600 capitalize">
               {{ selectedPollutant.toUpperCase() }}: <span class="font-bold">{{ station.value }}</span>
             </p>
@@ -70,20 +71,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
-const aqiData = ref([])
-const loading = ref(true)
-const error = ref(null)
-const searchQuery = ref('')
-const currentTime = ref(new Date())
+// Fix Leaflet default marker icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
-let map = null
-const markers = ref([])
+const aqiData = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const searchQuery = ref('');
+const currentTime = ref(new Date());
+let map = null;
+const markers = ref([]);
 
 const pollutants = ref([
   { label: 'AQI', value: 'aqi' },
@@ -93,133 +100,128 @@ const pollutants = ref([
   { label: 'NO₂', value: 'no2' },
   { label: 'SO₂', value: 'so2' },
   { label: 'CO', value: 'co' },
-])
-const selectedPollutant = ref('aqi')
+]);
+const selectedPollutant = ref('aqi');
 
 const initMap = async () => {
   map = L.map('map', {
     center: [20, 100],
     zoom: 3,
     zoomControl: true,
-    scrollWheelZoom: false
-  })
+    scrollWheelZoom: false,
+  });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap & CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
-  }).addTo(map)
+  }).addTo(map);
 
   map.on('mousewheel', (e) => {
     if (!e.originalEvent.ctrlKey) {
-      map.scrollWheelZoom.disable()
-      e.originalEvent.preventDefault()
+      map.scrollWheelZoom.disable();
+      e.originalEvent.preventDefault();
     } else {
-      map.scrollWheelZoom.enable()
+      map.scrollWheelZoom.enable();
     }
-  })
-}
+  });
+};
 
 const updateMap = async () => {
-  loading.value = true
-  aqiData.value = []
-  markers.value.forEach(marker => map.removeLayer(marker))
-  markers.value = []
+  loading.value = true;
+  aqiData.value = [];
+  markers.value.forEach(marker => map.removeLayer(marker));
+  markers.value = [];
 
   try {
-    const bounds = '-85,-180,85,180'
-    const boundsURL = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${TOKEN}`
-    const { data } = await axios.get(boundsURL)
+    const { data } = await axios.get(`http://localhost:8000/api/air-quality/map?pollutant=${selectedPollutant.value}`);
+    console.log('API Response:', data); // Debug API response
 
-    if (data.status === 'ok') {
-      const stations = data.data.slice(0, 100)
-      const results = []
-
-      for (const s of stations) {
-        const detailUrl = `https://api.waqi.info/feed/geo:${s.lat};${s.lon}/?token=${TOKEN}`
-        const res = await axios.get(detailUrl)
-        const detail = res.data.data
-
-        const value = selectedPollutant.value === 'aqi'
-          ? detail.aqi
-          : detail.iaqi?.[selectedPollutant.value]?.v
-
-        if (value !== undefined && value !== '-') {
-          results.push({ ...s, value })
-
-          const marker = L.circleMarker([s.lat, s.lon], {
-            radius: 6,
-            fillColor: getColor(value),
-            color: '#000',
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-          }).addTo(map)
-
-          marker.bindPopup(`
-            <div style="font-family: Arial; font-size: 13px;">
-              <b>${s.station.name}</b><br/>
-              ${selectedPollutant.value.toUpperCase()}: <strong>${value}</strong><br/>
-              Status: <span style="color:${getColor(value)}">${getStatusLabel(value)}</span>
-            </div>
-          `)
-
-          markers.value.push(marker)
-        }
-      }
-
-      aqiData.value = results
-    } else {
-      error.value = 'Failed to load station data.'
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid API response: Expected an array');
     }
+
+    const results = [];
+    for (const s of data) {
+      // station is string, so just check s.station exists
+      if (!s.lat || !s.lon || !s.station) {
+        console.warn('Invalid station data:', s);
+        continue;
+      }
+      results.push(s);
+
+      const marker = L.circleMarker([s.lat, s.lon], {
+        radius: 6,
+        fillColor: getColor(s.value),
+        color: '#000',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8,
+      }).addTo(map);
+
+      marker.bindPopup(`
+        <div style="font-family: Arial; font-size: 13px;">
+          <b>${s.station}</b><br/>
+          ${selectedPollutant.value.toUpperCase()}: <strong>${s.value}</strong><br/>
+          Status: <span style="color:${getColor(s.value)}">${getStatusLabel(s.value)}</span>
+        </div>
+      `);
+
+      markers.value.push(marker);
+    }
+
+    aqiData.value = results;
+    console.log('AQI Data:', aqiData.value); // Debug loaded data
   } catch (err) {
-    console.error(err)
-    error.value = 'Error loading data.'
+    console.error('UpdateMap Error:', err);
+    error.value = err.response?.data?.error || 'Failed to load air quality data';
   } finally {
-    loading.value = false
-    currentTime.value = new Date()
+    loading.value = false;
+    currentTime.value = new Date();
   }
-}
+};
 
 const searchLocation = async () => {
-  if (!searchQuery.value) return
+  if (!searchQuery.value) return;
   try {
-    const result = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery.value)}&format=json&limit=1`)
-    if (result.data.length) {
-      const { lat, lon } = result.data[0]
-      map.setView([parseFloat(lat), parseFloat(lon)], 8)
+    const { data } = await axios.get(`http://localhost:8000/api/air-quality/search?q=${encodeURIComponent(searchQuery.value)}`);
+    console.log('Search Response:', data); // Debug search response
+
+    if (data.length && data[0].lat && data[0].lon) {
+      map.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 8);
     } else {
-      alert('Location not found')
+      error.value = 'Location not found';
     }
-  } catch (e) {
-    alert('Error searching location')
+  } catch (err) {
+    console.error('Search Error:', err);
+    error.value = err.response?.data?.error || 'Error searching location';
   }
-}
+};
 
 const getColor = (value) => {
-  const v = parseInt(value)
-  if (v <= 50) return '#00e400'     // Good
-  if (v <= 100) return '#ffff00'    // Moderate
-  if (v <= 150) return '#ff7e00'    // Unhealthy for sensitive groups
-  if (v <= 200) return '#ff0000'    // Unhealthy
-  if (v <= 300) return '#99004c'    // Very Unhealthy
-  return '#7e0023'                  // Hazardous
-}
+  const v = parseInt(value);
+  if (v <= 50) return '#00e400'; // Good
+  if (v <= 100) return '#ffff00'; // Moderate
+  if (v <= 150) return '#ff7e00'; // Unhealthy for sensitive groups
+  if (v <= 200) return '#ff0000'; // Unhealthy
+  if (v <= 300) return '#99004c'; // Very Unhealthy
+  return '#7e0023'; // Hazardous
+};
 
 const getStatusLabel = (value) => {
-  const v = parseInt(value)
-  if (v <= 50) return 'Good'
-  if (v <= 100) return 'Moderate'
-  if (v <= 150) return 'Unhealthy for Sensitive Groups'
-  if (v <= 200) return 'Unhealthy'
-  if (v <= 300) return 'Very Unhealthy'
-  return 'Hazardous'
-}
+  const v = parseInt(value);
+  if (v <= 50) return 'Good';
+  if (v <= 100) return 'Moderate';
+  if (v <= 150) return 'Unhealthy for Sensitive Groups';
+  if (v <= 200) return 'Unhealthy';
+  if (v <= 300) return 'Very Unhealthy';
+  return 'Hazardous';
+};
 
 onMounted(async () => {
-  await initMap()
-  await updateMap()
-})
+  await initMap();
+  await updateMap();
+});
 </script>
 
 <style scoped>
