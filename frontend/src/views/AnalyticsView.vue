@@ -1,9 +1,20 @@
 <template>
   <div class="container mx-auto p-4">
-    <filter-bar/>
+    <!-- Analyst Page Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-extrabold text-white">Air Quality Analyst Dashboard</h1>
+      <p class="text-gray-300 mt-2 text-lg">Explore, filter, and analyze real-time AQI data around the world.</p>
+    </header>
+
+    <!-- Filter Controls -->
+    <FilterBar @update:filters="handleFilterChange" />
+
+    <!-- Map Section -->
     <div class="map-wrapper relative mb-6">
       <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden"></div>
     </div>
+
+    <!-- Stats + Chart -->
     <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
         <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
@@ -36,14 +47,15 @@ import { onMounted, ref } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
-import AQITrendsGraph from '@/components/AQITrendsGraph.vue'
+import Chart from 'chart.js/auto'
 import FilterBar from '@/components/FilterBar.vue'
-
 
 const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
+const filteredData = ref([])
 const top10HighAQI = ref([])
 const top10LowAQI = ref([])
+const filters = ref({})
 let aqiChart = null
 let map = null
 let markers = []
@@ -57,24 +69,29 @@ const getColor = (aqi) => {
   return '#7e0023'
 }
 
-const updateTop10 = () => {
-  const sorted = [...aqiData.value].filter(s => !isNaN(parseInt(s.aqi))).sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+const handleFilterChange = (newFilters) => {
+  filters.value = newFilters
+  filterAQIDataAndUpdate()
+}
+
+const updateTop10 = (data) => {
+  const sorted = [...data].filter(s => !isNaN(parseInt(s.aqi))).sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
   top10HighAQI.value = sorted.slice(0, 10)
   top10LowAQI.value = sorted.slice(-10).reverse()
 }
 
-const updateChart = () => {
+const updateChartWithData = (data) => {
   const ctx = document.getElementById('aqiChart').getContext('2d')
   if (aqiChart) aqiChart.destroy()
 
   aqiChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: aqiData.value.map(station => station.station.name),
+      labels: data.map(station => station.station.name),
       datasets: [{
         label: 'AQI Levels',
-        data: aqiData.value.map(station => parseInt(station.aqi)),
-        backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi))),
+        data: data.map(station => parseInt(station.aqi)),
+        backgroundColor: data.map(station => getColor(parseInt(station.aqi))),
         borderColor: '#000',
         borderWidth: 1
       }]
@@ -88,11 +105,11 @@ const updateChart = () => {
   })
 }
 
-const renderMarkers = () => {
+const renderMarkers = (data) => {
   markers.forEach(marker => marker.remove())
   markers = []
 
-  aqiData.value.forEach(station => {
+  data.forEach(station => {
     const { lat, lon, aqi } = station
     const color = getColor(parseInt(aqi))
 
@@ -116,6 +133,22 @@ const renderMarkers = () => {
   })
 }
 
+const filterAQIDataAndUpdate = () => {
+  let data = [...aqiData.value]
+
+  if (filters.value.pollutant) {
+    data = data.filter(s => s.iaqi?.[filters.value.pollutant]?.v !== undefined)
+  }
+  if (filters.value.country) {
+    data = data.filter(s => s.flag.includes(`/${filters.value.country.toLowerCase()}.png`))
+  }
+
+  filteredData.value = data
+  updateTop10(data)
+  renderMarkers(data)
+  updateChartWithData(data)
+}
+
 const fetchAQIData = async () => {
   try {
     const bounds = '-85,-180,85,180'
@@ -128,10 +161,7 @@ const fetchAQIData = async () => {
         name: station.station.name.split(',')[1]?.trim() || station.station.name,
         flag: `https://flagcdn.com/w160/${station.station.name.split(',')[1]?.trim().toLowerCase() || 'unknown'}.png`
       }))
-
-      updateTop10()
-      renderMarkers()
-      updateChart()
+      filterAQIDataAndUpdate()
     }
   } catch (err) {
     console.error('Failed to fetch AQI:', err)
@@ -168,7 +198,7 @@ const initMap = () => {
 onMounted(() => {
   initMap()
   fetchAQIData()
-  setInterval(fetchAQIData, 30000) // update every 30 seconds
+  setInterval(fetchAQIData, 30000)
 })
 </script>
 
@@ -205,4 +235,3 @@ onMounted(() => {
   max-height: 300px;
 }
 </style>
-1
