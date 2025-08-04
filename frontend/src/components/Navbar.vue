@@ -261,19 +261,19 @@
           <div class="px-4 py-2 text-sm text-gray-600">
             {{ profile.name || auth.userName || 'User' }}
             <span class="text-blue-600">({{ profile.role || auth.userRole || 'Loading...' }})</span>
-            <p class="text-xs text-gray-500 truncate">{{ profile.email || 'No email' }}</p>
+            <p class="text-xs text-gray-500 truncate">  {{ profile.email || $t('profile.noEmail') }}</p>
           </div>
           <button
             @click="navigateToProfile(); mobileMenuOpen = false"
             class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
           >
-            Profile
+              {{ $t('profile.profile') }}
           </button>
           <button
             @click="navigateToMessages(); mobileMenuOpen = false"
             class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
           >
-            Messages
+          {{ $t('profile.messages') }}
           </button>
           <button
             @click="handleLogout(); mobileMenuOpen = false"
