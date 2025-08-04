@@ -65,6 +65,76 @@
           </div>
         </div>
       </section>
+      <section class="mt-10">
+        <h2 class="text-2xl font-bold mb-8 text-gray-800 text-center">🌍 AQI Rankings</h2>
+
+        <div class="flex flex-col lg:flex-row gap-10">
+          <!-- Most Polluted -->
+          <div class="flex-1 bg-white rounded-2xl shadow-md p-6 border border-red-200">
+            <h3 class="text-2xl font-semibold text-red-600 text-center mb-4">🔴 Most Polluted Cities</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead>
+                  <tr class="bg-red-50 text-gray-700 font-semibold">
+                    <th class="p-3 border-b">City</th>
+                    <th class="p-3 border-b text-center">Status</th>
+                    <th class="p-3 border-b text-center">AQI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="city in top10MostPolluted" :key="city.uid" class="hover:bg-red-50 transition">
+                    <td class="p-3 border-b">{{ city.station.name }}</td>
+                    <td class="p-3 border-b text-center">
+                      <span
+                        class="px-2 py-1 rounded-full text-xs text-white"
+                        :style="{ backgroundColor: getColor(city.value) }"
+                      >
+                        {{ getStatusLabel(city.value) }}
+                      </span>
+                    </td>
+                    <td class="p-3 border-b text-center font-bold">{{ city.value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Least Polluted -->
+          <div class="flex-1 bg-white rounded-2xl shadow-md p-6 border border-green-200">
+            <h3 class="text-2xl font-semibold text-green-600 text-center mb-4">🟢 Least Polluted Cities</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead>
+                  <tr class="bg-green-50 text-gray-700 font-semibold">
+                    <th class="p-3 border-b">City</th>
+                    <th class="p-3 border-b text-center">Status</th>
+                    <th class="p-3 border-b text-center">AQI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="city in top10LeastPolluted" :key="city.uid" class="hover:bg-green-50 transition">
+                    <td class="p-3 border-b">{{ city.station.name }}</td>
+                    <td class="p-3 border-b text-center">
+                      <span
+                        class="px-2 py-1 rounded-full text-xxs text-white"
+                        :style="{ backgroundColor: getColor(city.value) }"
+                      >
+                        {{ getStatusLabel(city.value) }}
+                      </span>
+                    </td>
+                    <td class="p-3 border-b text-center font-bold">{{ city.value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="mt-10">
+        <p class="text-center text-gray-500 text-sm">
+          &copy; 2023 Air Quality Dashboard. All rights reserved.
+        </p>
+      </footer>
     </main>
   </div>
 </template>
@@ -74,6 +144,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { computed } from 'vue'
 
 const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
@@ -119,6 +190,19 @@ const initMap = async () => {
     }
   })
 }
+const top10MostPolluted = computed(() => {
+  return [...aqiData.value]
+    .filter(d => d.value !== undefined && d.value !== '-')
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 10)
+})
+
+const top10LeastPolluted = computed(() => {
+  return [...aqiData.value]
+    .filter(d => d.value !== undefined && d.value !== '-')
+    .sort((a, b) => a.value - b.value)
+    .slice(0, 10)
+})
 
 const updateMap = async () => {
   loading.value = true
@@ -157,7 +241,7 @@ const updateMap = async () => {
           }).addTo(map)
 
           marker.bindPopup(`
-            <div style="font-family: Arial; font-size: 13px;">
+            <div style="font-family: Arial; font-size: 12px;">
               <b>${s.station.name}</b><br/>
               ${selectedPollutant.value.toUpperCase()}: <strong>${value}</strong><br/>
               Status: <span style="color:${getColor(value)}">${getStatusLabel(value)}</span>
@@ -199,22 +283,23 @@ const searchLocation = async () => {
 const getColor = (value) => {
   const v = parseInt(value)
   if (v <= 50) return '#00e400'     // Good
-  if (v <= 100) return '#ffff00'    // Moderate
+  if (v <= 100) return '#f0dd0e'    // Moderate
   if (v <= 150) return '#ff7e00'    // Unhealthy for sensitive groups
   if (v <= 200) return '#ff0000'    // Unhealthy
   if (v <= 300) return '#99004c'    // Very Unhealthy
-  return '#7e0023'                  // Hazardous
+  return '#7e0023'  // Hazardous
 }
 
 const getStatusLabel = (value) => {
   const v = parseInt(value)
   if (v <= 50) return 'Good'
   if (v <= 100) return 'Moderate'
-  if (v <= 150) return 'Unhealthy for Sensitive Groups'
+  if (v <= 150) return 'USG'
   if (v <= 200) return 'Unhealthy'
   if (v <= 300) return 'Very Unhealthy'
   return 'Hazardous'
 }
+
 
 onMounted(async () => {
   await initMap()
