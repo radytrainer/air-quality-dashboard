@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-xl mx-auto mt-10 p-5 bg-white rounded-xl shadow">
-    <h1 class="text-xl font-semibold mb-4 text-gray-800">Edit Profile</h1>
+    <h1 class="text-xl font-semibold mb-4 text-gray-800">{{ t('profile.editProfile') }}</h1>
 
     <div v-if="loading" class="text-center py-8">
       <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-      <p class="mt-2 text-sm text-gray-500">Loading profile...</p>
+      <p class="mt-2 text-sm text-gray-500">{{ t('profile.loadingProfile') }}</p>
     </div>
 
     <div v-else>
@@ -24,13 +24,13 @@
             <img
               :src="form.profile_image_url || '/default-avatar.png'"
               class="w-24 h-24 rounded-full object-cover border shadow"
-              alt="Profile"
+              :alt="t('profile.profileImageAlt')"
             />
             <button
               type="button"
               @click="openFileInput"
               class="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full text-xs hover:bg-blue-700"
-              title="Change profile image"
+              :title="t('profile.changeProfileImage')"
             >
               <i class="fas fa-camera"></i>
             </button>
@@ -46,44 +46,44 @@
 
         <!-- Name -->
         <div>
-          <label class="block mb-1">Name</label>
+          <label class="block mb-1">{{ t('profile.name') }}</label>
           <input type="text" v-model="form.name" class="w-full px-3 py-1.5 border rounded" required />
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block mb-1">Email</label>
+          <label class="block mb-1">{{ t('profile.email') }}</label>
           <input type="email" v-model="form.email" class="w-full px-3 py-1.5 border rounded" required />
         </div>
 
         <!-- Phone -->
         <div>
-          <label class="block mb-1">Phone</label>
+          <label class="block mb-1">{{ t('profile.phone') }}</label>
           <input type="text" v-model="form.phone" class="w-full px-3 py-1.5 border rounded" />
         </div>
 
         <!-- Bio -->
         <div>
-          <label class="block mb-1">Bio</label>
+          <label class="block mb-1">{{ t('profile.bio') }}</label>
           <textarea v-model="form.bio" rows="2" class="w-full px-3 py-1.5 border rounded"></textarea>
         </div>
 
         <!-- Password Section -->
         <div class="border-t pt-4">
-          <h3 class="text-sm font-medium mb-2">Change Password</h3>
+          <h3 class="text-sm font-medium mb-2">{{ t('profile.changePassword') }}</h3>
 
           <div>
-            <label class="block mb-1">Current Password</label>
+            <label class="block mb-1">{{ t('profile.currentPassword') }}</label>
             <input type="password" v-model="form.current_password" class="w-full px-3 py-1.5 border rounded" />
           </div>
 
           <div class="mt-2">
-            <label class="block mb-1">New Password</label>
+            <label class="block mb-1">{{ t('profile.newPassword') }}</label>
             <input type="password" v-model="form.new_password" class="w-full px-3 py-1.5 border rounded" />
           </div>
 
           <div class="mt-2">
-            <label class="block mb-1">Confirm Password</label>
+            <label class="block mb-1">{{ t('profile.confirmPassword') }}</label>
             <input type="password" v-model="form.new_password_confirmation" class="w-full px-3 py-1.5 border rounded" />
           </div>
         </div>
@@ -95,15 +95,15 @@
             @click="resetForm"
             class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
           >
-            Cancel
+            {{ t('profile.cancel') }}
           </button>
           <button
             type="submit"
             :disabled="updating"
             class="px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
           >
-            <span v-if="updating"><i class="fas fa-spinner fa-spin mr-1"></i> Saving...</span>
-            <span v-else>Save</span>
+            <span v-if="updating"><i class="fas fa-spinner fa-spin mr-1"></i> {{ t('profile.saving') }}</span>
+            <span v-else>{{ t('profile.save') }}</span>
           </button>
         </div>
       </form>
@@ -113,8 +113,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/airQuality'
+
+const { t } = useI18n()
 
 const auth = useAuthStore()
 const loading = ref(true)
@@ -146,7 +149,7 @@ const fetchProfile = async () => {
     form.value.bio = res.data.bio || ''
     form.value.profile_image_url = res.data.profile_image
   } catch (err) {
-    error.value = err.response?.data || { message: 'Failed to fetch profile.' }
+    error.value = err.response?.data || { message: t('profile.fetchFailed') }
   } finally {
     loading.value = false
   }
@@ -169,7 +172,7 @@ const removeProfileImage = async () => {
     form.value.profile_image_url = ''
     auth.userProfileImage = ''
   } catch (err) {
-    error.value = err.response?.data || { message: 'Failed to remove image.' }
+    error.value = err.response?.data || { message: t('profile.removeImageFailed') }
   }
 }
 
@@ -206,9 +209,9 @@ const updateProfile = async () => {
     form.value.new_password = ''
     form.value.new_password_confirmation = ''
 
-    alert('Profile updated successfully!')
+    alert(t('profile.updateSuccess'))
   } catch (err) {
-    error.value = err.response?.data || { message: 'Failed to update profile.' }
+    error.value = err.response?.data || { message: t('profile.updateFailed') }
   } finally {
     updating.value = false
   }
