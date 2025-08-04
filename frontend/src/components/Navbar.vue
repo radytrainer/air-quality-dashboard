@@ -16,7 +16,7 @@
       <!-- Search Bar -->
       <div class="relative hidden lg:block">
         <CitySearch @city-selected="handleCitySelected" />
-        <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
+        <p v-if="selectedCity" class="mt-4">{{ $t('search.selectedCity') }}: {{ selectedCity }}</p>
       </div>
     </div>
 
@@ -144,7 +144,7 @@
         <button
           @click="toggleProfileDropdown"
           class="flex items-center justify-center gap-2 px-3 py-2 bg-green-50 rounded-lg text-green-600 hover:bg-green-100 transition-all duration-200 border border-green-200 min-w-[120px] max-w-[150px]"
-          title="User Profile"
+          title="$t('profile.title')"
           :disabled="loadingProfile"
         >
           <i v-if="loadingProfile" class="fas fa-spinner fa-spin text-green-500 text-sm flex-shrink-0"></i>
@@ -175,10 +175,10 @@
             </div>
             <div v-else>
               <p class="text-sm font-medium text-gray-900">
-                {{ profile.name || 'User' }}
-                <span class="text-blue-600">({{ profile.role || 'Role not set' }})</span>
+                {{ profile.name || $t('profile.user') }}
+                  <span>({{ profile.role || $t('profile.roleNotSet') }})</span>
               </p>
-              <p class="text-xs text-gray-500 truncate">{{ profile.email || 'No email' }}</p>
+              <p class="text-xs text-gray-500 truncate">  {{ profile.email || $t('profile.noEmail') }}</p>
             </div>
           </div>
 
@@ -188,7 +188,7 @@
               class="flex items-center w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
             >
               <i class="fas fa-user text-gray-400 text-sm w-4 mr-3"></i>
-              Profile
+              {{ $t('profile.profile') }}
             </button>
 
             <button
@@ -196,7 +196,7 @@
               class="flex items-center w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
             >
               <i class="fas fa-envelope text-gray-400 text-sm w-4 mr-3"></i>
-              Messages
+                {{ $t('profile.messages') }}
             </button>
 
             <div class="border-t border-gray-100 my-1"></div>
@@ -261,19 +261,19 @@
           <div class="px-4 py-2 text-sm text-gray-600">
             {{ profile.name || auth.userName || 'User' }}
             <span class="text-blue-600">({{ profile.role || auth.userRole || 'Loading...' }})</span>
-            <p class="text-xs text-gray-500 truncate">{{ profile.email || 'No email' }}</p>
+            <p class="text-xs text-gray-500 truncate">  {{ profile.email || $t('profile.noEmail') }}</p>
           </div>
           <button
             @click="navigateToProfile(); mobileMenuOpen = false"
             class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
           >
-            Profile
+              {{ $t('profile.profile') }}
           </button>
           <button
             @click="navigateToMessages(); mobileMenuOpen = false"
             class="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600"
           >
-            Messages
+          {{ $t('profile.messages') }}
           </button>
           <button
             @click="handleLogout(); mobileMenuOpen = false"
