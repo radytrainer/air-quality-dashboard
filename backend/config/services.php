@@ -20,17 +20,22 @@ return [
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
         'scheme' => 'https',
     ],
- 'openweather' => [
-    'api_key' => 'e206621a38fb37832cc3cb734fb477ae',
+//  'openweather' => [
+//     'api_key' => 'e206621a38fb37832cc3cb734fb477ae',
+// ],
+// 'openaq' => [
+//     'base_url' => 'https://api.openaq.org',
+//     'api_key' => '8570a81988caeddc953c8f0520e01574154d07440e2af72da906871f613545ff', 
+// ],
+// 'iqair' => [
+//     'api_key' => '2acd56eb-8186-40aa-b9e9-29b2c4e87f47',
+//     'base_url' => 'https://api.airvisual.com/v2',
+// ],
+'waqi' => [
+    'token' => env('WAQI_API_TOKEN'),
 ],
-'openaq' => [
-    'base_url' => 'https://api.openaq.org',
-    'api_key' => '8570a81988caeddc953c8f0520e01574154d07440e2af72da906871f613545ff', 
-],
-'iqair' => [
-    'api_key' => '2acd56eb-8186-40aa-b9e9-29b2c4e87f47',
-    'base_url' => 'https://api.airvisual.com/v2',
-],
+
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
