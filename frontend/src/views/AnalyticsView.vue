@@ -1,5 +1,6 @@
 <template>
   <div class="container mx-auto p-4">
+    <filter-bar/>
     <div class="map-wrapper relative mb-6">
       <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden"></div>
     </div>
@@ -36,6 +37,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
 import AQITrendsGraph from '@/components/AQITrendsGraph.vue'
+import FilterBar from '@/components/FilterBar.vue'
 
 
 const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
@@ -203,3 +205,4 @@ onMounted(() => {
   max-height: 300px;
 }
 </style>
+1
