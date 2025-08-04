@@ -16,7 +16,7 @@
       <!-- Search Bar -->
       <div class="relative hidden lg:block">
         <CitySearch @city-selected="handleCitySelected" />
-        <p v-if="selectedCity" class="mt-4">You selected: {{ selectedCity }}</p>
+        <p v-if="selectedCity" class="mt-4">{{ $t('search.selectedCity') }}: {{ selectedCity }}</p>
       </div>
     </div>
 

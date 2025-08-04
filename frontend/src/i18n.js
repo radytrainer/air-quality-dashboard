@@ -49,6 +49,13 @@ const messages = {
       createAccount: 'Create Account',
       creatingAccount: 'Creating Account...',
     },
+  search: {
+    "selectedCity": "You selected",
+    "placeholder": "Search any Location, City, State or Country",
+    "locateMe": "Locate me",
+    "locating": "Locating your position...",
+    "selectedCity": "You selected",
+  },
   },
   kh: {
     nav: {
@@ -98,6 +105,13 @@ const messages = {
       createAccount: 'បង្កើតគណនី',
       creatingAccount: 'កំពុងបង្កើតគណនី...',
     },
+     search: {
+    "selectedCity": "អ្នកបានជ្រើសរើស",
+    "placeholder": "ស្វែងរកទីតាំង ទីក្រុង ខេត្ត ឬ ប្រទេស",
+    "locateMe": "ស្វែងរកទីតាំងរបស់ខ្ញុំ",
+    "locating": "កំពុងស្វែងរកទីតាំងរបស់អ្នក...",
+    "selectedCity": "អ្នកបានជ្រើសរើស",
+  }
   },
 }
 
