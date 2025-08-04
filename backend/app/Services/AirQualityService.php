@@ -1,24 +1,44 @@
 <?php
-
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
 class AirQualityService
 {
-    public function fetchCityAirQuality(string $country, string $state, string $city): array
+    protected ?string $token;
+
+    public function __construct()
     {
-        $response = Http::get('http://api.airvisual.com/v2/city', [
-            'country' => $country,
-            'state' => $state,
-            'city' => $city,
-            'key' => config('services.iqair.api_key'),
+        $this->token = config('services.waqi.token');
+        // Do NOT throw here!
+    }
+
+    protected function getToken(): string
+    {
+        if (!$this->token) {
+            throw new \RuntimeException('WAQI_API_TOKEN is not set in config/services.php or .env');
+        }
+        return $this->token;
+    }
+
+    public function fetchAllGlobalStations(): array
+    {
+        $response = Http::get('https://api.waqi.info/map/bounds/', [
+            'token' => $this->getToken(),
+            'latlng' => '-90,-180,90,180',
         ]);
 
-        if ($response->successful()) {
-            return $response->json();
+        if ($response->failed()) {
+            throw new \RuntimeException('Failed to fetch AQI data from WAQI API.');
         }
 
-        throw new \Exception("Failed to fetch air quality for $city, $state: " . $response->body());
+        $json = $response->json();
+
+        if (isset($json['status']) && $json['status'] !== 'ok') {
+            $message = $json['data'] ?? 'Unknown error';
+            throw new \RuntimeException('WAQI API error: ' . $message);
+        }
+
+        return $json['data'] ?? [];
     }
 }
