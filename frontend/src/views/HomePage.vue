@@ -56,7 +56,6 @@ import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -84,13 +83,13 @@ const initMap = async () => {
     zoomControl: true,
     scrollWheelZoom: false
   });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 19
-}).addTo(map);
-}
 
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map)
+}
 
 const updateMap = async () => {
   loading.value = true
@@ -99,22 +98,17 @@ const updateMap = async () => {
   markers.value = []
 
   try {
-    const bounds = '-85,-180,85,180'
-    const boundsURL = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${TOKEN}`
-    const { data } = await axios.get(boundsURL)
+    // ✅ Call your Laravel API instead of WAQI directly
+    const { data } = await axios.get('http://127.0.0.1:8000/api/airquality') // Replace with your deployed URL if needed
 
     if (data.status === 'ok') {
-      const stations = data.data.slice(0, 100)
+      const stations = data.data.slice(0, 200)
       const results = []
 
       for (const s of stations) {
-        const detailUrl = `https://api.waqi.info/feed/geo:${s.lat};${s.lon}/?token=${TOKEN}`
-        const res = await axios.get(detailUrl)
-        const detail = res.data.data
-
         const value = selectedPollutant.value === 'aqi'
-          ? detail.aqi
-          : detail.iaqi?.[selectedPollutant.value]?.v
+          ? s.aqi
+          : s.iaqi?.[selectedPollutant.value]?.v
 
         if (value !== undefined && value !== '-') {
           results.push({ ...s, value })
