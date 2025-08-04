@@ -9,7 +9,7 @@
         <ul class="text-white">
           <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
             {{ station.name }}: <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2">
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
           </li>
         </ul>
       </div>
@@ -18,7 +18,7 @@
         <ul class="text-white">
           <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
             {{ station.name }}: <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2">
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
           </li>
         </ul>
       </div>
@@ -34,6 +34,8 @@
 import { onMounted, ref } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-velocity/dist/leaflet-velocity.min.js'
+import 'leaflet-velocity/dist/leaflet-velocity.min.css'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
 
@@ -55,7 +57,9 @@ const getColor = (aqi) => {
 }
 
 const updateTop10 = () => {
-  const sorted = [...aqiData.value].filter(s => !isNaN(parseInt(s.aqi))).sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+  const sorted = [...aqiData.value]
+    .filter(s => !isNaN(parseInt(s.aqi)))
+    .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
   top10HighAQI.value = sorted.slice(0, 10)
   top10LowAQI.value = sorted.slice(-10).reverse()
 }
@@ -68,20 +72,22 @@ const updateChart = () => {
     type: 'bar',
     data: {
       labels: aqiData.value.map(station => station.station.name),
-      datasets: [{
-        label: 'AQI Levels',
-        data: aqiData.value.map(station => parseInt(station.aqi)),
-        backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi))),
-        borderColor: '#000',
-        borderWidth: 1
-      }]
+      datasets: [
+        {
+          label: 'AQI Levels',
+          data: aqiData.value.map(station => parseInt(station.aqi)),
+          backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi))),
+          borderColor: '#000',
+          borderWidth: 1,
+        },
+      ],
     },
     options: {
       responsive: true,
       scales: {
-        y: { beginAtZero: true }
-      }
-    }
+        y: { beginAtZero: true },
+      },
+    },
   })
 }
 
@@ -99,7 +105,7 @@ const renderMarkers = () => {
       color: '#000',
       weight: 0.8,
       opacity: 1,
-      fillOpacity: 0.8
+      fillOpacity: 0.8,
     }).addTo(map)
 
     marker.bindPopup(`
@@ -123,7 +129,10 @@ const fetchAQIData = async () => {
       aqiData.value = data.data.map(station => ({
         ...station,
         name: station.station.name.split(',')[1]?.trim() || station.station.name,
-        flag: `https://flagcdn.com/w160/${station.station.name.split(',')[1]?.trim().toLowerCase() || 'unknown'}.png`
+        flag: `https://flagcdn.com/w160/${station.station.name
+          .split(',')[1]
+          ?.trim()
+          .toLowerCase() || 'unknown'}.png`,
       }))
 
       updateTop10()
@@ -132,6 +141,30 @@ const fetchAQIData = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch AQI:', err)
+  }
+}
+
+const addWindLayer = async () => {
+  try {
+    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
+    const windData = res.data
+
+    const velocityLayer = L.velocityLayer({
+      displayValues: true,
+      displayOptions: {
+        velocityType: 'Global Wind',
+        position: 'bottomleft',
+        emptyString: 'No wind data',
+        angleConvention: 'bearingCW',
+        speedUnit: 'mph',
+      },
+      data: windData,
+      maxVelocity: 15,
+    })
+
+    velocityLayer.addTo(map)
+  } catch (error) {
+    console.error('Failed to load wind data:', error)
   }
 }
 
@@ -152,7 +185,7 @@ const initMap = () => {
 
   map.on('focus', () => map.scrollWheelZoom.enable())
   map.on('blur', () => map.scrollWheelZoom.disable())
-  map.on('mousewheel', (e) => {
+  map.on('mousewheel', e => {
     if (!e.originalEvent.ctrlKey) {
       map.scrollWheelZoom.disable()
       e.originalEvent.preventDefault()
@@ -160,6 +193,8 @@ const initMap = () => {
       map.scrollWheelZoom.enable()
     }
   })
+
+  addWindLayer()
 }
 
 onMounted(() => {

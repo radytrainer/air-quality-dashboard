@@ -74,6 +74,8 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-velocity/dist/leaflet-velocity.min.js'
+import 'leaflet-velocity/dist/leaflet-velocity.min.css'
 
 const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
@@ -96,6 +98,7 @@ const pollutants = ref([
 ])
 const selectedPollutant = ref('aqi')
 
+// Setup map
 const initMap = async () => {
   map = L.map('map', {
     center: [20, 100],
@@ -110,6 +113,9 @@ const initMap = async () => {
     maxZoom: 19,
   }).addTo(map)
 
+  // Smooth scroll interaction
+  map.on('focus', () => map.scrollWheelZoom.enable())
+  map.on('blur', () => map.scrollWheelZoom.disable())
   map.on('mousewheel', (e) => {
     if (!e.originalEvent.ctrlKey) {
       map.scrollWheelZoom.disable()
@@ -120,6 +126,32 @@ const initMap = async () => {
   })
 }
 
+// Add wind speed layer
+const addWindLayer = async () => {
+  try {
+    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
+    const windData = res.data
+
+    const velocityLayer = L.velocityLayer({
+      displayValues: true,
+      displayOptions: {
+        velocityType: 'Global Wind',
+        position: 'bottomleft',
+        emptyString: 'No wind data',
+        angleConvention: 'bearingCW',
+        speedUnit: 'km/h',
+      },
+      data: windData,
+      maxVelocity: 15,
+    })
+
+    velocityLayer.addTo(map)
+  } catch (error) {
+    console.error('Failed to load wind data:', error)
+  }
+}
+
+// Fetch and update AQI map
 const updateMap = async () => {
   loading.value = true
   aqiData.value = []
@@ -181,6 +213,7 @@ const updateMap = async () => {
   }
 }
 
+// Search location
 const searchLocation = async () => {
   if (!searchQuery.value) return
   try {
@@ -198,12 +231,12 @@ const searchLocation = async () => {
 
 const getColor = (value) => {
   const v = parseInt(value)
-  if (v <= 50) return '#00e400'     // Good
-  if (v <= 100) return '#ffff00'    // Moderate
-  if (v <= 150) return '#ff7e00'    // Unhealthy for sensitive groups
-  if (v <= 200) return '#ff0000'    // Unhealthy
-  if (v <= 300) return '#99004c'    // Very Unhealthy
-  return '#7e0023'                  // Hazardous
+  if (v <= 50) return '#00e400'
+  if (v <= 100) return '#ffff00'
+  if (v <= 150) return '#ff7e00'
+  if (v <= 200) return '#ff0000'
+  if (v <= 300) return '#99004c'
+  return '#7e0023'
 }
 
 const getStatusLabel = (value) => {
@@ -218,6 +251,7 @@ const getStatusLabel = (value) => {
 
 onMounted(async () => {
   await initMap()
+  await addWindLayer()
   await updateMap()
 })
 </script>
