@@ -5,12 +5,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Services\AirQualityService;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class FetchAirQualityData extends Command
 {
     protected $signature = 'fetch:airquality';
-    protected $description = 'Fetch and cache air quality data for all cities in Cambodia';
+    protected $description = 'Fetch and cache global air quality data';
 
     protected AirQualityService $airQualityService;
 
@@ -22,46 +21,36 @@ class FetchAirQualityData extends Command
 
     public function handle(): void
     {
-        $this->info('Fetching air quality data for Cambodia...');
-
-        $country = 'Cambodia';
-        $results = [];
+        $this->info('🌍 Fetching global AQI station data...');
 
         try {
-            $states = $this->airQualityService->fetchStates($country);
+            $stations = $this->airQualityService->fetchAllGlobalStations();
+            $results = [];
 
-            foreach ($states as $state) {
-                $stateName = $state['state'];
-                sleep(1); // avoid rate limit
-                $cities = $this->airQualityService->fetchCities($country, $stateName);
+            foreach ($stations as $station) {
+                try {
+                    sleep(1); // WAQI rate limit safety
+                    $details = $this->airQualityService->fetchStationDetails($station['uid']);
 
-                foreach ($cities as $cityData) {
-                    $cityName = $cityData['city'];
-                    sleep(1); // avoid rate limit
+                    $cityInfo = $details['data']['city'] ?? [];
+                    $country = $cityInfo['country'] ?? 'Unknown';
+                    $flagCode = strtolower($country);
 
-                    try {
-                        $data = $this->airQualityService->fetchCityAirQuality($country, $stateName, $cityName);
-                        $pollution = $data['data']['current']['pollution'];
+                    $details['data']['timestamp_local'] = now()->toDateTimeString();
+                    $details['data']['country'] = $country;
+                    $details['data']['flag'] = "https://flagcdn.com/w160/{$flagCode}.png";
 
-                        $utcTime = $pollution['ts'] ?? null;
-                        $localTime = $utcTime
-                            ? Carbon::parse($utcTime)->timezone('Asia/Phnom_Penh')->format('Y-m-d H:i:s')
-                            : null;
-
-                        $data['data']['current']['pollution']['ts_local'] = $localTime . ' (Asia/Phnom_Penh)';
-
-                        $results[] = $data['data'];
-                    } catch (\Exception $e) {
-                        $this->warn("City failed: $cityName — " . $e->getMessage());
-                        continue;
-                    }
+                    $results[] = $details['data'];
+                } catch (\Throwable $e) {
+                    $this->warn("❌ UID {$station['uid']} failed: " . $e->getMessage());
+                    continue;
                 }
             }
 
-            Cache::put('air_quality_all_cities', $results, now()->addMinutes(15));
-            $this->info('✅ All cities cached successfully.');
-        } catch (\Exception $e) {
-            $this->error('❌ Failed to fetch data: ' . $e->getMessage());
+            Cache::put('air_quality_all_countries', $results, now()->addMinutes(15));
+            $this->info('✅ Global AQI data cached successfully.');
+        } catch (\Throwable $e) {
+            $this->error('❌ Fetch failed: ' . $e->getMessage());
         }
     }
 }
