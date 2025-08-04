@@ -61,7 +61,7 @@
             />
           </div>
 
-          <!-- Remember me and Forgot password -->
+          <!-- Remember me and Forgot password
           <div class="flex items-center justify-between mt-8">
             <label class="flex items-center">
               <input
@@ -73,7 +73,7 @@
             <a href="#" class="text-gray-300 text-sm hover:text-white transition-colors">
               Forgot your password?
             </a>
-          </div>
+          </div> -->
 
           <!-- Submit Button -->
           <button

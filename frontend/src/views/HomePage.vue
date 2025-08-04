@@ -27,7 +27,6 @@
     <main class="p-6 space-y-10">
       <!-- Pollutant Filters -->
       <section>
-        <h2 class="text-3xl font-semibold mb-4 text-gray-700">🌍 Global Air Quality Map</h2>
         <div class="flex flex-wrap gap-4 mb-4 items-center text-sm text-gray-700">
           <label v-for="pollutant in pollutants" :key="pollutant.value" class="flex items-center gap-2">
             <input
@@ -47,24 +46,6 @@
           <div id="map"></div>
         </div>
       </section>
-
-      <!-- AQI Grid -->
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">🌐 Recent Data</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <div
-            v-for="station in aqiData"
-            :key="station.uid"
-            class="bg-white rounded-lg shadow-md p-4 border border-gray-100"
-          >
-            <h3 class="text-lg font-semibold mb-2">{{ station.station.name }}</h3>
-            <p class="text-sm text-gray-600 capitalize">
-              {{ selectedPollutant.toUpperCase() }}: <span class="font-bold">{{ station.value }}</span>
-            </p>
-            <p class="text-xs text-gray-500 mt-1">Status: {{ getStatusLabel(station.value) }}</p>
-          </div>
-        </div>
-      </section>
     </main>
   </div>
 </template>
@@ -75,7 +56,6 @@ import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-const TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 const aqiData = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -102,22 +82,13 @@ const initMap = async () => {
     zoom: 3,
     zoomControl: true,
     scrollWheelZoom: false
-  })
+  });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap & CARTO',
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
-    maxZoom: 19,
+    maxZoom: 19
   }).addTo(map)
-
-  map.on('mousewheel', (e) => {
-    if (!e.originalEvent.ctrlKey) {
-      map.scrollWheelZoom.disable()
-      e.originalEvent.preventDefault()
-    } else {
-      map.scrollWheelZoom.enable()
-    }
-  })
 }
 
 const updateMap = async () => {
@@ -127,22 +98,17 @@ const updateMap = async () => {
   markers.value = []
 
   try {
-    const bounds = '-85,-180,85,180'
-    const boundsURL = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${TOKEN}`
-    const { data } = await axios.get(boundsURL)
+    // ✅ Call your Laravel API instead of WAQI directly
+    const { data } = await axios.get('http://127.0.0.1:8000/api/airquality') // Replace with your deployed URL if needed
 
     if (data.status === 'ok') {
-      const stations = data.data.slice(0, 100)
+      const stations = data.data.slice(0, 200)
       const results = []
 
       for (const s of stations) {
-        const detailUrl = `https://api.waqi.info/feed/geo:${s.lat};${s.lon}/?token=${TOKEN}`
-        const res = await axios.get(detailUrl)
-        const detail = res.data.data
-
         const value = selectedPollutant.value === 'aqi'
-          ? detail.aqi
-          : detail.iaqi?.[selectedPollutant.value]?.v
+          ? s.aqi
+          : s.iaqi?.[selectedPollutant.value]?.v
 
         if (value !== undefined && value !== '-') {
           results.push({ ...s, value })
