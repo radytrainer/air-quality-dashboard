@@ -41,7 +41,21 @@ const messages = {
       forgotPassword: 'Forgot Password?',
       submit: 'Submit',
       backToLogin: 'Back to Login',
+      registerSubtitle: 'Create an account to access air quality insights.',
+      termsText: 'I agree to the',
+      terms: 'Terms',
+      and: 'and',
+      privacy: 'Privacy Policy',
+      createAccount: 'Create Account',
+      creatingAccount: 'Creating Account...',
     },
+  search: {
+    "selectedCity": "You selected",
+    "placeholder": "Search any Location, City, State or Country",
+    "locateMe": "Locate me",
+    "locating": "Locating your position...",
+    "selectedCity": "You selected",
+  },
   },
   kh: {
     nav: {
@@ -83,7 +97,21 @@ const messages = {
       forgotPassword: 'ភ្លេចពាក្យសម្ងាត់?',
       submit: 'បញ្ជូន',
       backToLogin: 'ត្រលប់ទៅចូលគណនី',
+      registerSubtitle: 'បង្កើតគណនីដើម្បីចូលមើលព័ត៌មានអាកាសធាតុ។',
+      termsText: 'ខ្ញុំយល់ព្រមនឹង',
+      terms: 'លក្ខខណ្ឌ',
+      and: 'និង',
+      privacy: 'គោលនយោបាយឯកជនភាព',
+      createAccount: 'បង្កើតគណនី',
+      creatingAccount: 'កំពុងបង្កើតគណនី...',
     },
+     search: {
+    "selectedCity": "អ្នកបានជ្រើសរើស",
+    "placeholder": "ស្វែងរកទីតាំង ទីក្រុង ខេត្ត ឬ ប្រទេស",
+    "locateMe": "ស្វែងរកទីតាំងរបស់ខ្ញុំ",
+    "locating": "កំពុងស្វែងរកទីតាំងរបស់អ្នក...",
+    "selectedCity": "អ្នកបានជ្រើសរើស",
+  }
   },
 }
 
