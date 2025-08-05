@@ -60,7 +60,8 @@ Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class,
 
 Route::get('/aqi-asia', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
 
-Route::get('/aqi/global', [AqiController::class, 'getGlobalAqi']);
+
+Route::get('/aqi-global', [AqiController::class, 'global']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
