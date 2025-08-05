@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AirQualityDataController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CityAQIAdminController;
 
 use App\Http\Controllers\Api\AqiEuropeController;
 use App\Http\Controllers\Api\AqiAmericasController;
@@ -27,6 +28,8 @@ use App\Http\Controllers\FireDataController;
 | Public routes and routes protected by auth:sanctum middleware.
 |
 */
+
+Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
@@ -59,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
+
     // User management routes
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);              // List users
@@ -73,6 +77,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/me', [UserController::class, 'updateProfile']);
     Route::delete('/me/profile-image', [UserController::class, 'removeProfileImage']);
     Route::get('/me/role', [UserController::class, 'role']);
+
+Route::get('/aqi-global', [AqiController::class, 'global']);
+
+Route::get('/airquality', [AQIController::class, 'getGlobalAQI']);
+
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
+
 
     // Profile routes (can consider merging with /me routes if preferred)
     Route::get('/profile', [ProfileController::class, 'show']);
