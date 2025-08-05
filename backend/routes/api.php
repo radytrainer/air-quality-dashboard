@@ -20,16 +20,12 @@ use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Public routes and routes protected by auth:sanctum middleware.
 |
 */
 
@@ -40,31 +36,47 @@ Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/air-quality/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
-Route::get('/air-quality/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
-Route::get('/air-quality/locations', [AirQualityController::class, 'getLocations']);
-Route::get('/air-quality/global', [AirQualityController::class, 'getGlobalAirQuality']);
-Route::get('/air-quality/latest', [AirQualityController::class, 'getLatestAirQuality']);
-Route::get('/air-quality/countries', [AirQualityController::class, 'getCountries']);
-Route::get('/air-quality/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
-Route::get('/air-quality/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
-Route::get('/air-quality/iqair', [AirQualityController::class, 'getIqAirData']);
-Route::get('/air-quality/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
-Route::get('/air-quality/pm25', [AirQualityController::class, 'getPm25Concentration']);
+// Air quality public data
+Route::prefix('air-quality')->group(function () {
+    Route::get('/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
+    Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
+    Route::get('/locations', [AirQualityController::class, 'getLocations']);
+    Route::get('/global', [AirQualityController::class, 'getGlobalAirQuality']);
+    Route::get('/latest', [AirQualityController::class, 'getLatestAirQuality']);
+    Route::get('/countries', [AirQualityController::class, 'getCountries']);
+    Route::get('/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
+    Route::get('/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
+    Route::get('/iqair', [AirQualityController::class, 'getIqAirData']);
+    Route::get('/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
+    Route::get('/pm25', [AirQualityController::class, 'getPm25Concentration']);
+});
 
-//Europe countries
-Route::get('/air-quality/europe-countrie-cities', [AqiEuropeController::class, 'getAllCitiesAirQuality']);
-//Americas countries
-Route::get('/air-quality/americas-countrie-cities', [AqiAmericasController::class, 'getAlliAmericasCitiesAirQuality']);
-//Asia countries
-Route::get('/air-quality/Asia-countrie-cities', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
-// African countries
-Route::get('/air-quality/African-countrie-cities', [AqiAfricanController::class, 'getAllAfricanCitiesAirQuality']);
-//Oceania countries
-Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class, 'getAllOceaniaCitiesAirQuality']);
+// Additional AQI endpoints
+Route::get('/aqi', [AqiController::class, 'getCityAqi']);
+Route::get('/aqi-global', [AqiController::class, 'global']);
+Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
 
-Route::get('/aqi-asia', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
+// Routes protected by authentication
+Route::middleware('auth:sanctum')->group(function () {
 
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+
+    // User management routes
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);              // List users
+        Route::post('/', [UserController::class, 'store']);             // Create user
+        Route::get('/{id}', [UserController::class, 'show']);           // Show user
+        Route::put('/{id}', [UserController::class, 'update']);         // Update user
+        Route::delete('/{id}', [UserController::class, 'destroy']);     // Delete user
+    });
+
+    // Authenticated user's own profile routes
+    Route::get('/me', [UserController::class, 'profile']);
+    Route::put('/me', [UserController::class, 'updateProfile']);
+    Route::delete('/me/profile-image', [UserController::class, 'removeProfileImage']);
+    Route::get('/me/role', [UserController::class, 'role']);
 
 Route::get('/aqi-global', [AqiController::class, 'global']);
 
@@ -73,33 +85,17 @@ Route::get('/airquality', [AQIController::class, 'getGlobalAQI']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
-    // User routes
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-    
-    // Profile routes (combined into one group)
+
+    // Profile routes (can consider merging with /me routes if preferred)
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::post('/profile/image', [ProfileController::class, 'uploadImage']);
-    Route::post('/profile/update', [UserController::class, 'updateProfile']); // kept as is
+    Route::post('/profile/update', [UserController::class, 'updateProfile']); // Kept as is (possibly duplicate with /me PUT)
 
-    // Logout route
-    Route::post('/logout', [AuthController::class, 'logout']);
-
-    // Admin-only routes nested inside auth:sanctum
+    // Admin-only routes inside auth middleware
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+        // Add other admin routes here if any
     });
 
-});
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/users', [UserController::class, 'index']);            // List all users
-    Route::post('/users', [UserController::class, 'store']);           // Create user
-    Route::get('/users/{id}', [UserController::class, 'show']);        // View one user
-    Route::put('/users/{id}', [UserController::class, 'update']);      // Update user
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);  // Delete user
-
-    Route::get('/me', [UserController::class, 'profile']);             // Authenticated user profile
-    Route::put('/me', [UserController::class, 'updateProfile']);       // Update own profile
-    Route::delete('/me/profile-image', [UserController::class, 'removeProfileImage']); // Remove image
-    Route::get('/me/role', [UserController::class, 'role']);           // Get role
 });
