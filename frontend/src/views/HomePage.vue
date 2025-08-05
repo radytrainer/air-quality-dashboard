@@ -197,6 +197,7 @@ const pollutants = ref([
 ])
 const selectedPollutant = ref('aqi')
 
+// Setup map
 const initMap = async () => {
   map = L.map('map', {
     center: [20, 100],
@@ -241,6 +242,32 @@ const top10LeastPolluted = computed(() => {
     .slice(0, 10)
 })
 
+// Add wind speed layer
+const addWindLayer = async () => {
+  try {
+    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
+    const windData = res.data
+
+    const velocityLayer = L.velocityLayer({
+      displayValues: true,
+      displayOptions: {
+        velocityType: 'Global Wind',
+        position: 'bottomleft',
+        emptyString: 'No wind data',
+        angleConvention: 'bearingCW',
+        speedUnit: 'km/h',
+      },
+      data: windData,
+      maxVelocity: 15,
+    })
+
+    velocityLayer.addTo(map)
+  } catch (error) {
+    console.error('Failed to load wind data:', error)
+  }
+}
+
+// Fetch and update AQI map
 const updateMap = async () => {
   loading.value = true
   aqiData.value = []
@@ -297,6 +324,7 @@ const updateMap = async () => {
   }
 }
 
+// Search location
 const searchLocation = async () => {
   if (!searchQuery.value) return
   try {
@@ -335,6 +363,7 @@ const getStatusLabel = (value) => {
 
 onMounted(async () => {
   await initMap()
+  await addWindLayer()
   await updateMap()
 })
 </script>
