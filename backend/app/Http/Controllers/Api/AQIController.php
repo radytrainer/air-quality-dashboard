@@ -36,4 +36,5 @@ class AQIController extends Controller
             ], 500);
         }
     }
+    
 }
