@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AirQualityDataController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CityAQIAdminController;
 
 use App\Http\Controllers\Api\AqiEuropeController;
 use App\Http\Controllers\Api\AqiAmericasController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\AqiAfricanController;
 use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\Api\AQIController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +30,8 @@ use App\Http\Controllers\Api\AQIController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
@@ -59,7 +63,10 @@ Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class,
 
 Route::get('/aqi-asia', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
 
+
+
 Route::get('/airquality', [AQIController::class, 'getGlobalAQI']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
