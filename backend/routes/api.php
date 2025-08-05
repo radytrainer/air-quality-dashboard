@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -62,6 +63,7 @@ Route::get('/aqi-asia', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']
 
 
 Route::get('/aqi-global', [AqiController::class, 'global']);
+Route::get('/airquality', [AQIController::class, 'getGlobalAQI']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
