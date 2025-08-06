@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(\Illuminate\Console\Scheduling\Schedule $schedule): void
     {
         $schedule->call(function () {
-        $schedule->command('airquality:fetch')->hourly();
+        $schedule->command('fetch:airquality')->hourly();
 
     })->everyTenMinutes();
     }
