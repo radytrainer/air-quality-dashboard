@@ -50,7 +50,7 @@
 
       <!-- Main Dashboard Grid -->
       <section class="dashboard-grid">
-        <!-- AQI Map -->
+        <!-- Real-time AQI Map -->
         <div class="dashboard-card map-card">
           <div class="card-header-with-action">
             <div>
@@ -62,95 +62,17 @@
               Refresh
             </button>
           </div>
-          <div class="map-container">
-            <div class="map-background"></div>
-            <div class="city-markers">
-              <div
-                v-for="city in cityData"
-                :key="city.name"
-                class="city-marker"
-                :class="getAQIClass(city.aqi)"
-                :style="{
-                  left: `${((city.lng + 180) / 360) * 100}%`,
-                  top: `${((90 - city.lat) / 180) * 100}%`
-                }"
-                @mouseenter="showCityTooltip(city, $event)"
-                @mouseleave="hideCityTooltip"
-              >
-                <div class="city-tooltip" v-if="hoveredCity === city.name">
-                  {{ city.name }}: AQI {{ city.aqi }} ({{ city.level }})
-                </div>
-              </div>
-            </div>
-            <div class="map-legend">
-              <h4>AQI Levels</h4>
-              <div class="legend-items">
-                <div class="legend-item">
-                  <div class="legend-color aqi-good"></div>
-                  <span>Good (0-50)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color aqi-moderate"></div>
-                  <span>Moderate (51-100)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color aqi-unhealthy-sensitive"></div>
-                  <span>Unhealthy for Sensitive (101-150)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color aqi-unhealthy"></div>
-                  <span>Unhealthy (151-200)</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div id="map" class="map-container"></div>
         </div>
 
-        <!-- System Logs -->
-        <div class="dashboard-card logs-card">
-          <div class="card-header">
-            <h2>System Logs & Cache Status</h2>
-            <p>Latest system activity and cache performance</p>
-          </div>
-          <div class="logs-content">
-            <!-- Cache Status -->
-            <div class="cache-status">
-              <div class="cache-header">
-                <span>Cache Performance</span>
-                <span class="status-badge">{{ cacheData.status }}</span>
-              </div>
-              <div class="cache-metrics">
-                <div class="metric">
-                  <span class="metric-label">Hit Rate:</span>
-                  <span class="metric-value">{{ cacheData.hitRate }}</span>
-                </div>
-                <div class="metric">
-                  <span class="metric-label">Last Refresh:</span>
-                  <span class="metric-value">{{ cacheData.lastRefresh }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="separator"></div>
-
-            <!-- Recent Logs -->
-            <div class="recent-logs">
-              <h4>Recent Activity</h4>
-              <div class="logs-container">
-                <div
-                  v-for="(log, index) in systemLogs"
-                  :key="index"
-                  class="log-entry"
-                >
-                  <component :is="getLogIcon(log.type)" :class="['log-icon', log.type]" />
-                  <div class="log-content">
-                    <div class="log-time">{{ log.time }}</div>
-                    <div class="log-message">{{ log.message }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- AQI Graphs -->
+        <div class="dashboard-card graph-card">
+          <h2>Top 10 Most Polluted Cities</h2>
+          <canvas id="mostPollutedChart"></canvas>
+        </div>
+        <div class="dashboard-card graph-card">
+          <h2>Top 10 Least Polluted Cities</h2>
+          <canvas id="leastPollutedChart"></canvas>
         </div>
       </section>
 
@@ -182,44 +104,29 @@
         </div>
       </section>
     </main>
-
-    <!-- Loading Overlay -->
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-spinner">
-        <RefreshCw class="animate-spin loading-icon" />
-        <p>Loading...</p>
-      </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <Transition name="toast">
-      <div v-if="toast.show" class="toast" :class="toast.type">
-        <div class="toast-content">
-          <component :is="getToastIcon(toast.type)" class="toast-icon" />
-          <span class="toast-message">{{ toast.message }}</span>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-velocity/dist/leaflet-velocity.min.js'
+import 'leaflet-velocity/dist/leaflet-velocity.min.css'
 import axios from 'axios'
+import Chart from 'chart.js/auto'
 import {
-  Wind,
-  Bell,
-  Settings,
-  User,
   MapPin,
   Server,
   CheckCircle,
   AlertTriangle,
   RefreshCw,
-  Activity,
-  Info,
-  XCircle
+  Activity
 } from 'lucide-vue-next'
+
+// API keys
+const NINJA_API_KEY = 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
+const WAQI_TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
 
 // City coordinates mapping
 const cityCoordinates = {
@@ -230,7 +137,12 @@ const cityCoordinates = {
   'Delhi': { lat: 28.7041, lng: 77.1025 },
   'Beijing': { lat: 39.9042, lng: 116.4074 },
   'Mumbai': { lat: 19.0760, lng: 72.8777 },
-  'Sydney': { lat: -33.8688, lng: 151.2093 }
+  'Sydney': { lat: -33.8688, lng: 151.2093 },
+  'Paris': { lat: 48.8566, lng: 2.3522 },
+  'Berlin': { lat: 52.5200, lng: 13.4050 },
+  'Toronto': { lat: 43.6532, lng: -79.3832 },
+  'Singapore': { lat: 1.3521, lng: 103.8198 },
+  'Dubai': { lat: 25.2048, lng: 55.2708 }
 }
 
 // Reactive data
@@ -245,29 +157,35 @@ const summaryData = reactive({
 })
 
 const cityData = ref([])
-const systemLogs = ref([])
-const cacheData = reactive({
-  hitRate: '94.2%',
-  lastRefresh: 'Just now',
-  status: 'Active'
-})
-
-const toast = reactive({
-  show: false,
-  message: '',
-  type: 'success'
-})
 
 // State management
 const isLoading = ref(false)
 const isRefreshing = ref(false)
 const hoveredCity = ref(null)
 let realTimeInterval = null
+let map = null
+let markers = []
+let mostPollutedChart = null
+let leastPollutedChart = null
 
 // Computed properties
 const mostPollutedCity = computed(() => {
   return cityData.value.reduce((max, city) => 
     city.aqi > max.aqi ? city : max, { aqi: 0 })
+})
+
+const top10HighAQI = computed(() => {
+  return cityData.value
+    .filter(s => !isNaN(parseInt(s.aqi)))
+    .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+    .slice(0, 10)
+})
+
+const top10LowAQI = computed(() => {
+  return cityData.value
+    .filter(s => !isNaN(parseInt(s.aqi)))
+    .sort((a, b) => parseInt(a.aqi) - parseInt(b.aqi))
+    .slice(0, 10)
 })
 
 // Utility functions
@@ -288,41 +206,52 @@ const getAQIClass = (aqi) => {
   return 'aqi-very-unhealthy'
 }
 
-const getLogIcon = (type) => {
-  const icons = {
-    success: CheckCircle,
-    warning: AlertTriangle,
-    error: XCircle,
-    info: Info
-  }
-  return icons[type] || Info
+const getColor = (aqi) => {
+  if (aqi <= 50) return '#00e400'
+  if (aqi <= 100) return '#ffff00'
+  if (aqi <= 150) return '#ff7e00'
+  if (aqi <= 200) return '#ff0000'
+  if (aqi <= 300) return '#99004c'
+  return '#7e0023'
 }
 
-const getToastIcon = (type) => {
-  const icons = {
-    success: CheckCircle,
-    warning: AlertTriangle,
-    error: XCircle,
-    info: Info
+// New function to add wind layer
+const addWindLayer = async () => {
+  try {
+    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
+    const windData = res.data
+
+    const velocityLayer = L.velocityLayer({
+      displayValues: true,
+      displayOptions: {
+        velocityType: 'Global Wind',
+        position: 'bottomleft',
+        emptyString: 'No wind data',
+        angleConvention: 'bearingCW',
+        speedUnit: 'mph',
+      },
+      data: windData,
+      maxVelocity: 15,
+    })
+
+    velocityLayer.addTo(map)
+  } catch (error) {
+    console.error('Failed to load wind data:', error)
   }
-  return icons[type] || CheckCircle
 }
 
-// API fetching
-const cities = Object.keys(cityCoordinates)
+// API fetching and map rendering
+const cities = Object.keys(cityCoordinates).filter(city => !['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai'].includes(city))
 const fetchAllAQI = async () => {
   isLoading.value = true
   cityData.value = []
-  const newLogs = []
 
+  // Fetch data from API-Ninjas
   for (const city of cities) {
     try {
       const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${city}`, {
-        headers: {
-          'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
-        }
+        headers: { 'X-Api-Key': NINJA_API_KEY }
       })
-
       const aqi = response.data.overall_aqi
       cityData.value.push({
         name: city,
@@ -331,20 +260,36 @@ const fetchAllAQI = async () => {
         lat: cityCoordinates[city].lat,
         lng: cityCoordinates[city].lng
       })
-
-      newLogs.push({
-        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-        type: 'success',
-        message: `AQI data fetched for ${city} (AQI: ${aqi})`
-      })
     } catch (err) {
       console.error(`Failed to fetch AQI for ${city}`, err)
-      newLogs.push({
-        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-        type: 'error',
-        message: `Failed to fetch AQI for ${city}`
-      })
     }
+  }
+
+  // Fetch data from WAQI API
+  try {
+    const bounds = '-85,-180,85,180'
+    const url = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${WAQI_TOKEN}`
+    const { data } = await axios.get(url)
+
+    if (data.status === 'ok') {
+      const waqiData = data.data.map(station => ({
+        name: station.station.name.split(',')[1]?.trim() || station.station.name,
+        aqi: parseInt(station.aqi),
+        level: getAQILevel(parseInt(station.aqi)),
+        lat: station.lat,
+        lng: station.lon
+      }))
+
+      const cityNames = new Set(cityData.value.map(city => city.name.toLowerCase()))
+      for (const station of waqiData) {
+        if (!cityNames.has(station.name.toLowerCase()) && station.lat && station.lng) {
+          cityData.value.push(station)
+          cityNames.add(station.name.toLowerCase())
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch WAQI AQI:', err)
   }
 
   // Update summary data
@@ -355,176 +300,183 @@ const fetchAllAQI = async () => {
     aqi: newMostPolluted.aqi,
     level: newMostPolluted.level
   }
+  summaryData.apiStatus = cityData.value.length > 0 ? 'Operational' : 'Issues Detected'
 
-  // Update logs
-  systemLogs.value = [...newLogs, ...systemLogs.value].slice(0, 10)
+  // Update map and charts
+  renderMap()
+  updateCharts()
+
   isLoading.value = false
-  showToast('AQI data refreshed successfully', 'success')
+}
+
+const initMap = () => {
+  map = L.map('map', {
+    center: [20, 100],
+    zoom: 4,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+  })
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map)
+
+  map.on('focus', () => map.scrollWheelZoom.enable())
+  map.on('blur', () => map.scrollWheelZoom.disable())
+  map.on('mousewheel', e => {
+    if (!e.originalEvent.ctrlKey) {
+      map.scrollWheelZoom.disable()
+      e.originalEvent.preventDefault()
+    } else {
+      map.scrollWheelZoom.enable()
+    }
+  })
+
+  addWindLayer()
+}
+
+const renderMap = () => {
+  if (markers) markers.forEach(marker => marker.remove())
+  markers = []
+
+  cityData.value.forEach(city => {
+    const color = getColor(parseInt(city.aqi))
+    const marker = L.circleMarker([city.lat, city.lng], {
+      radius: 6,
+      fillColor: color,
+      color: '#000',
+      weight: 0.8,
+      opacity: 1,
+      fillOpacity: 0.8,
+    }).addTo(map)
+
+    marker.bindPopup(`
+      <div style="font-family: Arial; font-size: 13px;">
+        <b>${city.name}</b><br/>
+        AQI: <strong style="color: ${color}">${city.aqi}</strong><br/>
+        Level: ${city.level}
+      </div>
+    `)
+
+    markers.push(marker)
+  })
+}
+
+const updateCharts = () => {
+  // Destroy existing charts if they exist
+  if (mostPollutedChart) mostPollutedChart.destroy()
+  if (leastPollutedChart) leastPollutedChart.destroy()
+
+  // Most Polluted Chart
+  const mostPollutedCtx = document.getElementById('mostPollutedChart').getContext('2d')
+  mostPollutedChart = new Chart(mostPollutedCtx, {
+    type: 'bar',
+    data: {
+      labels: top10HighAQI.value.map(city => city.name),
+      datasets: [{
+        label: 'AQI Levels',
+        data: top10HighAQI.value.map(city => parseInt(city.aqi)),
+        backgroundColor: top10HighAQI.value.map(city => getColor(parseInt(city.aqi))),
+        borderColor: '#000',
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+    },
+  })
+
+  // Least Polluted Chart
+  const leastPollutedCtx = document.getElementById('leastPollutedChart').getContext('2d')
+  leastPollutedChart = new Chart(leastPollutedCtx, {
+    type: 'bar',
+    data: {
+      labels: top10LowAQI.value.map(city => city.name),
+      datasets: [{
+        label: 'AQI Levels',
+        data: top10LowAQI.value.map(city => parseInt(city.aqi)),
+        backgroundColor: top10LowAQI.value.map(city => getColor(parseInt(city.aqi))),
+        borderColor: '#000',
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+    },
+  })
 }
 
 // Methods
-const showToast = (message, type = 'success') => {
-  toast.message = message
-  toast.type = type
-  toast.show = true
-  
-  setTimeout(() => {
-    toast.show = false
-  }, 3000)
-}
-
-const showNotifications = () => {
-  showToast('Notifications panel opened', 'info')
-}
-
-const showSettings = () => {
-  showToast('Settings panel opened', 'info')
-}
-
-const viewCitiesDetail = () => {
-  showToast('Opening cities detail view...', 'info')
-}
-
-const viewAPIStatus = () => {
-  showToast('Opening API status dashboard...', 'info')
-}
-
-const viewPollutedCity = () => {
-  showToast(`Viewing details for ${summaryData.mostPollutedCity.name}`, 'info')
-}
-
+const viewCitiesDetail = () => { console.log('Opening cities detail view...') }
+const viewAPIStatus = () => { console.log('Opening API status dashboard...') }
+const viewPollutedCity = () => { console.log(`Viewing details for ${summaryData.mostPollutedCity.name}`) }
 const refreshMapData = async () => {
   isRefreshing.value = true
   await fetchAllAQI()
   isRefreshing.value = false
 }
-
 const refreshAllData = async () => {
   isLoading.value = true
   await fetchAllAQI()
   isLoading.value = false
 }
-
 const clearCache = async () => {
   isLoading.value = true
-  
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    cacheData.lastRefresh = 'Just now'
-    
-    const newLog = {
-      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      type: 'success',
-      message: 'Cache cleared and refreshed'
-    }
-    systemLogs.value.unshift(newLog)
-    
-    showToast('Cache cleared successfully', 'success')
-  } catch (error) {
-    showToast('Failed to clear cache', 'error')
-  } finally {
-    isLoading.value = false
-  }
+  } finally { isLoading.value = false }
 }
-
 const addNewCity = async () => {
   const availableCities = ['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai']
   const randomCity = availableCities[Math.floor(Math.random() * availableCities.length)]
-  
-  if (cities.includes(randomCity)) {
-    showToast(`${randomCity} is already being monitored`, 'warning')
+  if (cityData.value.some(city => city.name.toLowerCase() === randomCity.toLowerCase())) {
     return
   }
-
   isLoading.value = true
-  
   try {
     const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${randomCity}`, {
-      headers: {
-        'X-Api-Key': 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
-      }
+      headers: { 'X-Api-Key': NINJA_API_KEY }
     })
-
     const aqi = response.data.overall_aqi
     cityData.value.push({
       name: randomCity,
       aqi: aqi,
       level: getAQILevel(aqi),
-      lat: cityCoordinates[randomCity]?.lat || 0,
-      lng: cityCoordinates[randomCity]?.lng || 0
+      lat: cityCoordinates[randomCity].lat,
+      lng: cityCoordinates[randomCity].lng
     })
-
-    cities.push(randomCity)
     summaryData.totalCities++
-
-    const newLog = {
-      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      type: 'info',
-      message: `New city added: ${randomCity}`
-    }
-    systemLogs.value.unshift(newLog)
-    
-    showToast(`${randomCity} added to monitoring`, 'success')
-  } catch (error) {
-    showToast('Failed to add new city', 'error')
-  } finally {
-    isLoading.value = false
-  }
+    const newMostPolluted = mostPollutedCity.value
+    summaryData.mostPollutedCity = { name: newMostPolluted.name, aqi: newMostPolluted.aqi, level: newMostPolluted.level }
+    renderMap()
+    updateCharts()
+  } finally { isLoading.value = false }
 }
-
-const viewFullLogs = () => {
-  showToast('Opening full logs view...', 'info')
-}
-
-const showCityTooltip = (city, event) => {
-  hoveredCity.value = city.name
-}
-
-const hideCityTooltip = () => {
-  hoveredCity.value = null
-}
+const viewFullLogs = () => { console.log('Opening full logs view...') }
 
 const startRealTimeUpdates = () => {
   realTimeInterval = setInterval(async () => {
     await fetchAllAQI()
-    
-    // Update cache refresh time
-    const minutes = Math.floor(Math.random() * 5) + 1
-    cacheData.lastRefresh = `${minutes} min ago`
-    
-    // Occasionally add new log entries
-    if (Math.random() > 0.7) {
-      const messages = [
-        'Automated data sync completed',
-        'System health check passed',
-        'Cache optimization finished',
-        'API response time improved'
-      ]
-      
-      const newLog = {
-        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-        type: 'info',
-        message: messages[Math.floor(Math.random() * messages.length)]
-      }
-      
-      systemLogs.value.unshift(newLog)
-      if (systemLogs.value.length > 10) {
-        systemLogs.value.pop()
-      }
-    }
-  }, 300000) // Update every 5 minutes
+  }, 300000)
 }
 
 // Lifecycle hooks
 onMounted(() => {
+  initMap()
   fetchAllAQI()
   startRealTimeUpdates()
 })
 
 onUnmounted(() => {
-  if (realTimeInterval) {
-    clearInterval(realTimeInterval)
-  }
+  if (realTimeInterval) clearInterval(realTimeInterval)
+  if (map) map.remove()
+  if (mostPollutedChart) mostPollutedChart.destroy()
+  if (leastPollutedChart) leastPollutedChart.destroy()
 })
 </script>
 
@@ -786,221 +738,10 @@ onUnmounted(() => {
 
 /* Map Styles */
 .map-container {
-  position: relative;
   height: 300px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+  width: 100%;
   border-radius: 8px;
   overflow: hidden;
-}
-
-.map-background {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-}
-
-.city-markers {
-  position: absolute;
-  inset: 0;
-}
-
-.city-marker {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  animation: pulse 2s infinite;
-  transition: transform 0.2s ease;
-}
-
-.city-marker:hover {
-  transform: scale(1.3);
-  z-index: 10;
-}
-
-.city-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 8px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  font-size: 12px;
-  border-radius: 6px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.map-legend {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.map-legend h4 {
-  font-size: 12px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-  color: #374151;
-}
-
-.legend-items {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.legend-color {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.legend-item span {
-  font-size: 11px;
-  color: #6b7280;
-}
-
-/* System Logs */
-.logs-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.cache-status {
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #f1f5f9;
-}
-
-.cache-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.cache-header span:first-child {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.status-badge {
-  padding: 4px 8px;
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.cache-metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.metric {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.metric-label {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.metric-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.separator {
-  height: 1px;
-  background: #e5e7eb;
-}
-
-.recent-logs h4 {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin: 0 0 12px 0;
-}
-
-.logs-container {
-  max-height: 200px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.log-entry {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.log-entry:last-child {
-  border-bottom: none;
-}
-
-.log-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  width: 14px;
-  height: 14px;
-}
-
-.log-icon.success {
-  color: #10b981;
-}
-.log-icon.warning {
-  color: #f59e0b;
-}
-.log-icon.error {
-  color: #ef4444;
-}
-.log-icon.info {
-  color: #3b82f6;
-}
-
-.log-content {
-  flex: 1;
-}
-
-.log-time {
-  font-size: 11px;
-  color: #6b7280;
-  margin-bottom: 2px;
-}
-
-.log-message {
-  font-size: 13px;
-  color: #374151;
 }
 
 /* Quick Actions */
@@ -1040,81 +781,6 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-/* Loading Overlay */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.loading-spinner {
-  background: white;
-  padding: 32px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
-}
-
-.loading-icon {
-  width: 32px;
-  height: 32px;
-  color: #3b82f6;
-  margin-bottom: 16px;
-}
-
-.loading-spinner p {
-  color: #6b7280;
-  font-weight: 500;
-  margin: 0;
-}
-
-/* Toast Notification */
-.toast {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #10b981;
-  z-index: 1001;
-}
-
-.toast.success {
-  border-left-color: #10b981;
-}
-.toast.error {
-  border-left-color: #ef4444;
-}
-.toast.warning {
-  border-left-color: #f59e0b;
-}
-.toast.info {
-  border-left-color: #3b82f6;
-}
-
-.toast-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.toast-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.toast-message {
-  font-size: 14px;
-  color: #374151;
-  font-weight: 500;
-}
-
 /* Animations */
 @keyframes pulse {
   0%, 100% {
@@ -1136,22 +802,6 @@ onUnmounted(() => {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* Toast Transitions */
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s ease;
-}
-
-.toast-enter-from {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.toast-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
 }
 
 /* Responsive Design */
@@ -1176,17 +826,8 @@ onUnmounted(() => {
     grid-template-columns: 1fr;
   }
 
-  .map-legend {
-    position: static;
-    margin-top: 16px;
-  }
-
   .quick-actions {
     justify-content: center;
-  }
-
-  .cache-metrics {
-    grid-template-columns: 1fr;
   }
 }
 
