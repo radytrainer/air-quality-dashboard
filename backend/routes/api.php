@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\AqiAsiaController;
 use App\Http\Controllers\Api\AqiAfricanController;
 use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\WeatherAqiController;
+use App\Http\Controllers\Api\ApiAnalyController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +59,10 @@ Route::get('/air-quality/African-countrie-cities', [AqiAfricanController::class,
 Route::get('/air-quality/Oceania-countrie-cities', [AqiOceaniaController::class, 'getAllOceaniaCitiesAirQuality']);
 
 Route::get('/aqi-asia', [AqiAsiaController::class, 'getAllAsiaCitiesAirQuality']);
+
+// Analy Page
+Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
+
 
 
 // Protected routes
