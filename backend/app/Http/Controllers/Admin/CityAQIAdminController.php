@@ -19,7 +19,7 @@ class CityAQIAdminController extends Controller
 {
     $pollutant = $request->get('pollutant', 'aqi');
     $search = $request->get('search');
-    $limit = (int) $request->get('limit', 100);
+    $limit = (int) $request->get('limit', 933);
 
     $stations = collect($this->aqiService->fetchAllGlobalStations());
 
