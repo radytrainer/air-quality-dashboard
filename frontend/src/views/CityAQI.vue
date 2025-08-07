@@ -1,17 +1,17 @@
 <template>
   <div class="p-6 max-w-screen-xl mx-auto">
     <div class="bg-white shadow-md rounded-lg p-6">
-      <h1 class="text-3xl font-bold mb-6 text-gray-800">City AQI</h1>
+      <h1 class="text-3xl sm:text-4xl font-extrabold mb-8 text-gray-900 tracking-tight">City AQI</h1>
 
       <div class="flex flex-wrap gap-4 items-center mb-6">
         <input
           v-model="search"
           type="text"
           placeholder="Search city..."
-          class="p-2 border border-gray-300 rounded-md w-full sm:w-1/3"
+          class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md w-full sm:w-1/4 transition"
         />
 
-        <select v-model="pollutant" class="p-2 border border-gray-300 rounded-md">
+        <select v-model="pollutant" class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition">
           <option value="aqi">AQI</option>
           <option value="pm25">PM2.5</option>
           <option value="pm10">PM10</option>
@@ -21,13 +21,11 @@
           <option value="co">CO</option>
         </select>
 
-        <select v-model="levelFilter" class="p-2 border border-gray-300 rounded-md">
+        <select v-model="levelFilter" class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition">
           <option value="">All Levels</option>
           <option value="Good">Good</option>
           <option value="Moderate">Moderate</option>
-          <option value="Unhealthy for Sensitive Groups">
-            Unhealthy for Sensitive Groups
-          </option>
+          <option value="Unhealthy for Sensitive Groups">Unhealthy for Sensitive Groups</option>
           <option value="Unhealthy">Unhealthy</option>
           <option value="Very Unhealthy">Very Unhealthy</option>
           <option value="Hazardous">Hazardous</option>
@@ -35,20 +33,20 @@
 
         <button
           @click="fetchAQIData"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
         >
           🔄 Refresh
         </button>
 
         <button
           @click="exportToCSV"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
         >
           📄 Export CSV
         </button>
       </div>
 
-      <div class="text-sm text-gray-600 mb-4">
+      <div class="text-sm text-gray-500 mb-4 space-y-1">
         <p>
           Data source:
           <a
@@ -66,33 +64,33 @@
       <div v-else-if="error" class="text-red-600">{{ error }}</div>
 
       <div v-else class="overflow-auto rounded-md shadow">
-        <table class="min-w-full border border-gray-200 text-sm">
-          <thead class="bg-gray-100 text-gray-700 font-semibold">
+        <table class="min-w-full border border-gray-300 text-sm divide-y divide-gray-200">
+          <thead class="bg-gray-100 text-gray-800 font-semibold uppercase tracking-wide text-xs">
             <tr>
-              <th class="border p-3 text-left cursor-pointer" @click="sortBy('name')">City</th>
-              <th class="border p-3 text-left">Latitude</th>
-              <th class="border p-3 text-left">Longitude</th>
-              <th class="border p-3 text-left">Pollutant</th>
-              <th class="border p-3 text-left cursor-pointer" @click="sortBy('value')">Value</th>
-              <th class="border p-3 text-left">Level</th>
+              <th class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition" @click="sortBy('name')">City</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">Latitude</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">Longitude</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">Pollutant</th>
+              <th class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition" @click="sortBy('value')">Value</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">Level</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="city in paginatedCities"
               :key="city.name"
-              class="hover:bg-gray-50"
+              class="hover:bg-gray-100 transition"
               :class="rowColor(city.level)"
             >
               <td class="border px-3 py-2">{{ city.name }}</td>
               <td class="border px-3 py-2">{{ city.lat }}</td>
               <td class="border px-3 py-2">{{ city.lon }}</td>
               <td class="border px-3 py-2 uppercase">{{ city.pollutant }}</td>
-              <td class="border px-3 py-2 font-semibold">{{ city.value }}</td>
+              <td class="border px-3 py-2 font-bold text-gray-800">{{ city.value }}</td>
               <td class="border px-3 py-2">
                 <span
                   :class="levelBadge(city.level)"
-                  class="px-2 py-1 rounded text-xs font-bold inline-block"
+                  class="px-2 py-1 rounded-full text-xs font-semibold inline-block shadow-sm transition"
                 >
                   {{ city.level }}
                 </span>
@@ -102,7 +100,7 @@
         </table>
       </div>
 
-      <div class="flex justify-between items-center mt-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
         <span class="text-sm text-gray-500">
           Showing {{ paginatedCities.length }} of {{ filteredCities.length }} entries
         </span>
@@ -110,7 +108,7 @@
           <button
             @click="goToPage(currentPage - 1)"
             :disabled="currentPage === 1"
-            class="px-3 py-1 border rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+            class="px-3 py-1 border rounded bg-gray-50 hover:bg-gray-200 disabled:opacity-40 transition"
           >
             Prev
           </button>
@@ -118,7 +116,7 @@
           <button
             @click="goToPage(currentPage + 1)"
             :disabled="currentPage === totalPages"
-            class="px-3 py-1 border rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+            class="px-3 py-1 border rounded bg-gray-50 hover:bg-gray-200 disabled:opacity-40 transition"
           >
             Next
           </button>
@@ -127,6 +125,7 @@
     </div>
   </div>
 </template>
+
 
 
 <script setup>
@@ -148,21 +147,22 @@ const levelFilter = ref("");
 const levelBadge = (level) => {
   switch (level) {
     case "Good":
-      return "bg-green-100 text-green-700";
+      return "bg-[#A8E05F] text-[#1E5A00]";
     case "Moderate":
-      return "bg-yellow-100 text-yellow-700";
+      return "bg-[#FDD64B] text-[#8C6D1F]";
     case "Unhealthy for Sensitive Groups":
-      return "bg-orange-100 text-orange-700";
+      return "bg-[#FF9B57] text-[#7B3C00]";
     case "Unhealthy":
-      return "bg-red-100 text-red-700";
+      return "bg-[#FE6A69] text-[#7A0000]";
     case "Very Unhealthy":
-      return "bg-purple-100 text-purple-700";
+      return "bg-[#A97ABC] text-[#3E005E]";
     case "Hazardous":
-      return "bg-black text-white";
+      return "bg-[#A87383] text-white";
     default:
       return "bg-gray-100 text-gray-700";
   }
 };
+
 
 const fetchAQIData = async () => {
   try {
@@ -256,11 +256,13 @@ const rowColor = (level) => {
     case "Very Unhealthy":
       return "bg-purple-200";
     case "Hazardous":
-      return "bg-black text-white";
+      return "bg-rose-200 ";
     default:
       return "";
   }
 };
+
+
 
 watch([search, pollutant], fetchAQIData, { immediate: true });
 </script>
