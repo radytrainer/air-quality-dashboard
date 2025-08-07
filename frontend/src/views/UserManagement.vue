@@ -39,7 +39,7 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Users</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Active</th>
@@ -75,39 +75,42 @@
                 >●</span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(user.created_at) }}</td>
-              <td class="px-6 py-4 text-right relative">
+              <td class="px-6 py-4 text-right ">
                 <button
                   @click="toggleDropdown(user.id)"
-                  class="dropdown-button text-gray-600 hover:text-gray-900 focus:outline-none"
+                  class="dropdown-button text-gray-600 hover:text-gray-900 focus:outline-none "
                   aria-haspopup="true"
                   :aria-expanded="dropdownOpenId === user.id"
                 >
                   <!-- vertical ellipsis icon -->
-                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-7 h-8" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 4a2 2 0 110-4 2 2 0 010 4zm0 4a2 2 0 110-4 2 2 0 010 4z" />
                   </svg>
                 </button>
 
                 <div
                   v-if="dropdownOpenId === user.id"
-                  class="dropdown-menu absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-md z-50"
+                  class="dropdown-menu absolute mb-10 w-32 bg-white border border-gray-200 rounded shadow-md z-50"
                 >
                   <button
                     @click="viewUser(user); closeDropdown()"
-                    class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
                   >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     View
                   </button>
                   <button
                     @click="editUser(user); closeDropdown()"
                     class="block w-full text-left px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100"
                   >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                   </button>
                   <button
                     @click="deleteUser(user); closeDropdown()"
                     class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                   >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     Delete
                   </button>
                 </div>
@@ -146,8 +149,8 @@
 
           <div class="flex justify-end gap-2 mt-4">
             <button type="button" @click="closeAddUser" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-            <button type="submit" :disabled="addUserLoading" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              {{ addUserLoading ? 'Saving...' : 'Save' }}
+            <button type="submit" :disabled="addUserLoading.value" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              {{ addUserLoading.value ? 'Saving...' : 'Save' }}
             </button>
           </div>
           <div v-if="addUserErrors" class="text-red-600 mt-2 text-xs">
@@ -196,8 +199,8 @@
 
           <div class="flex justify-end gap-2 mt-4">
             <button type="button" @click="closeEditUser" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-            <button type="submit" :disabled="editUserLoading" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              {{ editUserLoading ? 'Saving...' : 'Save' }}
+            <button type="submit" :disabled="editUserLoading.value" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              {{ editUserLoading.value ? 'Saving...' : 'Save' }}
             </button>
           </div>
           <div v-if="editUserErrors" class="text-red-600 mt-2 text-xs">
@@ -289,7 +292,7 @@ const editUserForm = ref({
 })
 const editUserImagePreview = ref(null)
 const editUserErrors = ref({})
-const editUserLoading = ref(false)
+const editUserLoading = ref(false) // Fixed: Properly defined as a ref
 
 const viewUserData = ref({})
 
@@ -319,7 +322,6 @@ onBeforeUnmount(() => {
 
 // Click outside handler to close dropdown
 const handleClickOutside = (e) => {
-  // If click not inside dropdown menu or button, close dropdown
   if (!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-button')) {
     closeDropdown()
   }
@@ -423,7 +425,7 @@ const openEditUser = (user) => {
     role: user.role,
     phone: user.phone || '',
     bio: user.bio || '',
-    profile_image: null, // new image upload only
+    profile_image: null,
   }
   editUserImagePreview.value = null
 }
@@ -453,7 +455,6 @@ const submitEditUser = async () => {
         formData.append(key, editUserForm.value[key])
       }
     }
-    // Send PATCH or PUT request (adjust endpoint accordingly)
     await api.post(`/users/${editUserForm.value.id}`, formData, { headers: { 'X-HTTP-Method-Override': 'PATCH' } })
     await fetchUsers()
     closeEditUser()
