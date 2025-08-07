@@ -32,30 +32,104 @@
       <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden" style="height: 500px;"></div>
     </div>
 
-    <!-- Top 10 Lists -->
-    <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 px-6 mt-10">
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
-            {{ station.name }}: 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <span class="ml-1 text-sm italic">({{ getStatus(station.aqi) }})</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
+
+
+    <!-- Top 10 AQI Lists -->
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center text-gray-800 tracking-tight mb-8 drop-shadow-sm">
+      Top 10 Air Quality Index (AQI) Lists
+    </h1>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-12">
+      <!-- Top 10 Most Polluted Cities -->
+      <div class="bg-white rounded-2xl shadow-md p-6">
+        <h2 class="text-xl font-semibold text-red-600 mb-4 border-b pb-2 flex items-center gap-2">
+          🔥 Top 10 Most Polluted Cities
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full table-auto text-sm">
+            <thead class="bg-red-600 text-white uppercase text-xs">
+              <tr>
+                <th class="px-4 py-3 text-left">#</th>
+                <th class="px-4 py-3 text-left">Flag</th>
+                <th class="px-4 py-3 text-left">City</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 text-gray-800">
+              <tr v-for="(station, index) in top10HighAQI" :key="index" class="hover:bg-gray-50">
+                <td class="px-4 py-2">{{ index + 1 }}</td>
+                <td class="px-4 py-2">
+                  <img :src="station.flag" alt="Flag" class="w-10 h-6 object-cover rounded-sm shadow" />
+                </td>
+                <td class="px-4 py-2 font-semibold">{{ station.name }}</td>
+                <td class="px-4 py-2">
+                  <span
+                    class="px-3 py-1 rounded-full text-white text-xs font-medium shadow whitespace-nowrap"
+                    :style="{ backgroundColor: getColor(station.aqi) }"
+                  >
+                    {{ getStatus(station.aqi) }}
+                  </span>
+                </td>
+
+                <td class="px-4 py-2 text-center">
+                  <span
+                    class="px-3 py-1 rounded-full text-white text-xs font-semibold"
+                    :style="{ backgroundColor: getColor(station.aqi) }"
+                  >
+                    {{ station.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
-            {{ station.name }}: 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <span class="ml-1 text-sm italic">({{ getStatus(station.aqi) }})</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
+      <!-- Top 10 Cleanest Cities -->
+      <div class="bg-white rounded-2xl shadow-md p-6">
+        <h2 class="text-xl font-semibold text-green-600 mb-4 border-b pb-2 flex items-center gap-2">
+          🌱 Top 10 Cleanest Air Cities
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full table-auto text-sm">
+            <thead class="bg-green-600 text-white uppercase text-xs">
+              <tr>
+                <th class="px-4 py-3 text-left">#</th>
+                <th class="px-4 py-3 text-left">Flag</th>
+                <th class="px-4 py-3 text-left">City</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 text-gray-800">
+              <tr v-for="(station, index) in top10LowAQI" :key="index" class="hover:bg-gray-50">
+                <td class="px-4 py-2">{{ index + 1 }}</td>
+                <td class="px-4 py-2">
+                  <img :src="station.flag" alt="Flag" class="w-10 h-6 object-cover rounded-sm shadow" />
+                </td>
+                <td class="px-4 py-2 font-semibold">{{ station.name }}</td>
+                <td class="px-4 py-2">
+                  <span
+                    class="px-3 py-1 rounded-full text-white text-xs font-semibold"
+                    :style="{ backgroundColor: getColor(station.aqi) }"
+                  >
+                    {{ getStatus(station.aqi) }}
+                  </span>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <span
+                    class="px-3 py-1 rounded-full text-white text-xs font-semibold"
+                    :style="{ backgroundColor: getColor(station.aqi) }"
+                  >
+                    {{ station.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -78,14 +152,15 @@ const searchQuery = ref('')
 let map = null
 let markers = []
 
+
 const getColor = (aqi) => {
   const val = parseInt(aqi)
   if (val <= 50) return '#00e400'      // Good - Green
   if (val <= 100) return '#ffff00'     // Moderate - Yellow
   if (val <= 150) return '#ff7e00'     // Unhealthy for Sensitive Groups - Orange
   if (val <= 200) return '#ff0000'     // Unhealthy - Red
-  if (val <= 300) return '#99004c'     // Very Unhealthy - Purple
-  return '#7e0023'                     // Hazardous - Maroon
+  if (val <= 300) return '#7702ad'     // Very Unhealthy - Purple
+  return '#94012a'                     // Hazardous - Maroon
 }
 
 const getStatus = (aqi) => {
@@ -138,36 +213,26 @@ const renderMarkers = () => {
   })
 }
 
+
+// Fetch AQI data (from your backend API)
 const fetchAQIData = async () => {
   try {
-    const url = 'http://127.0.0.1:8000/api/aqi-global' // Your backend API URL
+    const url = 'http://127.0.0.1:8000/api/aqi-global'
     const { data } = await axios.get(url)
 
     if (data.status === 'ok' && Array.isArray(data.data)) {
-      aqiData.value = data.data.map(station => {
-        // Example: generate flag url using country code (assuming station.country_code)
-        // Use a fallback flag image if no country_code or image available
-        const flag = station.country_code
-          ? `https://flagcdn.com/w40/${station.country_code.toLowerCase()}.png`
-          : ''
-
-        return {
-          ...station,
-          flag,
-        }
-      })
-
+      aqiData.value = data.data
       updateTop10()
       renderMarkers()
-      currentTime.value = new Date()
+      updateChart()
     } else {
       console.error('API returned unexpected data:', data)
     }
   } catch (err) {
     console.error('Failed to fetch AQI:', err)
   }
+  currentTime.value = new Date()
 }
-
 const addWindLayer = async () => {
   try {
     const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
@@ -201,11 +266,13 @@ const initMap = () => {
     attributionControl: false,
   })
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap & CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(map)
+
+  addLegend()
 
   map.on('focus', () => map.scrollWheelZoom.enable())
   map.on('blur', () => map.scrollWheelZoom.disable())
@@ -219,6 +286,28 @@ const initMap = () => {
   })
 
   addWindLayer()
+}
+
+const addLegend = () => {
+  const legend = L.control({ position: 'bottomright' })
+
+  legend.onAdd = () => {
+    const div = L.DomUtil.create('div', 'info legend')
+    const grades = [0, 51, 101, 151, 201, 301]
+    const labels = ['Good', 'Moderate', 'Unhealthy for Sensitive Groups', 'Unhealthy', 'Very Unhealthy', 'Hazardous']
+    const colors = ['#00e400', '#ffff00', '#ff7e00', '#ff0000', '#7702ad', '#94012a']
+
+    let html = '<h4>AQI Legend</h4>'
+    for (let i = 0; i < grades.length; i++) {
+      html +=
+        `<i style="background:${colors[i]}; width:18px; height:18px; display:inline-block; margin-right:8px;"></i>` +
+        `${labels[i]}<br/>`
+    }
+    div.innerHTML = html
+    return div
+  }
+
+  legend.addTo(map)
 }
 
 const searchLocation = async () => {
