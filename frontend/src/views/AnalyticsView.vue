@@ -3,28 +3,63 @@
     <div class="map-wrapper relative mb-6">
       <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden"></div>
     </div>
+
     <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
-            {{ station.name }} ({{ station.country }}): 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
+      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg border border-gray-800">
+        <h2 class="text-xl font-bold mb-4 text-red-500">World's Most Polluted City Rankings (2025)</h2>
+        <table class="w-full text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th class="py-2 text-left">Rank</th>
+              <th class="py-2 text-left">Most Polluted Cities</th>
+              <th class="py-2 text-center">AQI</th>
+              <th class="py-2 text-center">AQI Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(station, index) in top10HighAQI" :key="index" class="border-b border-gray-700 hover:bg-gray-800">
+              <td class="py-2">{{ index + 1 }}</td>
+              <td class="py-2 flex items-center">
+                <img :src="station.flag" alt="Flag" class="w-6 h-4 mr-2" />
+                {{ station.name }}
+              </td>
+              <td class="py-2 text-center">
+                <span :style="{ color: getColor(station.aqi) }" class="text-lg font-bold">{{ station.aqi }}</span>
+              </td>
+              <td class="py-2 text-center">{{ getStatus(station.aqi) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
-            {{ station.name }} ({{ station.country }}): 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
+
+      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg border border-gray-800">
+        <h2 class="text-xl font-bold mb-4 text-green-500">World's Least Polluted City Rankings (2025)</h2>
+        <table class="w-full text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th class="py-2 text-left">Rank</th>
+              <th class="py-2 text-left">Least Polluted Cities</th>
+              <th class="py-2 text-center">AQI</th>
+              <th class="py-2 text-center">AQI Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(station, index) in top10LowAQI" :key="index" class="border-b border-gray-700 hover:bg-gray-800">
+              <td class="py-2">{{ index + 1 }}</td>
+              <td class="py-2 flex items-center">
+                <img :src="station.flag" alt="Flag" class="w-6 h-4 mr-2" />
+                {{ station.name }}
+              </td>
+              <td class="py-2 text-center">
+                <span :style="{ color: getColor(station.aqi) }" class="text-lg font-bold">{{ station.aqi }}</span>
+              </td>
+              <td class="py-2 text-center">{{ getStatus(station.aqi) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg col-span-2">
+
+      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg col-span-2">
         <h2 class="text-xl font-bold mb-2 text-white">AQI Trend Graph</h2>
         <canvas id="aqiChart"></canvas>
       </div>
@@ -33,10 +68,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted, ref } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-velocity/dist/leaflet-velocity.min.js'
+import 'leaflet-velocity/dist/leaflet-velocity.min.css'
+import axios from 'axios'
 import Chart from 'chart.js/auto'
 
 const aqiData = ref([])
@@ -46,28 +83,34 @@ let aqiChart = null
 let map = null
 let markers = []
 
-// AQI color scale
 const getColor = (aqi) => {
-  const num = parseInt(aqi)
-  if (num <= 50) return '#00e400'
-  if (num <= 100) return '#ffff00'
-  if (num <= 150) return '#ff7e00'
-  if (num <= 200) return '#ff0000'
-  if (num <= 300) return '#99004c'
-  return '#7e0023'
+  const val = parseInt(aqi)
+  if (val <= 50) return '#00e400'      // Good - Green
+  if (val <= 100) return '#ffff00'     // Moderate - Yellow
+  if (val <= 150) return '#ff7e00'     // Unhealthy for Sensitive Groups - Orange
+  if (val <= 200) return '#ff0000'     // Unhealthy - Red
+  if (val <= 300) return '#99004c'     // Very Unhealthy - Purple
+  return '#7e0023'                     // Hazardous - Maroon
 }
 
-// Update Top 10 rankings
+const getStatus = (aqi) => {
+  const val = parseInt(aqi)
+  if (val <= 50) return 'Good'
+  if (val <= 100) return 'Moderate'
+  if (val <= 150) return 'Unhealthy for Sensitive Groups'
+  if (val <= 200) return 'Unhealthy'
+  if (val <= 300) return 'Very Unhealthy'
+  return 'Hazardous'
+}
+
 const updateTop10 = () => {
   const sorted = [...aqiData.value]
     .filter(s => !isNaN(parseInt(s.aqi)))
     .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
-
   top10HighAQI.value = sorted.slice(0, 10)
   top10LowAQI.value = sorted.slice(-10).reverse()
 }
 
-// Render AQI bar chart
 const updateChart = () => {
   const ctx = document.getElementById('aqiChart').getContext('2d')
   if (aqiChart) aqiChart.destroy()
@@ -75,12 +118,12 @@ const updateChart = () => {
   aqiChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: aqiData.value.slice(0, 20).map(station => station.name),
+      labels: aqiData.value.map(station => station.name),
       datasets: [
         {
           label: 'AQI Levels',
-          data: aqiData.value.slice(0, 20).map(station => parseInt(station.aqi)),
-          backgroundColor: aqiData.value.slice(0, 20).map(station => getColor(parseInt(station.aqi))),
+          data: aqiData.value.map(station => parseInt(station.aqi) || 0),
+          backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi) || 0)),
           borderColor: '#000',
           borderWidth: 1,
         },
@@ -95,17 +138,17 @@ const updateChart = () => {
   })
 }
 
-// Render markers on Leaflet map
 const renderMarkers = () => {
   markers.forEach(marker => marker.remove())
   markers = []
 
   aqiData.value.forEach(station => {
-    const { lat, lon, aqi, name } = station
-    if (!lat || !lon) return
-    const color = getColor(aqi)
+    if (!station.lat || !station.lon) return
 
-    const marker = L.circleMarker([lat, lon], {
+    const color = getColor(station.aqi)
+    const status = getStatus(station.aqi)
+
+    const marker = L.circleMarker([station.lat, station.lon], {
       radius: 6,
       fillColor: color,
       color: '#000',
@@ -116,8 +159,9 @@ const renderMarkers = () => {
 
     marker.bindPopup(`
       <div style="font-family: Arial; font-size: 13px;">
-        <b>${name}</b><br/>
-        AQI: <strong style="color: ${color}">${aqi}</strong>
+        <b>${station.name}</b><br/>
+        AQI: <strong style="color: ${color}">${station.aqi}</strong><br/>
+        Status: <em>${status}</em>
       </div>
     `)
 
@@ -125,27 +169,53 @@ const renderMarkers = () => {
   })
 }
 
-// Fetch AQI data from Laravel API
 const fetchAQIData = async () => {
   try {
-    const { data } = await axios.get('/api/aqi/global') // Laravel backend
+    const url = 'http://127.0.0.1:8000/api/aqi-global' // Your backend Laravel API
+    const { data } = await axios.get(url)
 
-    if (data.status === 'ok') {
+    if (data.status === 'ok' && Array.isArray(data.data)) {
       aqiData.value = data.data
+
       updateTop10()
       renderMarkers()
       updateChart()
+    } else {
+      console.error('API returned unexpected data:', data)
     }
   } catch (err) {
-    console.error('Failed to fetch AQI from backend:', err)
+    console.error('Failed to fetch AQI:', err)
   }
 }
 
-// Initialize Leaflet map
+const addWindLayer = async () => {
+  try {
+    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
+    const windData = res.data
+
+    const velocityLayer = L.velocityLayer({
+      displayValues: true,
+      displayOptions: {
+        velocityType: 'Global Wind',
+        position: 'bottomleft',
+        emptyString: 'No wind data',
+        angleConvention: 'bearingCW',
+        speedUnit: 'mph',
+      },
+      data: windData,
+      maxVelocity: 15,
+    })
+
+    velocityLayer.addTo(map)
+  } catch (error) {
+    console.error('Failed to load wind data:', error)
+  }
+}
+
 const initMap = () => {
   map = L.map('map', {
     center: [20, 100],
-    zoom: 3,
+    zoom: 4,
     zoomControl: true,
     scrollWheelZoom: false,
     attributionControl: false,
@@ -167,19 +237,22 @@ const initMap = () => {
       map.scrollWheelZoom.enable()
     }
   })
+
+  addWindLayer()
 }
 
-// On page load
 onMounted(() => {
   initMap()
   fetchAQIData()
-  setInterval(fetchAQIData, 60000) // auto-refresh every 60s
+  setInterval(fetchAQIData, 30000) // refresh every 30 seconds
 })
 </script>
 
 <style scoped>
 .container {
   margin-top: 60px;
+  background-color: #1a1a2e;
+  color: #e0e0e0;
 }
 
 .map-wrapper {
@@ -195,6 +268,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
+  transition: box-shadow 0.3s ease;
+  background-color: #2a2a3e;
 }
 
 .stats-grid {
@@ -203,9 +278,30 @@ onMounted(() => {
 
 .stats-card {
   border-radius: 0.75rem;
+  background: linear-gradient(135deg, #2a2a3e 0%, #3a3a5e 100%);
+}
+
+.stats-card table {
+  border-collapse: collapse;
+}
+
+.stats-card th, .stats-card td {
+  padding: 0.5rem;
+}
+
+.stats-card th {
+  font-weight: bold;
+  color: #b0b0b0;
+}
+
+.stats-card tbody tr:hover {
+  background-color: #33334d;
 }
 
 #aqiChart {
   max-height: 300px;
+  background-color: #2a2a3e;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 </style>
