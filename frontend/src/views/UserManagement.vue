@@ -147,7 +147,18 @@
           <div>
             <label class="block mb-1 font-medium">Profile Image (optional)</label>
             <input @change="onEditImageChange" type="file" accept="image/*" />
-            <img v-if="editUserImagePreview || editUserForm.profile_image" :src="editUserImagePreview || editUserForm.profile_image" alt="preview" class="mt-2 w-24 h-24 rounded object-cover" />
+            <img
+              v-if="editUserImagePreview"
+              :src="editUserImagePreview"
+              alt="preview"
+              class="mt-2 w-24 h-24 rounded object-cover"
+            />
+            <img
+              v-else-if="editUserForm.profile_image"
+              :src="editUserForm.profile_image"
+              alt="preview"
+              class="mt-2 w-24 h-24 rounded object-cover"
+            />
           </div>
 
           <div class="flex justify-end gap-2 mt-4">
@@ -189,12 +200,12 @@
         <p><strong>Phone:</strong> {{ viewUserData.phone || '-' }}</p>
         <p class="mt-2"><strong>Bio:</strong> {{ viewUserData.bio || '-' }}</p>
         <p class="mt-2"><strong>Created at:</strong> {{ formatDate(viewUserData.created_at) }}</p>
-        <p class="mt-2"><strong>Status:</strong> 
+        <p class="mt-2"><strong>Status:</strong>
           <span :class="viewUserData.email_verified_at ? 'text-green-600' : 'text-red-600'">
             {{ viewUserData.email_verified_at ? 'active' : 'inactive' }}
           </span>
         </p>
-        <p class="mt-2"><strong>Active:</strong> 
+        <p class="mt-2"><strong>Active:</strong>
           <span :class="viewUserData.is_online ? 'text-green-600' : 'text-gray-400'">●</span>
         </p>
       </div>
@@ -316,17 +327,17 @@ const submitAddUser = async () => {
   addUserLoading.value = true
   addUserErrors.value = {}
 
-  const formData = new FormData()
-  for (const key in addUserForm.value) {
-    if (addUserForm.value[key] !== null) {
-      formData.append(key, addUserForm.value[key])
-    }
-  }
-
   try {
-    const res = await api.post('/users', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    const formData = new FormData()
+    for (const key in addUserForm.value) {
+      if (addUserForm.value[key] !== null && addUserForm.value[key] !== '') {
+        formData.append(key, addUserForm.value[key])
+      }
+    }
+
+    // Don't set Content-Type here, let Axios set it automatically
+    const res = await api.post('/users', formData)
+
     users.value.unshift(res.data.user)
     closeAddUser()
   } catch (err) {
@@ -351,9 +362,9 @@ const editUser = (user) => {
     role: user.role || '',
     phone: user.phone || '',
     bio: user.bio || '',
-    profile_image: user.profile_image || null,
+    profile_image: null,
   }
-  editUserImagePreview.value = null
+  editUserImagePreview.value = user.profile_image || null
   editUserErrors.value = {}
 }
 
@@ -376,19 +387,22 @@ const submitEditUser = async () => {
   editUserLoading.value = true
   editUserErrors.value = {}
 
-  const formData = new FormData()
-  for (const key in editUserForm.value) {
-    if (key === 'id') continue
-    if (editUserForm.value[key] !== null) {
-      formData.append(key, editUserForm.value[key])
-    }
-  }
-
   try {
-    const res = await api.post(`/users/${editUserForm.value.id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      method: 'POST',
-    })
+    const formData = new FormData()
+    for (const key in editUserForm.value) {
+      if (editUserForm.value[key] !== null && editUserForm.value[key] !== '') {
+        formData.append(key, editUserForm.value[key])
+      }
+    }
+    // For password, if empty, don't send
+    if (!editUserForm.value.password) {
+      formData.delete('password')
+      formData.delete('password_confirmation')
+    }
+
+    const res = await api.post(`/users/${editUserForm.value.id}`, formData)
+
+    // Update user in list
     const idx = users.value.findIndex(u => u.id === editUserForm.value.id)
     if (idx !== -1) {
       users.value[idx] = res.data.user
@@ -405,43 +419,45 @@ const submitEditUser = async () => {
   }
 }
 
+const deleteUser = async (user) => {
+  if (!confirm(`Are you sure you want to delete user "${user.name}"?`)) return
+
+  try {
+    await api.delete(`/users/${user.id}`)
+    users.value = users.value.filter(u => u.id !== user.id)
+  } catch (err) {
+    alert('Failed to delete user.')
+  }
+}
+
 const viewUser = (user) => {
-  showViewUserModal.value = true
   viewUserData.value = user
+  showViewUserModal.value = true
 }
 
 const closeViewUser = () => {
   showViewUserModal.value = false
 }
 
-const deleteUser = async (user) => {
-  if (!confirm(`Are you sure you want to delete user "${user.name}"? This action cannot be undone.`)) {
-    return
-  }
-  try {
-    await api.delete(`/users/${user.id}`)
-    users.value = users.value.filter(u => u.id !== user.id)
-  } catch {
-    alert('Failed to delete user.')
-  }
+const formatDate = (dateString) => {
+  const d = new Date(dateString)
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
 }
 
 const roleBadgeClass = (role) => {
   switch (role) {
-    case 'admin': return 'bg-red-100 text-red-800'
-    case 'user': return 'bg-blue-100 text-blue-800'
-    case 'viewer': return 'bg-gray-100 text-gray-800'
-    default: return 'bg-gray-100 text-gray-800'
+    case 'admin':
+      return 'bg-red-100 text-red-700'
+    case 'user':
+      return 'bg-green-100 text-green-700'
+    case 'viewer':
+      return 'bg-yellow-100 text-yellow-700'
+    default:
+      return 'bg-gray-100 text-gray-700'
   }
-}
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-'
-  const d = new Date(dateStr)
-  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
 }
 </script>
 
 <style scoped>
-/* minimal styling */
+/* Add any extra styling if needed */
 </style>
