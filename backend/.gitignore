@@ -5,6 +5,8 @@
 /public/storage
 /storage/*
 !storage/app/public
+/storage/framework/cache/**
+
 /vendor
 .env
 .env.backup
