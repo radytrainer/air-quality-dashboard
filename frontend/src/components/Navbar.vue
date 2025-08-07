@@ -7,7 +7,7 @@
       <!-- Logo -->
       <div class="w-16 h-16 rounded-2xl">
         <img
-          src="../assets/images/Logo.png"
+          src="../assets/videos/18454482.gif"
           alt="Air Quality Icon"
           class="w-full h-full object-cover"
         />
