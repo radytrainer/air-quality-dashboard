@@ -31,7 +31,7 @@ use App\Http\Controllers\Api\AqiCompareController;
 | Public routes and routes protected by auth:sanctum middleware.
 |
 */
-
+Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
