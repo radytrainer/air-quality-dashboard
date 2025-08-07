@@ -76,42 +76,90 @@ const currentTime = ref(new Date())
 const searchQuery = ref('')
 
 let map = null
-const markers = ref([])
+let markers = []
 
-const pollutants = ref([
-  { label: 'AQI', value: 'aqi' },
-  { label: 'PM₂.₅', value: 'pm25' },
-  { label: 'PM₁₀', value: 'pm10' },
-  { label: 'Ozone (O₃)', value: 'o3' },
-  { label: 'NO₂', value: 'no2' },
-  { label: 'SO₂', value: 'so2' },
-  { label: 'CO', value: 'co' },
-])
-const selectedPollutant = ref('aqi')
+const getColor = (aqi) => {
+  const val = parseInt(aqi)
+  if (val <= 50) return '#00e400'      // Good - Green
+  if (val <= 100) return '#ffff00'     // Moderate - Yellow
+  if (val <= 150) return '#ff7e00'     // Unhealthy for Sensitive Groups - Orange
+  if (val <= 200) return '#ff0000'     // Unhealthy - Red
+  if (val <= 300) return '#99004c'     // Very Unhealthy - Purple
+  return '#7e0023'                     // Hazardous - Maroon
+}
 
-// Setup map
-const initMap = async () => {
-  map = L.map('map', {
-    center: [20, 100],
-    zoom: 3,
-    zoomControl: true,
-    scrollWheelZoom: false,
-  });
+const getStatus = (aqi) => {
+  const val = parseInt(aqi)
+  if (val <= 50) return 'Good'
+  if (val <= 100) return 'Moderate'
+  if (val <= 150) return 'Unhealthy for Sensitive Groups'
+  if (val <= 200) return 'Unhealthy'
+  if (val <= 300) return 'Very Unhealthy'
+  return 'Hazardous'
+}
 
-  // Changed map link to OpenStreetMap standard tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: `
-      &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> |
-      Powered by <a href="https://yourappwebsite.com" target="_blank" rel="noopener noreferrer">Air Quality Dashboard</a>
-    `,
-    maxZoom: 19,
-    subdomains: 'abc', // optional for OSM, but you can keep or remove
-  }).addTo(map);
 
-  const mapContainer = map.getContainer();
-  mapContainer.addEventListener('wheel', (e) => {
-    if (e.ctrlKey) {
-      map.scrollWheelZoom.enable();
+const updateTop10 = () => {
+  const sorted = [...aqiData.value]
+    .filter(s => !isNaN(parseInt(s.aqi)))
+    .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+  top10HighAQI.value = sorted.slice(0, 10)
+  top10LowAQI.value = sorted.slice(-10).reverse()
+}
+
+const renderMarkers = () => {
+  markers.forEach(marker => marker.remove())
+  markers = []
+
+  aqiData.value.forEach(station => {
+    if (!station.lat || !station.lon) return
+
+    const color = getColor(station.aqi)
+    const status = getStatus(station.aqi)
+
+    const marker = L.circleMarker([station.lat, station.lon], {
+      radius: 6,
+      fillColor: color,
+      color: '#000',
+      weight: 0.8,
+      opacity: 1,
+      fillOpacity: 0.8,
+    }).addTo(map)
+
+    marker.bindPopup(`
+      <div style="font-family: Arial; font-size: 13px;">
+        <b>${station.name}</b><br/>
+        AQI: <strong style="color: ${color}">${station.aqi}</strong><br/>
+        Status: <em>${status}</em>
+      </div>
+    `)
+
+    markers.push(marker)
+  })
+}
+
+const fetchAQIData = async () => {
+  try {
+    const url = 'http://127.0.0.1:8000/api/aqi-global' // Your backend API URL
+    const { data } = await axios.get(url)
+
+    if (data.status === 'ok' && Array.isArray(data.data)) {
+      aqiData.value = data.data.map(station => {
+        // Example: generate flag url using country code (assuming station.country_code)
+        // Use a fallback flag image if no country_code or image available
+        const flag = station.country_code
+          ? `https://flagcdn.com/w40/${station.country_code.toLowerCase()}.png`
+          : ''
+
+        return {
+          ...station,
+          flag,
+        }
+      })
+
+      updateTop10()
+      renderMarkers()
+      currentTime.value = new Date()
     } else {
       console.error('API returned unexpected data:', data)
     }
@@ -213,6 +261,15 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+
+.stats-grid {
+  margin-top: 20px;
+}
+
+.stats-card {
+  border-radius: 0.75rem;
 }
 </style>
