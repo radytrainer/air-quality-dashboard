@@ -5,61 +5,27 @@
     </div>
 
     <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg border border-gray-800">
-        <h2 class="text-xl font-bold mb-4 text-red-500">World's Most Polluted City Rankings (2025)</h2>
-        <table class="w-full text-gray-200">
-          <thead>
-            <tr class="border-b border-gray-700">
-              <th class="py-2 text-left">Rank</th>
-              <th class="py-2 text-left">Most Polluted Cities</th>
-              <th class="py-2 text-center">AQI</th>
-              <th class="py-2 text-center">AQI Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(station, index) in top10HighAQI" :key="index" class="border-b border-gray-700 hover:bg-gray-800">
-              <td class="py-2">{{ index + 1 }}</td>
-              <td class="py-2 flex items-center">
-                <img :src="station.flag" alt="Flag" class="w-6 h-4 mr-2" />
-                {{ station.name }}
-              </td>
-              <td class="py-2 text-center">
-                <span :style="{ color: getColor(station.aqi) }" class="text-lg font-bold">{{ station.aqi }}</span>
-              </td>
-              <td class="py-2 text-center">{{ getStatus(station.aqi) }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
+        <ul class="text-white">
+          <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
+            {{ station.name }} ({{ station.country }}): 
+            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
+          </li>
+        </ul>
       </div>
-
-      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg border border-gray-800">
-        <h2 class="text-xl font-bold mb-4 text-green-500">World's Least Polluted City Rankings (2025)</h2>
-        <table class="w-full text-gray-200">
-          <thead>
-            <tr class="border-b border-gray-700">
-              <th class="py-2 text-left">Rank</th>
-              <th class="py-2 text-left">Least Polluted Cities</th>
-              <th class="py-2 text-center">AQI</th>
-              <th class="py-2 text-center">AQI Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(station, index) in top10LowAQI" :key="index" class="border-b border-gray-700 hover:bg-gray-800">
-              <td class="py-2">{{ index + 1 }}</td>
-              <td class="py-2 flex items-center">
-                <img :src="station.flag" alt="Flag" class="w-6 h-4 mr-2" />
-                {{ station.name }}
-              </td>
-              <td class="py-2 text-center">
-                <span :style="{ color: getColor(station.aqi) }" class="text-lg font-bold">{{ station.aqi }}</span>
-              </td>
-              <td class="py-2 text-center">{{ getStatus(station.aqi) }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
+        <ul class="text-white">
+          <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
+            {{ station.name }} ({{ station.country }}): 
+            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
+            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
+          </li>
+        </ul>
       </div>
-
-      <div class="stats-card p-4 bg-gray-900 rounded-lg shadow-lg col-span-2">
+      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg col-span-2">
         <h2 class="text-xl font-bold mb-2 text-white">AQI Trend Graph</h2>
         <canvas id="aqiChart"></canvas>
       </div>
@@ -143,10 +109,9 @@ const renderMarkers = () => {
   markers = []
 
   aqiData.value.forEach(station => {
-    if (!station.lat || !station.lon) return
-
-    const color = getColor(station.aqi)
-    const status = getStatus(station.aqi)
+    const { lat, lon, aqi, name } = station
+    if (!lat || !lon) return
+    const color = getColor(aqi)
 
     const marker = L.circleMarker([station.lat, station.lon], {
       radius: 6,
@@ -268,8 +233,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
-  transition: box-shadow 0.3s ease;
-  background-color: #2a2a3e;
 }
 
 .stats-grid {

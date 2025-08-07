@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\PollutionDataController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
-
+use App\Http\Controllers\Admin\CityAQIAdminController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,7 +28,7 @@ use App\Http\Controllers\FireDataController;
 | Public routes and routes protected by auth:sanctum middleware.
 |
 */
-
+Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::post('/profile/image', [ProfileController::class, 'uploadImage']);
     Route::post('/profile/update', [UserController::class, 'updateProfile']); // Kept as is (possibly duplicate with /me PUT)
+
 
     // Admin-only routes inside auth middleware
     Route::middleware('role:admin')->group(function () {
