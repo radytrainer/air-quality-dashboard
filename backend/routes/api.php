@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminHealthAlertController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ContactController;
@@ -48,6 +49,17 @@ Route::prefix('air-quality')->group(function () {
     Route::get('/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
     Route::get('/pm25', [AirQualityController::class, 'getPm25Concentration']);
 });
+
+//
+Route::prefix('admin')->group(function () {
+    Route::get('/aqi-meta', [AdminHealthAlertController::class, 'fetchMeta']);
+    Route::get('/alert-config', [AdminHealthAlertController::class, 'getAlertConfig']);
+    Route::post('/alert-config', [AdminHealthAlertController::class, 'updateAlertConfig']);
+    Route::get('/alert-history', [AdminHealthAlertController::class, 'alertHistory']);
+    Route::post('/alert-history', [AdminHealthAlertController::class, 'storeAlertHistory']);
+    Route::get('/current-aqi', [AdminHealthAlertController::class, 'currentAqi']);
+});
+
 
 // Additional AQI endpoints
 Route::get('/aqi', [AqiController::class, 'getCityAqi']);
