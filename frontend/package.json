@@ -13,6 +13,7 @@
     "@heroicons/vue": "^2.2.0",
     "@tabler/icons-vue": "^3.34.0",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
+    "@vueuse/core": "^13.6.0",
     "apexcharts": "^5.2.0",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
