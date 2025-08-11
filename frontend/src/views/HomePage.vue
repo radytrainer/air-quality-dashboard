@@ -44,7 +44,7 @@
         <!-- Top 10 Most Polluted Cities -->
         <div class="bg-white rounded-2xl shadow-md p-6">
           <h2 class="text-xl font-semibold text-red-600 mb-4 border-b pb-2 flex items-center gap-2">
-            🔥 Top 10 Most Polluted Cities
+             Top 10 Most Polluted Cities
           </h2>
           <div class="overflow-x-auto">
             <table class="min-w-full table-auto text-sm">
@@ -90,7 +90,7 @@
         <!-- Top 10 Cleanest Cities -->
         <div class="bg-white rounded-2xl shadow-md p-6">
           <h2 class="text-xl font-semibold text-green-600 mb-4 border-b pb-2 flex items-center gap-2">
-            🌱 Top 10 Cleanest Air Cities
+            Top 10 Cleanest Air Cities
           </h2>
           <div class="overflow-x-auto">
             <table class="min-w-full table-auto text-sm">
