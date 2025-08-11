@@ -4,7 +4,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
-          <span class="bg-red-100 text-red-600 p-3 rounded-full">
+          <span class="bg-red-100 text-red-600 p-3 rounded-full text-2xl">
             📈
           </span>
           <div>
@@ -18,7 +18,7 @@
 
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
-          <span class="bg-green-100 text-green-600 p-3 rounded-full">
+          <span class="bg-green-100 text-green-600 p-3 rounded-full text-2xl">
             🌿
           </span>
           <div>
@@ -32,7 +32,7 @@
 
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
-          <span class="bg-blue-100 text-blue-600 p-3 rounded-full">
+          <span class="bg-blue-100 text-blue-600 p-3 rounded-full text-2xl">
             📊
           </span>
           <div>
@@ -46,7 +46,7 @@
 
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
-          <span class="bg-purple-100 text-purple-600 p-3 rounded-full">
+          <span class="bg-purple-100 text-purple-600 p-3 rounded-full text-2xl">
             🌍
           </span>
           <div>
@@ -60,51 +60,32 @@
     </div>
 
     <!-- Middle Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div class="bg-white rounded-xl shadow-md p-4">
-        <h2 class="text-lg font-semibold mb-4">AQI Map</h2>
-        <div class="map-wrapper rounded-lg overflow-hidden">
-          <div id="map" class="h-[400px] w-full"></div>
-        </div>
-      </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+      <div class="bg-white rounded-xl shadow-md p-4 relative">
+  <h2 class="text-lg font-semibold mb-4">AQI Map</h2>
+  <div class="map-wrapper rounded-lg overflow-hidden pt-16">
+    <div id="map" class="h-[400px] w-full"></div>
+  </div>
+</div>
+
       <div class="bg-white rounded-xl shadow-md p-4">
         <h2 class="text-lg font-semibold mb-4">AQI Trend</h2>
-        <canvas id="aqiChart" class="h-[400px] w-full "></canvas>
+        <canvas id="aqiChart" class="h-[400px] w-full"></canvas>
       </div>
     </div>
 
-    <!-- Bottom Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Top 10 Highest -->
-      <div class="bg-white rounded-xl shadow-md p-4">
-        <h2 class="text-lg font-semibold mb-4">Top 10 Highest AQI</h2>
-        <ul class="divide-y divide-gray-200">
-          <li v-for="(station, index) in top10HighAQI" :key="index" class="py-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium">{{ station.name }} ({{ station.country }})</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span :style="{ color: getColor(station.aqi) }" class="font-bold">{{ station.aqi }}</span>
-              <img :src="station.flag" alt="Flag" class="w-8 h-6 rounded shadow" />
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Top 10 Lowest -->
-      <div class="bg-white rounded-xl shadow-md p-4">
-        <h2 class="text-lg font-semibold mb-4">Top 10 Lowest AQI</h2>
-        <ul class="divide-y divide-gray-200">
-          <li v-for="(station, index) in top10LowAQI" :key="index" class="py-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium">{{ station.name }} ({{ station.country }})</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span :style="{ color: getColor(station.aqi) }" class="font-bold">{{ station.aqi }}</span>
-              <img :src="station.flag" alt="Flag" class="w-8 h-6 rounded shadow" />
-            </div>
-          </li>
-        </ul>
+    <!-- Bottom Section: AQI Categories Summary -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-6">AQI Categories Summary</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+        <div v-for="category in aqiCategories" :key="category.name"
+          class="p-4 rounded-lg border flex flex-col items-center justify-center">
+          <div class="w-10 h-10 rounded-full mb-2" :style="{ backgroundColor: category.color }"></div>
+          <p class="font-semibold">{{ category.name }}</p>
+          <p class="text-2xl font-bold" :style="{ color: category.color }">
+            {{ category.count }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -125,25 +106,22 @@ let map = null
 let markers = []
 let aqiChart = null
 
-// AQI Color Scale
 const getColor = (aqi) => {
   const val = parseInt(aqi)
-  if (val <= 50) return '#00e400'
-  if (val <= 100) return '#ffff00'
-  if (val <= 150) return '#ff7e00'
-  if (val <= 200) return '#ff0000'
-  if (val <= 300) return '#99004c'
-  return '#7e0023'
+  if (val <= 50) return '#00e400'        // Good - Green
+  if (val <= 100) return '#ffff00'       // Moderate - Yellow
+  if (val <= 150) return '#ff7e00'       // Unhealthy for Sensitive Groups - Orange
+  if (val <= 200) return '#ff0000'       // Unhealthy - Red
+  if (val <= 300) return '#99004c'       // Very Unhealthy - Purple
+  return '#7e0023'                       // Hazardous - Maroon
 }
 
-// Average AQI Calculation
 const avgAQI = computed(() => {
   if (!aqiData.value.length) return 'N/A'
   const sum = aqiData.value.reduce((acc, s) => acc + (parseInt(s.aqi) || 0), 0)
   return Math.round(sum / aqiData.value.length)
 })
 
-// Top 10 Lists
 const updateTop10 = () => {
   const sorted = [...aqiData.value]
     .filter(s => !isNaN(parseInt(s.aqi)))
@@ -152,7 +130,6 @@ const updateTop10 = () => {
   top10LowAQI.value = sorted.slice(-10).reverse()
 }
 
-// Render Leaflet Map Markers
 const renderMarkers = () => {
   markers.forEach(marker => marker.remove())
   markers = []
@@ -173,33 +150,45 @@ const renderMarkers = () => {
     markers.push(marker)
   })
 }
+
 const truncateLabel = (label, maxLength = 10) => {
   if (label.length <= maxLength) return label
   return label.slice(0, maxLength - 1) + '…'
 }
 
-// Update Chart Data
 const updateChart = () => {
   if (!aqiChart) return
-
   const dataPoints = top10HighAQI.value.map(station => parseInt(station.aqi) || 0)
   const labels = top10HighAQI.value.map(station => truncateLabel(station.name, 10))
-
   const maxAQI = Math.max(...dataPoints)
-
-  const pointColors = dataPoints.map(val =>
-    val === maxAQI ? '#ff0000' : 'rgba(16, 185, 129, 1)'
-  )
-
+  const pointColors = dataPoints.map(val => val === maxAQI ? '#ff0000' : 'rgba(16, 185, 129, 1)')
   aqiChart.data.labels = labels
   aqiChart.data.datasets[0].data = dataPoints
   aqiChart.data.datasets[0].pointBackgroundColor = pointColors
   aqiChart.update()
 }
 
+// New computed for AQI categories count
+const aqiCategories = computed(() => {
+  const categories = [
+    { name: 'Good', range: [0, 50], color: '#00e400', count: 0 },
+    { name: 'Moderate', range: [51, 100], color: '#ffff00', count: 0 },
+    { name: 'Unhealthy SG', range: [101, 150], color: '#ff7e00', count: 0 },
+    { name: 'Unhealthy', range: [151, 200], color: '#ff0000', count: 0 },
+    { name: 'Very Unhealthy', range: [201, 300], color: '#99004c', count: 0 },
+    { name: 'Hazardous', range: [301, Infinity], color: '#7e0023', count: 0 },
+  ]
 
+  aqiData.value.forEach(station => {
+    const aqi = parseInt(station.aqi)
+    if (isNaN(aqi)) return
+    const cat = categories.find(c => aqi >= c.range[0] && aqi <= c.range[1])
+    if (cat) cat.count++
+  })
 
-// Fetch AQI Data from API
+  return categories
+})
+
 const fetchAQIData = async () => {
   try {
     const { data } = await axios.get('http://127.0.0.1:8000/api/aqi-global')
@@ -214,7 +203,6 @@ const fetchAQIData = async () => {
   }
 }
 
-// Initialize Leaflet Map
 const initMap = () => {
   map = L.map('map', {
     center: [20, 100],
@@ -235,16 +223,15 @@ const initMap = () => {
 onMounted(() => {
   initMap()
 
-  // Initialize Chart after DOM is mounted
   const ctx = document.getElementById('aqiChart').getContext('2d')
   const gradient = ctx.createLinearGradient(0, 0, 0, 400)
-  gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)') // emerald 500 light
-  gradient.addColorStop(1, 'rgba(16, 185, 129, 0)')   // transparent
+  gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)')
+  gradient.addColorStop(1, 'rgba(16, 185, 129, 0)')
 
   aqiChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: [], // initially empty
+      labels: [],
       datasets: [{
         label: 'AQI',
         data: [],
@@ -284,6 +271,17 @@ onMounted(() => {
   })
 
   fetchAQIData()
-  setInterval(fetchAQIData, 30000) // refresh every 30 seconds
+  setInterval(fetchAQIData, 30000)
 })
 </script>
+<style scoped>
+.map-wrapper {
+  height: 500px;
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 0;
+}
+
+</style>
