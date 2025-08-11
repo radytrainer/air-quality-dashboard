@@ -3,103 +3,69 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\Pool;
 
 class AqiCompareController extends Controller
 {
-    public function compare(Request $request)
+    public function getGlobalAQI()
     {
-        $city1 = $request->query('city1');
-        $city2 = $request->query('city2');
+        set_time_limit(0);
 
-        if (!$city1 || !$city2) {
-            return response()->json(['error' => 'Both city1 and city2 are required'], 400);
+        $token = env('WAQI_API_TOKEN');
+        $bounds = '-85,-180,85,180';
+        $mapUrl = "https://api.waqi.info/map/bounds/?latlng=$bounds&token=$token";
+
+        // Get stations list
+        $stations = Http::get($mapUrl)->json('data') ?? [];
+
+        // Limit to first 120 stations to avoid too many requests
+        $stations = array_slice($stations, 0, 120);
+
+        // Remove duplicates
+        $uniqueStations = [];
+        foreach ($stations as $station) {
+            $cityKey = strtolower($station['station']['name']);
+            if (!isset($uniqueStations[$cityKey])) {
+                $uniqueStations[$cityKey] = $station;
+            }
         }
 
-        if (strtolower($city1) === strtolower($city2)) {
-            return response()->json(['error' => 'Please choose two different cities'], 422);
-        }
+        // Parallel requests
+        $responses = Http::pool(function (Pool $pool) use ($uniqueStations, $token) {
+            $reqs = [];
+            foreach ($uniqueStations as $station) {
+                $lat = $station['lat'];
+                $lon = $station['lon'];
+                $reqs[] = $pool->get("https://api.waqi.info/feed/geo:$lat;$lon/?token=$token");
+            }
+            return $reqs;
+        });
 
-        $token = config('services.waqi.token');
+        $result = [];
+        foreach ($responses as $response) {
+            if (!$response->ok()) continue;
 
-        $city1Response = Http::get("https://api.waqi.info/feed/" . urlencode($city1) . "/?token=$token");
-        $city2Response = Http::get("https://api.waqi.info/feed/" . urlencode($city2) . "/?token=$token");
+            $data = $response->json();
+            if (($data['status'] ?? null) !== 'ok') continue;
 
-        if ($city1Response->failed() || $city2Response->failed()) {
-            return response()->json(['error' => 'Failed to fetch data from WAQI'], 500);
-        }
+            $iaqi = $data['data']['iaqi'] ?? [];
 
-        $data1 = $city1Response->json();
-        $data2 = $city2Response->json();
-
-        if ($data1['status'] !== 'ok' || $data2['status'] !== 'ok') {
-            return response()->json(['error' => 'One or both cities not found or invalid'], 404);
+            $result[] = [
+                
+                'city'        => $data['data']['city']['name'] ?? null,
+                'country'     => $data['data']['city']['name'] ?? 'Unknown',
+                'temperature' => $iaqi['t']['v'] ?? null,
+                'humidity'    => $iaqi['h']['v'] ?? null,
+                'wind'        => $iaqi['w']['v'] ?? null,
+                'uv'          => $iaqi['uv']['v'] ?? null,
+            ];
         }
 
         return response()->json([
-            'city1' => $this->extractCityData($data1),
-            'city2' => $this->extractCityData($data2),
+            'status' => 'ok',
+            'count'  => count($result),
+            'data'   => $result,
         ]);
     }
-
-    private function extractCityData($apiData)
-    {
-        $aqi = $apiData['data']['aqi'] ?? null;
-
-        return [
-            'name' => $apiData['data']['city']['name'],
-            'aqi' => $aqi,
-            'level' => $this->getAqiLevel($aqi),
-            'dominant_pollutant' => $apiData['data']['dominentpol'] ?? 'N/A',
-            'iaqi' => $apiData['data']['iaqi'] ?? [],
-            'timezone' => $apiData['data']['time']['tz'] ?? 'UTC',
-        ];
-    }
-
-    private function getAqiLevel($aqi)
-    {
-        if ($aqi <= 50) return 'Good';
-        if ($aqi <= 100) return 'Moderate';
-        if ($aqi <= 150) return 'Unhealthy for Sensitive Groups';
-        if ($aqi <= 200) return 'Unhealthy';
-        if ($aqi <= 300) return 'Very Unhealthy';
-        return 'Hazardous';
-    }
-    public function allCitiesFromWaqi()
-{
-    set_time_limit(0); // Prevent timeout for large data fetch
-
-    $token = config('services.waqi.token'); // From your .env
-    $bounds = '-85,-180,85,180'; // Full world bounds
-
-    $url = "https://api.waqi.info/map/bounds/?latlng=$bounds&token=$token";
-
-    $response = Http::get($url);
-
-    if ($response->failed()) {
-        return response()->json(['error' => 'Failed to fetch city data from WAQI'], 500);
-    }
-
-    $data = $response->json();
-
-    if ($data['status'] !== 'ok') {
-        return response()->json(['error' => 'Invalid response from WAQI API'], 500);
-    }
-
-    // Filter and format station data (which includes city names)
-    $cities = collect($data['data'])
-        ->map(function ($station) {
-            return [
-                'name' => $station['station']['name'],
-                'lat' => $station['lat'],
-                'lon' => $station['lon'],
-                'aqi' => $station['aqi']
-            ];
-        })
-        ->unique('name') // Remove duplicates by name
-        ->values();
-
-    return response()->json($cities);
-}
 }

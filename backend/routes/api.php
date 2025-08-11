@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\ApiAnalyController;
 use App\Http\Controllers\Api\AqiCompareController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -57,11 +58,11 @@ Route::get('/aqi', [AqiController::class, 'getCityAqi']);
 Route::get('/aqi-global', [AqiController::class, 'global']);
 Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
 
-Route::get('/compare', [AqiCompareController::class, 'compare']);
-Route::get('/aqi/compare', [AqiCompareController::class, 'compare']); 
-Route::get('/cities', [AqiCompareController::class, 'allCitiesFromWaqi']);
 
-
+Route::get('/waqi-city', [AqiCompareController::class, 'getCityPollution']);
+Route::get('/global-aqi', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/country-aqi-info', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/aqi-global', [AqiCompareController::class, 'global']);
 Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
 // Analy Page
 Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
