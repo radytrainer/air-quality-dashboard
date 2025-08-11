@@ -65,6 +65,7 @@ Route::prefix('admin')->group(function () {
 Route::get('/aqi', [AqiController::class, 'getCityAqi']);
 Route::get('/aqi-global', [AqiController::class, 'global']);
 Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
+Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
 
 Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
 
