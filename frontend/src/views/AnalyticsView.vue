@@ -1,73 +1,126 @@
 <template>
-  <div class="container mx-auto p-4">
-    <div class="map-wrapper relative mb-6">
-      <div id="map" class="rounded-lg shadow-lg border border-gray-700 overflow-hidden"></div>
+  <div class="container mx-auto p-6 space-y-8">
+    <!-- Top Metrics Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
+        <div class="flex items-center gap-3">
+          <span class="bg-red-100 text-red-600 p-3 rounded-full text-2xl">
+            📈
+          </span>
+          <div>
+            <p class="text-sm text-gray-500">Highest AQI</p>
+            <p class="text-2xl font-semibold">
+              {{ top10HighAQI[0]?.aqi || 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
+        <div class="flex items-center gap-3">
+          <span class="bg-green-100 text-green-600 p-3 rounded-full text-2xl">
+            🌿
+          </span>
+          <div>
+            <p class="text-sm text-gray-500">Lowest AQI</p>
+            <p class="text-2xl font-semibold">
+              {{ top10LowAQI[0]?.aqi || 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
+        <div class="flex items-center gap-3">
+          <span class="bg-blue-100 text-blue-600 p-3 rounded-full text-2xl">
+            📊
+          </span>
+          <div>
+            <p class="text-sm text-gray-500">Average AQI</p>
+            <p class="text-2xl font-semibold">
+              {{ avgAQI }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
+        <div class="flex items-center gap-3">
+          <span class="bg-purple-100 text-purple-600 p-3 rounded-full text-2xl">
+            🌍
+          </span>
+          <div>
+            <p class="text-sm text-gray-500">Cities Tracked</p>
+            <p class="text-2xl font-semibold">
+              {{ aqiData.length }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="stats-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
-            {{ station.name }} ({{ station.country }}): 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
+    <!-- Middle Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+      <div class="bg-white rounded-xl shadow-md p-4 relative">
+  <h2 class="text-lg font-semibold mb-4">AQI Map</h2>
+  <div class="map-wrapper rounded-lg overflow-hidden pt-16">
+    <div id="map" class="h-[400px] w-full"></div>
+  </div>
+</div>
+
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <h2 class="text-lg font-semibold mb-4">AQI Trend</h2>
+        <canvas id="aqiChart" class="h-[400px] w-full"></canvas>
       </div>
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
-        <ul class="text-white">
-          <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
-            {{ station.name }} ({{ station.country }}): 
-            <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
-          </li>
-        </ul>
-      </div>
-      <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg col-span-2">
-        <h2 class="text-xl font-bold mb-2 text-white">AQI Trend Graph</h2>
-        <canvas id="aqiChart"></canvas>
+    </div>
+
+    <!-- Bottom Section: AQI Categories Summary -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-6">AQI Categories Summary</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+        <div v-for="category in aqiCategories" :key="category.name"
+          class="p-4 rounded-lg border flex flex-col items-center justify-center">
+          <div class="w-10 h-10 rounded-full mb-2" :style="{ backgroundColor: category.color }"></div>
+          <p class="font-semibold">{{ category.name }}</p>
+          <p class="text-2xl font-bold" :style="{ color: category.color }">
+            {{ category.count }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'leaflet-velocity/dist/leaflet-velocity.min.js'
-import 'leaflet-velocity/dist/leaflet-velocity.min.css'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
 
 const aqiData = ref([])
 const top10HighAQI = ref([])
 const top10LowAQI = ref([])
-let aqiChart = null
+
 let map = null
 let markers = []
+let aqiChart = null
 
 const getColor = (aqi) => {
   const val = parseInt(aqi)
-  if (val <= 50) return '#00e400'      // Good - Green
-  if (val <= 100) return '#ffff00'     // Moderate - Yellow
-  if (val <= 150) return '#ff7e00'     // Unhealthy for Sensitive Groups - Orange
-  if (val <= 200) return '#ff0000'     // Unhealthy - Red
-  if (val <= 300) return '#99004c'     // Very Unhealthy - Purple
-  return '#7e0023'                     // Hazardous - Maroon
+  if (val <= 50) return '#00e400'        // Good - Green
+  if (val <= 100) return '#ffff00'       // Moderate - Yellow
+  if (val <= 150) return '#ff7e00'       // Unhealthy for Sensitive Groups - Orange
+  if (val <= 200) return '#ff0000'       // Unhealthy - Red
+  if (val <= 300) return '#99004c'       // Very Unhealthy - Purple
+  return '#7e0023'                       // Hazardous - Maroon
 }
 
-const getStatus = (aqi) => {
-  const val = parseInt(aqi)
-  if (val <= 50) return 'Good'
-  if (val <= 100) return 'Moderate'
-  if (val <= 150) return 'Unhealthy for Sensitive Groups'
-  if (val <= 200) return 'Unhealthy'
-  if (val <= 300) return 'Very Unhealthy'
-  return 'Hazardous'
-}
+const avgAQI = computed(() => {
+  if (!aqiData.value.length) return 'N/A'
+  const sum = aqiData.value.reduce((acc, s) => acc + (parseInt(s.aqi) || 0), 0)
+  return Math.round(sum / aqiData.value.length)
+})
 
 const updateTop10 = () => {
   const sorted = [...aqiData.value]
@@ -77,42 +130,12 @@ const updateTop10 = () => {
   top10LowAQI.value = sorted.slice(-10).reverse()
 }
 
-const updateChart = () => {
-  const ctx = document.getElementById('aqiChart').getContext('2d')
-  if (aqiChart) aqiChart.destroy()
-
-  aqiChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: aqiData.value.map(station => station.name),
-      datasets: [
-        {
-          label: 'AQI Levels',
-          data: aqiData.value.map(station => parseInt(station.aqi) || 0),
-          backgroundColor: aqiData.value.map(station => getColor(parseInt(station.aqi) || 0)),
-          borderColor: '#000',
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true },
-      },
-    },
-  })
-}
-
 const renderMarkers = () => {
   markers.forEach(marker => marker.remove())
   markers = []
-
   aqiData.value.forEach(station => {
-    const { lat, lon, aqi, name } = station
-    if (!lat || !lon) return
-    const color = getColor(aqi)
-
+    if (!station.lat || !station.lon) return
+    const color = getColor(station.aqi)
     const marker = L.circleMarker([station.lat, station.lon], {
       radius: 6,
       fillColor: color,
@@ -121,59 +144,62 @@ const renderMarkers = () => {
       opacity: 1,
       fillOpacity: 0.8,
     }).addTo(map)
-
-    marker.bindPopup(`
-      <div style="font-family: Arial; font-size: 13px;">
-        <b>${station.name}</b><br/>
-        AQI: <strong style="color: ${color}">${station.aqi}</strong><br/>
-        Status: <em>${status}</em>
-      </div>
-    `)
-
+    marker.bindPopup(
+      `<b>${station.name}</b><br/>AQI: <span style="color:${color}">${station.aqi}</span>`
+    )
     markers.push(marker)
   })
 }
 
+const truncateLabel = (label, maxLength = 10) => {
+  if (label.length <= maxLength) return label
+  return label.slice(0, maxLength - 1) + '…'
+}
+
+const updateChart = () => {
+  if (!aqiChart) return
+  const dataPoints = top10HighAQI.value.map(station => parseInt(station.aqi) || 0)
+  const labels = top10HighAQI.value.map(station => truncateLabel(station.name, 10))
+  const maxAQI = Math.max(...dataPoints)
+  const pointColors = dataPoints.map(val => val === maxAQI ? '#ff0000' : 'rgba(16, 185, 129, 1)')
+  aqiChart.data.labels = labels
+  aqiChart.data.datasets[0].data = dataPoints
+  aqiChart.data.datasets[0].pointBackgroundColor = pointColors
+  aqiChart.update()
+}
+
+// New computed for AQI categories count
+const aqiCategories = computed(() => {
+  const categories = [
+    { name: 'Good', range: [0, 50], color: '#00e400', count: 0 },
+    { name: 'Moderate', range: [51, 100], color: '#ffff00', count: 0 },
+    { name: 'Unhealthy SG', range: [101, 150], color: '#ff7e00', count: 0 },
+    { name: 'Unhealthy', range: [151, 200], color: '#ff0000', count: 0 },
+    { name: 'Very Unhealthy', range: [201, 300], color: '#99004c', count: 0 },
+    { name: 'Hazardous', range: [301, Infinity], color: '#7e0023', count: 0 },
+  ]
+
+  aqiData.value.forEach(station => {
+    const aqi = parseInt(station.aqi)
+    if (isNaN(aqi)) return
+    const cat = categories.find(c => aqi >= c.range[0] && aqi <= c.range[1])
+    if (cat) cat.count++
+  })
+
+  return categories
+})
+
 const fetchAQIData = async () => {
   try {
-    const url = 'http://127.0.0.1:8000/api/aqi-global' // Your backend Laravel API
-    const { data } = await axios.get(url)
-
+    const { data } = await axios.get('http://127.0.0.1:8000/api/aqi-global')
     if (data.status === 'ok' && Array.isArray(data.data)) {
       aqiData.value = data.data
-
       updateTop10()
       renderMarkers()
       updateChart()
-    } else {
-      console.error('API returned unexpected data:', data)
     }
   } catch (err) {
-    console.error('Failed to fetch AQI:', err)
-  }
-}
-
-const addWindLayer = async () => {
-  try {
-    const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
-    const windData = res.data
-
-    const velocityLayer = L.velocityLayer({
-      displayValues: true,
-      displayOptions: {
-        velocityType: 'Global Wind',
-        position: 'bottomleft',
-        emptyString: 'No wind data',
-        angleConvention: 'bearingCW',
-        speedUnit: 'mph',
-      },
-      data: windData,
-      maxVelocity: 15,
-    })
-
-    velocityLayer.addTo(map)
-  } catch (error) {
-    console.error('Failed to load wind data:', error)
+    console.error(err)
   }
 }
 
@@ -183,43 +209,72 @@ const initMap = () => {
     zoom: 4,
     zoomControl: true,
     scrollWheelZoom: false,
-    attributionControl: false,
   })
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap & CARTO',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(map)
-
-  map.on('focus', () => map.scrollWheelZoom.enable())
-  map.on('blur', () => map.scrollWheelZoom.disable())
-  map.on('mousewheel', e => {
-    if (!e.originalEvent.ctrlKey) {
-      map.scrollWheelZoom.disable()
-      e.originalEvent.preventDefault()
-    } else {
-      map.scrollWheelZoom.enable()
+  L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    {
+      attribution: '&copy; OpenStreetMap & CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19,
     }
-  })
-
-  addWindLayer()
+  ).addTo(map)
 }
 
 onMounted(() => {
   initMap()
+
+  const ctx = document.getElementById('aqiChart').getContext('2d')
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+  gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)')
+  gradient.addColorStop(1, 'rgba(16, 185, 129, 0)')
+
+  aqiChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'AQI',
+        data: [],
+        borderColor: 'rgba(16, 185, 129, 1)',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#000',
+          bodyColor: '#000',
+          borderColor: '#ccc',
+          borderWidth: 1,
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#666', font: { size: 12 } }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#666', font: { size: 12 } }
+        }
+      }
+    }
+  })
+
   fetchAQIData()
-  setInterval(fetchAQIData, 30000) // refresh every 30 seconds
+  setInterval(fetchAQIData, 30000)
 })
 </script>
-
 <style scoped>
-.container {
-  margin-top: 60px;
-  background-color: #1a1a2e;
-  color: #e0e0e0;
-}
-
 .map-wrapper {
   height: 500px;
   width: 100%;
@@ -229,42 +284,4 @@ onMounted(() => {
   z-index: 0;
 }
 
-#map {
-  width: 100%;
-  height: 100%;
-  border-radius: 0.75rem;
-}
-
-.stats-grid {
-  margin-top: 20px;
-}
-
-.stats-card {
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #2a2a3e 0%, #3a3a5e 100%);
-}
-
-.stats-card table {
-  border-collapse: collapse;
-}
-
-.stats-card th, .stats-card td {
-  padding: 0.5rem;
-}
-
-.stats-card th {
-  font-weight: bold;
-  color: #b0b0b0;
-}
-
-.stats-card tbody tr:hover {
-  background-color: #33334d;
-}
-
-#aqiChart {
-  max-height: 300px;
-  background-color: #2a2a3e;
-  border-radius: 0.5rem;
-  padding: 1rem;
-}
 </style>
