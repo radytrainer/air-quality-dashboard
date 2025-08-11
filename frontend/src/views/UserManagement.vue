@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 p-6" v-click-outside="closeDropdown">
+
     <div class="max-w-7xl mx-auto">
 
       <!-- Header and Add User button -->
@@ -38,7 +39,7 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Users</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Active</th>
@@ -74,10 +75,45 @@
                 >●</span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(user.created_at) }}</td>
-              <td class="px-6 py-4 text-right space-x-2">
-                <button @click="viewUser(user)" class="text-blue-600 hover:underline">View</button>
-                <button @click="editUser(user)" class="text-indigo-600 hover:underline">Edit</button>
-                <button @click="deleteUser(user)" class="text-red-600 hover:underline">Delete</button>
+              <td class="px-6 py-4 text-right ">
+                <button
+                  @click="toggleDropdown(user.id)"
+                  class="dropdown-button text-gray-600 hover:text-gray-900 focus:outline-none "
+                  aria-haspopup="true"
+                  :aria-expanded="dropdownOpenId === user.id"
+                >
+                  <!-- vertical ellipsis icon -->
+                  <svg class="w-7 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 4a2 2 0 110-4 2 2 0 010 4zm0 4a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+
+                <div
+                  v-if="dropdownOpenId === user.id"
+                  class="dropdown-menu absolute mb-10 w-32 bg-white border border-gray-200 rounded shadow-md z-50"
+                >
+                  <button
+                    @click="viewUser(user); closeDropdown()"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                  >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    View
+                  </button>
+                  <button
+                    @click="editUser(user); closeDropdown()"
+                    class="block w-full text-left px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100"
+                  >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteUser(user); closeDropdown()"
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -113,8 +149,8 @@
 
           <div class="flex justify-end gap-2 mt-4">
             <button type="button" @click="closeAddUser" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-            <button type="submit" :disabled="addUserLoading" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              {{ addUserLoading ? 'Saving...' : 'Save' }}
+            <button type="submit" :disabled="addUserLoading.value" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              {{ addUserLoading.value ? 'Saving...' : 'Save' }}
             </button>
           </div>
           <div v-if="addUserErrors" class="text-red-600 mt-2 text-xs">
@@ -163,8 +199,8 @@
 
           <div class="flex justify-end gap-2 mt-4">
             <button type="button" @click="closeEditUser" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-            <button type="submit" :disabled="editUserLoading" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              {{ editUserLoading ? 'Saving...' : 'Save' }}
+            <button type="submit" :disabled="editUserLoading.value" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              {{ editUserLoading.value ? 'Saving...' : 'Save' }}
             </button>
           </div>
           <div v-if="editUserErrors" class="text-red-600 mt-2 text-xs">
@@ -187,7 +223,7 @@
             alt="profile"
             class="w-20 h-20 rounded-full object-cover"
           />
-          <div v-else class="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-3xl">
+          <div class="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-3xl" v-else>
             {{ viewUserData.name?.charAt(0).toUpperCase() }}
           </div>
           <div>
@@ -215,7 +251,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import api from '@/services/api'
 
 const users = ref([])
@@ -256,10 +292,13 @@ const editUserForm = ref({
 })
 const editUserImagePreview = ref(null)
 const editUserErrors = ref({})
-const editUserLoading = ref(false)
+const editUserLoading = ref(false) // Fixed: Properly defined as a ref
 
 const viewUserData = ref({})
 
+const dropdownOpenId = ref(null)
+
+// Fetch users from API
 const fetchUsers = async () => {
   loading.value = true
   try {
@@ -272,8 +311,35 @@ const fetchUsers = async () => {
   }
 }
 
-onMounted(fetchUsers)
+onMounted(() => {
+  fetchUsers()
+  document.addEventListener('click', handleClickOutside)
+})
 
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// Click outside handler to close dropdown
+const handleClickOutside = (e) => {
+  if (!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-button')) {
+    closeDropdown()
+  }
+}
+
+// Dropdown toggle and close functions
+const toggleDropdown = (id) => {
+  if (dropdownOpenId.value === id) {
+    dropdownOpenId.value = null
+  } else {
+    dropdownOpenId.value = id
+  }
+}
+const closeDropdown = () => {
+  dropdownOpenId.value = null
+}
+
+// Filtering users based on search, role, and status filters
 const filteredUsers = computed(() => {
   return users.value.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -326,46 +392,42 @@ const onAddImageChange = (e) => {
 const submitAddUser = async () => {
   addUserLoading.value = true
   addUserErrors.value = {}
-
   try {
     const formData = new FormData()
     for (const key in addUserForm.value) {
-      if (addUserForm.value[key] !== null && addUserForm.value[key] !== '') {
+      if (addUserForm.value[key] !== null) {
         formData.append(key, addUserForm.value[key])
       }
     }
-
-    // Don't set Content-Type here, let Axios set it automatically
-    const res = await api.post('/users', formData)
-
-    users.value.unshift(res.data.user)
+    await api.post('/users', formData)
+    await fetchUsers()
     closeAddUser()
-  } catch (err) {
-    if (err.response?.status === 422) {
-      addUserErrors.value = err.response.data.errors || {}
+  } catch (e) {
+    if (e.response && e.response.data.errors) {
+      addUserErrors.value = e.response.data.errors
     } else {
-      alert('Failed to add user.')
+      alert('Failed to add user')
     }
   } finally {
     addUserLoading.value = false
   }
 }
 
-const editUser = (user) => {
+const openEditUser = (user) => {
   showEditUserModal.value = true
+  editUserErrors.value = {}
   editUserForm.value = {
     id: user.id,
     name: user.name,
     email: user.email,
     password: '',
     password_confirmation: '',
-    role: user.role || '',
+    role: user.role,
     phone: user.phone || '',
     bio: user.bio || '',
     profile_image: null,
   }
-  editUserImagePreview.value = user.profile_image || null
-  editUserErrors.value = {}
+  editUserImagePreview.value = null
 }
 
 const closeEditUser = () => {
@@ -386,47 +448,24 @@ const onEditImageChange = (e) => {
 const submitEditUser = async () => {
   editUserLoading.value = true
   editUserErrors.value = {}
-
   try {
     const formData = new FormData()
     for (const key in editUserForm.value) {
-      if (editUserForm.value[key] !== null && editUserForm.value[key] !== '') {
+      if (editUserForm.value[key] !== null) {
         formData.append(key, editUserForm.value[key])
       }
     }
-    // For password, if empty, don't send
-    if (!editUserForm.value.password) {
-      formData.delete('password')
-      formData.delete('password_confirmation')
-    }
-
-    const res = await api.post(`/users/${editUserForm.value.id}`, formData)
-
-    // Update user in list
-    const idx = users.value.findIndex(u => u.id === editUserForm.value.id)
-    if (idx !== -1) {
-      users.value[idx] = res.data.user
-    }
+    await api.post(`/users/${editUserForm.value.id}`, formData, { headers: { 'X-HTTP-Method-Override': 'PATCH' } })
+    await fetchUsers()
     closeEditUser()
-  } catch (err) {
-    if (err.response?.status === 422) {
-      editUserErrors.value = err.response.data.errors || {}
+  } catch (e) {
+    if (e.response && e.response.data.errors) {
+      editUserErrors.value = e.response.data.errors
     } else {
-      alert('Failed to update user.')
+      alert('Failed to update user')
     }
   } finally {
     editUserLoading.value = false
-  }
-}
-
-const deleteUser = async (user) => {
-  if (!confirm(`Are you sure you want to delete user "${user.name}"?`)) return
-
-  try {
-    await api.delete(`/users/${user.id}`)
-    users.value = users.value.filter(u => u.id !== user.id)
-  } catch (err) {
-    alert('Failed to delete user.')
   }
 }
 
@@ -439,25 +478,37 @@ const closeViewUser = () => {
   showViewUserModal.value = false
 }
 
-const formatDate = (dateString) => {
-  const d = new Date(dateString)
+const deleteUser = async (user) => {
+  if (confirm(`Are you sure you want to delete user "${user.name}"?`)) {
+    try {
+      await api.delete(`/users/${user.id}`)
+      await fetchUsers()
+    } catch {
+      alert('Failed to delete user')
+    }
+  }
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
   return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
 }
 
 const roleBadgeClass = (role) => {
   switch (role) {
-    case 'admin':
-      return 'bg-red-100 text-red-700'
-    case 'user':
-      return 'bg-green-100 text-green-700'
-    case 'viewer':
-      return 'bg-yellow-100 text-yellow-700'
-    default:
-      return 'bg-gray-100 text-gray-700'
+    case 'admin': return 'bg-red-100 text-red-700'
+    case 'user': return 'bg-blue-100 text-blue-700'
+    case 'viewer': return 'bg-gray-100 text-gray-700'
+    default: return 'bg-gray-100 text-gray-700'
   }
 }
 </script>
 
 <style scoped>
-/* Add any extra styling if needed */
+/* Add pointer cursor to dropdown button */
+.dropdown-button {
+  cursor: pointer;
+}
+/* You can customize dropdown-menu styles here if needed */
 </style>
