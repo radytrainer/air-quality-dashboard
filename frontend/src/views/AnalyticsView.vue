@@ -19,26 +19,22 @@
         <h2 class="text-xl font-bold mb-2 text-white">Top 10 Highest AQI</h2>
         <ul class="text-white">
           <li v-for="(station, index) in top10HighAQI" :key="index" class="mb-2">
-            {{ station.name }}: 
+            {{ station.name }} ({{ station.country }}): 
             <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <span class="ml-1 text-sm italic">({{ getStatus(station.aqi) }})</span>
             <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
           </li>
         </ul>
       </div>
-
       <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg">
         <h2 class="text-xl font-bold mb-2 text-white">Top 10 Lowest AQI</h2>
         <ul class="text-white">
           <li v-for="(station, index) in top10LowAQI" :key="index" class="mb-2">
-            {{ station.name }}: 
+            {{ station.name }} ({{ station.country }}): 
             <span :style="{ color: getColor(station.aqi) }">{{ station.aqi }}</span>
-            <span class="ml-1 text-sm italic">({{ getStatus(station.aqi) }})</span>
             <img :src="station.flag" alt="Flag" class="w-12 h-8 inline-block ml-2" />
           </li>
         </ul>
       </div>
-
       <div class="stats-card p-4 bg-gray-800 rounded-lg shadow-lg col-span-2">
         <h2 class="text-xl font-bold mb-2 text-white">AQI Trend Graph</h2>
         <canvas id="aqiChart"></canvas>
@@ -126,11 +122,9 @@ const renderMarkers = () => {
   markers = []
 
   aqiData.value.forEach(station => {
-    if (!station.lat || !station.lon) return
-
-    const color = getColor(station.aqi)
-    const status = getStatus(station.aqi)
-
+    const { lat, lon, aqi, name } = station
+    if (!lat || !lon) return
+    const color = getColor(aqi)
 
     const marker = L.circleMarker([station.lat, station.lon], {
       radius: 6,
@@ -235,6 +229,8 @@ onMounted(() => {
 <style scoped>
 .container {
   margin-top: 60px;
+  background-color: #1a1a2e;
+  color: #e0e0e0;
 }
 
 .map-wrapper {
@@ -250,7 +246,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
-  transition: box-shadow 0.3s ease;
 }
 
 .stats-grid {
@@ -259,9 +254,30 @@ onMounted(() => {
 
 .stats-card {
   border-radius: 0.75rem;
+  background: linear-gradient(135deg, #2a2a3e 0%, #3a3a5e 100%);
+}
+
+.stats-card table {
+  border-collapse: collapse;
+}
+
+.stats-card th, .stats-card td {
+  padding: 0.5rem;
+}
+
+.stats-card th {
+  font-weight: bold;
+  color: #b0b0b0;
+}
+
+.stats-card tbody tr:hover {
+  background-color: #33334d;
 }
 
 #aqiChart {
   max-height: 300px;
+  background-color: #2a2a3e;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 </style>
