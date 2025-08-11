@@ -334,7 +334,7 @@ const renderMarkers = () => {
 
 const fetchAQIData = async () => {
   try {
-    const url = 'http://127.0.0.1:8000/api/aqi-global'
+    const url = 'http://127.0.0.1:8000/api/aqi'
     const { data } = await axios.get(url)
 
     if (data.status === 'ok' && Array.isArray(data.data)) {
