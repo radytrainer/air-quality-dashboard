@@ -345,25 +345,59 @@
 
 
   const fetchAQIData = async () => {
-    try {
-      const url = 'http://127.0.0.1:8000/api/aqi'
-      const { data } = await axios.get(url)
+  try {
+    // Fetch global AQI data
+    const url = 'http://127.0.0.1:8000/api/aqi'
+    const { data } = await axios.get(url)
 
-      if (data.status === 'ok' && Array.isArray(data.data)) {
-        aqiData.value = data.data
-        updateTop10()
-        renderMarkers()
-        // Removed updateChart() because it was undefined
-      } else {
-        console.error('API returned unexpected data:', data)
-        aqiData.value = []
-      }
-    } catch (err) {
-      console.error('Failed to fetch AQI:', err)
+    if (data.status === 'ok' && Array.isArray(data.data)) {
+      aqiData.value = data.data
+    } else {
+      console.error('API returned unexpected data:', data)
       aqiData.value = []
     }
-    currentTime.value = new Date()
+
+    // Fetch Phnom Penh AQI data
+    try {
+      const phnomPenhUrl = 'http://127.0.0.1:8000/api/air-quality/phnom-penh'
+      const phnomPenhRes = await axios.get(phnomPenhUrl)
+
+      if (phnomPenhRes.data && phnomPenhRes.data.list && phnomPenhRes.data.list.length > 0) {
+        const ppm = phnomPenhRes.data.list[0] // OpenWeather first record
+        const phnomPenhAQI = ppm.main.aqi // AQI (1-5 scale from OpenWeather)
+
+        // Convert OpenWeather's AQI scale to your scale (1-500)
+        // This is a simple mapping, you can adjust as needed
+        const scaleMap = { 1: 50, 2: 100, 3: 150, 4: 200, 5: 300 }
+        const convertedAQI = scaleMap[phnomPenhAQI] || 0
+
+        const phnomPenhData = {
+          name: 'Phnom Penh',
+          country: 'Cambodia',
+          flag: 'https://flagcdn.com/w320/kh.png',
+          lat: 11.562108,
+          lon: 104.888535,
+          aqi: convertedAQI
+        }
+
+        // Push Phnom Penh into the AQI list
+        aqiData.value.push(phnomPenhData)
+      }
+    } catch (err) {
+      console.error('Failed to fetch Phnom Penh AQI:', err)
+    }
+
+    updateTop10()
+    renderMarkers()
+
+  } catch (err) {
+    console.error('Failed to fetch AQI:', err)
+    aqiData.value = []
   }
+
+  currentTime.value = new Date()
+}
+
 
   const addWindLayer = async () => {
     try {
