@@ -155,6 +155,7 @@ const fetchCityData = async () => {
 }
 
 
+
 onMounted(() => {
   fetchCityData()
 })
