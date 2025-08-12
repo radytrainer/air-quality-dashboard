@@ -517,9 +517,40 @@
       alert('Error searching location')
     }
   }
+  const detectUserLocation = () => {
+  if (!navigator.geolocation) {
+    console.warn('Geolocation is not supported by this browser.')
+    return
+  }
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords
+      console.log('User location detected:', latitude, longitude)
+      if (map) {
+        // Do NOT change map view or zoom
+
+        // Add marker at user location
+        const userMarker = L.marker([latitude, longitude]).addTo(map)
+
+        // Bind popup message to marker and open it
+        userMarker.bindPopup('You are here').openPopup()
+      }
+    },
+    (error) => {
+      console.warn('Geolocation error:', error.message)
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    }
+  )
+}
+
 
   onMounted(() => {
     initMap()
+    detectUserLocation()
     fetchAQIData()
     setInterval(fetchAQIData, 30000) // refresh every 30 seconds
   })
