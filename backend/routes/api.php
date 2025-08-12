@@ -38,7 +38,6 @@ Route::prefix('air-quality')->group(function () {
     Route::get('/cambodia-cities', [AirQualityController::class, 'getCambodiaCities']);
 });
 
-//
 Route::prefix('admin')->group(function () {
     Route::get('/aqi-meta', [AdminHealthAlertController::class, 'fetchMeta']);
     Route::get('/alert-config', [AdminHealthAlertController::class, 'getAlertConfig']);
