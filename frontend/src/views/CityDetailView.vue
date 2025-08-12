@@ -97,17 +97,55 @@ const getStatus = (aqi) => {
 const fetchCityData = async () => {
   loading.value = true
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/aqi')
-    if (response.data.status === 'ok' && Array.isArray(response.data.data)) {
-      // If route param id is like "lat-lon" (e.g. "12.345-67.890"), split it:
-      const [latStr, lonStr] = cityIdParam.split('-')
-      const lat = parseFloat(latStr)
-      const lon = parseFloat(lonStr)
+    // Fetch both global AQI data and Phnom Penh data
+    const [globalRes, phnomRes] = await Promise.all([
+      axios.get('http://127.0.0.1:8000/api/aqi'),
+      axios.get('http://127.0.0.1:8000/api/air-quality/phnom-penh')
+    ])
 
-      cityData.value = response.data.data.find(c => {
-        return parseFloat(c.lat) === lat && parseFloat(c.lon) === lon
-      }) || null
+    let allCities = []
+
+    // Global cities data
+    if (globalRes.data.status === 'ok' && Array.isArray(globalRes.data.data)) {
+      allCities = [...globalRes.data.data]
     }
+
+    // Phnom Penh data from OpenWeather
+    if (phnomRes.data && phnomRes.data.list && phnomRes.data.list.length > 0) {
+      const ppm = phnomRes.data.list[0]
+      const phnomPenhAQI = ppm.main.aqi
+
+      // Convert 1–5 scale to 0–500 scale
+      const scaleMap = { 1: 50, 2: 100, 3: 150, 4: 200, 5: 300 }
+      const convertedAQI = scaleMap[phnomPenhAQI] || 0
+
+      const phnomPenhData = {
+        name: 'Phnom Penh',
+        country: 'Cambodia',
+        flag: 'https://flagcdn.com/w320/kh.png',
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: convertedAQI,
+        pm10: ppm.components.pm10,
+        pm25: ppm.components.pm2_5,
+        co: ppm.components.co,
+        no2: ppm.components.no2,
+        so2: ppm.components.so2,
+        o3: ppm.components.o3
+      }
+
+      allCities.push(phnomPenhData)
+    }
+
+    // Match the city by lat-lon from the route
+    const [latStr, lonStr] = cityIdParam.split('-')
+    const lat = parseFloat(latStr)
+    const lon = parseFloat(lonStr)
+
+    cityData.value = allCities.find(c =>
+      parseFloat(c.lat) === lat && parseFloat(c.lon) === lon
+    ) || null
+
   } catch (error) {
     console.error('Error fetching city AQI:', error)
     cityData.value = null
