@@ -320,13 +320,14 @@
     marker.setIcon(customIcon)
     marker.off('click')
     marker.on('click', () => {
-  router.push({ name: 'city-detail', params: { name: encodeURIComponent(station.name) } })
+    router.push({ name: 'city-detail', params: { id: `${station.lat}-${station.lon}` } })
 })
 
   } else {
     const marker = L.marker([station.lat, station.lon], { icon: customIcon }).addTo(map)
     marker.on('click', () => {
-  router.push({ name: 'city-detail', params: { name: encodeURIComponent(station.name) } })
+  router.push({ name: 'city-detail', params: { id: `${station.lat}-${station.lon}` } })
+
 })
 
     markersMap.set(key, marker)

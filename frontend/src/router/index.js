@@ -33,7 +33,7 @@ const routes = [
     component: HomePage,
   },
   {
-    path: '/city-detail',
+    path: '/city/:id',
     name: 'city-detail',
     component: CityDetailView,
     meta: { requiresAuth: true },

@@ -70,7 +70,7 @@ import axios from 'axios'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const cityNameParam = decodeURIComponent(route.params.name || '').toLowerCase().trim()
+const cityIdParam = route.params.id 
 const cityData = ref(null)
 const loading = ref(false)
 
@@ -97,14 +97,16 @@ const getStatus = (aqi) => {
 const fetchCityData = async () => {
   loading.value = true
   try {
-    // API returns all cities - filter client side for demo
     const response = await axios.get('http://127.0.0.1:8000/api/aqi')
     if (response.data.status === 'ok' && Array.isArray(response.data.data)) {
-      // Find city by name param (case insensitive)
-      cityData.value = response.data.data.find(c => {
-  return c.name.toLowerCase().includes(cityNameParam.toLowerCase().trim())
-}) || null
+      // If route param id is like "lat-lon" (e.g. "12.345-67.890"), split it:
+      const [latStr, lonStr] = cityIdParam.split('-')
+      const lat = parseFloat(latStr)
+      const lon = parseFloat(lonStr)
 
+      cityData.value = response.data.data.find(c => {
+        return parseFloat(c.lat) === lat && parseFloat(c.lon) === lon
+      }) || null
     }
   } catch (error) {
     console.error('Error fetching city AQI:', error)
@@ -113,6 +115,7 @@ const fetchCityData = async () => {
     loading.value = false
   }
 }
+
 
 onMounted(() => {
   fetchCityData()
