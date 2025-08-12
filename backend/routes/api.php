@@ -34,7 +34,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Air quality public data
 Route::prefix('air-quality')->group(function () {
-    Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
+    Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQualityOpenWeather']);
     Route::get('/cambodia-cities', [AirQualityController::class, 'getCambodiaCities']);
 });
 
