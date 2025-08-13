@@ -190,7 +190,7 @@ const getColor = (value, pollutant) => {
 // Status text
 const getStatus = (value, pollutant) => {
   const val = parseFloat(value);
-  if (isNaN(val)) return "N/A";
+  if (isNaN(val)) return "0";
 
   switch (pollutant) {
     case "pm25":
@@ -235,7 +235,7 @@ const getStatus = (value, pollutant) => {
       if (val < 15) return "Moderate";
       return "Strong";
     default:
-      return "N/A";
+      return "0";
   }
 };
 
@@ -341,7 +341,7 @@ const renderMarkers = () => {
 
     const color = getColor(value, selectedPollutant.value);
     const status = getStatus(value, selectedPollutant.value);
-    const windValue = station.wind_speed || station.wind || "N/A";
+    const windValue = station.wind_speed || station.wind || "0";
 
     const popupContent = `
       <div style="min-width: 220px; font-family: system-ui, -apple-system, sans-serif;">
@@ -349,17 +349,17 @@ const renderMarkers = () => {
           <h3 style="margin: 0; font-size: 14px; font-weight: 600;">${station.name}</h3>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
-          <div><strong>${selectedPollutant.value.toUpperCase()}:</strong> ${value ?? "N/A"}</div>
+          <div><strong>${selectedPollutant.value.toUpperCase()}:</strong> ${value ?? "0"}</div>
           <div><strong>Status:</strong> <span style="color:${color}; font-weight: 600;">${status}</span></div>
-          <div><strong>AQI:</strong> ${station.aqi ?? "N/A"}</div>
-          <div><strong>PM2.5:</strong> ${station.pm25 ?? "N/A"}</div>
-          <div><strong>PM10:</strong> ${station.pm10 ?? "N/A"}</div>
-          <div><strong>NO₂:</strong> ${station.no2 ?? "N/A"}</div>
-          <div><strong>CO:</strong> ${station.co ?? "N/A"}</div>
-          <div><strong>O₃:</strong> ${station.o3 ?? "N/A"}</div>
-          <div><strong>Temp:</strong> ${station.temperature ?? "N/A"} °C</div>
-          <div><strong>Humidity:</strong> ${station.humidity ?? "N/A"} %</div>
-          <div><strong>Pressure:</strong> ${station.pressure ?? "N/A"} hPa</div>
+          <div><strong>AQI:</strong> ${station.aqi ?? "0"}</div>
+          <div><strong>PM2.5:</strong> ${station.pm25 ?? "0"}</div>
+          <div><strong>PM10:</strong> ${station.pm10 ?? "0"}</div>
+          <div><strong>NO₂:</strong> ${station.no2 ?? "0"}</div>
+          <div><strong>CO:</strong> ${station.co ?? "0"}</div>
+          <div><strong>O₃:</strong> ${station.o3 ?? "0"}</div>
+          <div><strong>Temp:</strong> ${station.temperature ?? "0"} °C</div>
+          <div><strong>Humidity:</strong> ${station.humidity ?? "0"} %</div>
+          <div><strong>Pressure:</strong> ${station.pressure ?? "0"} hPa</div>
           <div><strong>Wind:</strong> ${windValue} m/s</div>
         </div>
       </div>
@@ -403,7 +403,7 @@ const searchLocation = () => {
                      <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
                    </div>
                    <div style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 1px 3px; border-radius: 2px; font-size: 9px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                     ${result.aqi || 'N/A'}
+                     ${result.aqi || '0'}
                    </div>
                  </div>`,
           className: "custom-search-marker",
@@ -415,7 +415,7 @@ const searchLocation = () => {
       marker.bindPopup(`
         <div style="text-align: center; font-family: system-ui, -apple-system, sans-serif;">
           <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name}</h4>
-          <div style="color: ${getColor(result.aqi, 'aqi')}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || 'N/A'}</div>
+          <div style="color: ${getColor(result.aqi, 'aqi')}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || '0'}</div>
         </div>
       `);
       searchMarkers.value.push(marker);
