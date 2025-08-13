@@ -145,7 +145,7 @@ const getColor = (value, pollutant) => {
     case "pm10":
     case "aqi":
       if (val <= 50) return "#00e400";
-      if (val <= 100) return "#ffff00";
+      if (val <= 100) return "#FFEB3B";
       if (val <= 150) return "#ff7e00";
       if (val <= 200) return "#ff0000";
       if (val <= 300) return "#99004c";
@@ -153,20 +153,20 @@ const getColor = (value, pollutant) => {
     case "no2":
     case "o3":
       if (val <= 40) return "#00e400";
-      if (val <= 80) return "#ffff00";
+      if (val <= 80) return "#FFEB3B";
       if (val <= 180) return "#ff7e00";
       if (val <= 280) return "#ff0000";
       return "#99004c";
     case "co":
       if (val <= 1) return "#00e400";
-      if (val <= 2) return "#ffff00";
+      if (val <= 2) return "#FFEB3B";
       if (val <= 10) return "#ff7e00";
       return "#ff0000";
     case "temperature":
       if (val < 0) return "#0000ff";
       if (val < 15) return "#00ffff";
       if (val < 25) return "#00e400";
-      if (val < 35) return "#ffff00";
+      if (val < 35) return "#FFEB3B";
       return "#ff0000";
     case "humidity":
       if (val < 30) return "#ff7e00";
@@ -179,7 +179,7 @@ const getColor = (value, pollutant) => {
       return "#00ff00";
     case "wind":
       if (val < 5) return "#00e400";
-      if (val < 10) return "#ffff00";
+      if (val < 10) return "#FFEB3B";
       if (val < 15) return "#ff7e00";
       return "#ff0000";
     default:
@@ -247,7 +247,7 @@ const getLegendItems = (pollutant) => {
     case "aqi":
       return [
         { color: "#00e400", label: "Good (0-50)" },
-        { color: "#ffff00", label: "Moderate (51-100)" },
+        { color: "#FFEB3B", label: "Moderate (51-100)" },
         { color: "#ff7e00", label: "Unhealthy for SG (101-150)" },
         { color: "#ff0000", label: "Unhealthy (151-200)" },
         { color: "#99004c", label: "Very Unhealthy (201-300)" },
@@ -257,7 +257,7 @@ const getLegendItems = (pollutant) => {
     case "o3":
       return [
         { color: "#00e400", label: "Good (0-40)" },
-        { color: "#ffff00", label: "Moderate (41-80)" },
+        { color: "#FFEB3B", label: "Moderate (41-80)" },
         { color: "#ff7e00", label: "Unhealthy for SG (81-180)" },
         { color: "#ff0000", label: "Unhealthy (181-280)" },
         { color: "#99004c", label: "Very Unhealthy (281+)" },
@@ -265,7 +265,7 @@ const getLegendItems = (pollutant) => {
     case "co":
       return [
         { color: "#00e400", label: "Good (0-1)" },
-        { color: "#ffff00", label: "Moderate (1.1-2)" },
+        { color: "#FFEB3B", label: "Moderate (1.1-2)" },
         { color: "#ff7e00", label: "Unhealthy (2.1-10)" },
         { color: "#ff0000", label: "Hazardous (10.1+)" },
       ];
@@ -274,7 +274,7 @@ const getLegendItems = (pollutant) => {
         { color: "#0000ff", label: "Freezing (<0°C)" },
         { color: "#00ffff", label: "Cold (0-15°C)" },
         { color: "#00e400", label: "Mild (15-25°C)" },
-        { color: "#ffff00", label: "Warm (25-35°C)" },
+        { color: "#FFEB3B", label: "Warm (25-35°C)" },
         { color: "#ff0000", label: "Hot (>35°C)" },
       ];
     case "humidity":
@@ -293,7 +293,7 @@ const getLegendItems = (pollutant) => {
     case "wind":
       return [
         { color: "#00e400", label: "Calm (0-5 m/s)" },
-        { color: "#ffff00", label: "Light (5-10 m/s)" },
+        { color: "#FFEB3B", label: "Light (5-10 m/s)" },
         { color: "#ff7e00", label: "Moderate (10-15 m/s)" },
         { color: "#ff0000", label: "Strong (>15 m/s)" },
       ];
