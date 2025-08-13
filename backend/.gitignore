@@ -6,7 +6,9 @@
 /storage/*
 !/storage/app
 !/storage/framework
-!/storage/logs
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
 
 
 /vendor
@@ -26,3 +28,8 @@ yarn-error.log
 
 /storage/
 /backend/storage/
+backend/storage/framework/cache/
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
