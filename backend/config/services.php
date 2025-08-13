@@ -23,10 +23,9 @@ return [
 //  'openweather' => [
 //     'api_key' => 'e206621a38fb37832cc3cb734fb477ae',
 // ],
-// 'openaq' => [
-//     'base_url' => 'https://api.openaq.org',
-//     'api_key' => '8570a81988caeddc953c8f0520e01574154d07440e2af72da906871f613545ff', 
-// ],
+'openaq' => [
+    'api_key' => env('OPENAQ_API_KEY'), 
+],
 // 'iqair' => [
 //     'api_key' => '2acd56eb-8186-40aa-b9e9-29b2c4e87f47',
 //     'base_url' => 'https://api.airvisual.com/v2',
