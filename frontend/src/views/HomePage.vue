@@ -305,6 +305,7 @@ const getLegendItems = (pollutant) => {
 const legendItems = computed(() => getLegendItems(selectedPollutant.value));
 const legendTitle = computed(() => `${selectedPollutant.value.toUpperCase()} Levels`);
 
+
 // Fetch data
 const fetchAQIData = async () => {
   try {
@@ -463,10 +464,36 @@ const initMap = () => {
     maxZoom: 19,
   }).addTo(map);
 };
+const detectUserLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Center map on user location
+        map.setView([lat, lon], 5);
+
+        // Add a marker for the user's location
+        L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup("You are here!")
+          .openPopup();
+      },
+      (error) => {
+        console.warn("Geolocation error:", error.message);
+      }
+    );
+  } else {
+    console.warn("Geolocation is not supported by this browser.");
+  }
+};
+
 
 onMounted(() => {
   initMap();
   fetchAQIData();
+  detectUserLocation(); 
   setInterval(fetchAQIData, 30000);
 });
 
