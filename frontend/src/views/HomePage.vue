@@ -189,57 +189,37 @@ const maxVisibleResults = ref(5);
 
 // Inline SVG icons
 const pollutantOptions = [
-  {
-    value: "aqi",
-    label: "AQI",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 17h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2v-2H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 9v2h14V9H7zm0-4v2h14V5H7z"/></svg>`,
-  },
-  {
-    value: "pm25",
-    label: "PM2.5",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M4 16a4 4 0 1 1 0-8 6 6 0 1 1 12 0h1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>`,
-  },
-  {
-    value: "pm10",
-    label: "PM10",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M6 19a6 6 0 1 1 0-12 8 8 0 1 1 16 0h-1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>`,
-  },
-  {
-    value: "no2",
-    label: "NO₂",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M20 6h-4v12h4V6zM14 6h-4v12h4V6zM4 6v12h4V6H4z"/></svg>`,
-  },
-  {
-    value: "co",
-    label: "CO",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="3"/></svg>`,
-  },
-  {
-    value: "o3",
-    label: "O₃",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M21 12a9 9 0 1 1-18 0"/></svg>`,
-  },
-  {
-    value: "temperature",
-    label: "Temperature",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 3.5L3.5 12 12 20.5 20.5 12 12 3.5zm0 13.66l-5.66-5.66 5.66-5.66 5.66 5.66-5.66 5.66z"/></svg>`,
-  },
-  {
-    value: "humidity",
-    label: "Humidity",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 3.5L3.5 12 12 20.5 20.5 12 12 3.5zm0 13.66l-5.66-5.66 5.66-5.66 5.66 5.66-5.66 5.66z"/></svg>`,
-  },
-  {
-    value: "pressure",
-    label: "Pressure",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8zm1-13h-2v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>`,
-  },
-  {
-    value: "wind",
-    label: "Wind",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6 2 2 0 0 1 0-4M3 18h9a3 3 0 1 1 0 6"/></svg>`,
-  },
+  // AQI - green/yellow/red gauge
+  { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+
+  // PM2.5 - small gray particles
+  { value: "pm25", label: "PM2.5", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="#888"/><circle cx="12" cy="8" r="1.5" fill="#888"/><circle cx="17" cy="14" r="2" fill="#888"/><circle cx="10" cy="16" r="1.5" fill="#888"/></svg>` },
+
+  // PM10 - bigger brownish particles
+  { value: "pm10", label: "PM10", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="5" cy="10" r="2" fill="#A0522D"/><circle cx="12" cy="7" r="3" fill="#A0522D"/><circle cx="18" cy="15" r="2.5" fill="#A0522D"/><circle cx="9" cy="17" r="1.5" fill="#A0522D"/></svg>` },
+
+  // NO2 - dark gray factory
+  { value: "no2", label: "NO₂", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="8" fill="#555"/><polygon points="4,10 8,4 12,10" fill="#777"/></svg>` },
+
+  // CO - molecule circles in red
+  { value: "co", label: "CO", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="#FF4D4D"/><circle cx="17" cy="12" r="3" fill="#FF6666"/></svg>` },
+
+  // O3 - ozone in blue
+  { value: "o3", label: "O₃", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3" fill="#3399FF"/><circle cx="15" cy="9" r="3" fill="#33CCFF"/><circle cx="15" cy="15" r="3" fill="#3399FF"/></svg>` },
+
+  // Temperature - red thermometer
+  { value: "temperature", label: "Temperature", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="12" fill="#FF3300"/><circle cx="12" cy="18" r="3" fill="#FF3300"/></svg>` },
+
+  // Humidity - blue water droplet
+  { value: "humidity", label: "Humidity", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l5 7a8 8 0 1 1-10 0z" fill="#3399FF"/></svg>` },
+
+  // Pressure - gauge in green
+  { value: "pressure", label: "Pressure", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+
+  // Wind - light blue flowing lines
+  { value: "wind", label: "Wind", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>` }
 ];
+
 
 // Color scale
 const getColor = (value, pollutant) => {
