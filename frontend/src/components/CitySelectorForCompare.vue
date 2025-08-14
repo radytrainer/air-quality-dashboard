@@ -1,60 +1,81 @@
 <template>
-  <div>
-    <label class="block mb-1 font-semibold text-lg" :for="selectId">{{ label || 'Select City' }}</label>
-    <div class="flex items-center gap-2 mb-2">
-      <img
-        v-if="selectedCityFlag"
-        :src="selectedCityFlag"
-        alt="Flag"
-        class="w-6 h-4 rounded-sm object-cover"
-      />
-      <span v-if="selected">{{ selected }}</span>
-      <span v-else class="text-gray-400 italic">No city selected</span>
-    </div>
-    <select
-      :id="selectId"
-      v-model="selected"
-      class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      aria-label="City selector"
-      name="city-selector"
+  <div class="w-full relative">
+    <label class="font-semibold text-black text-xl mb-1 block">{{ label }}</label>
+    <p class="text-sm text-gray-500 mb-3">{{ description }}</p>
+
+    <!-- Dropdown toggle -->
+    <div
+      class="border rounded p-2 flex items-center justify-between cursor-pointer"
+      @click="toggleDropdown"
     >
-      <option value="">Select a city</option>
-      <option v-for="city in cities" :key="city.name" :value="city.name">
-        {{ city.name }}
-      </option>
-    </select>
+      <div class="flex items-center gap-2">
+        <img
+          v-if="selectedCity?.flag"
+          :src="selectedCity.flag"
+          alt="flag"
+          class="w-6 h-4 object-cover rounded-sm"
+        />
+        <span>{{ selectedCity ? getCityAndCountry(selectedCity.name) : 'Select a city' }}</span>
+      </div>
+      <span>▼</span>
+    </div>
+
+    <!-- Dropdown list -->
+    <div
+      v-if="isOpen"
+      class="absolute z-10 bg-white border rounded mt-1 w-full max-h-60 overflow-y-auto shadow"
+    >
+      <div
+        v-for="city in cities"
+        :key="city.name"
+        class="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
+        @click="selectCity(city)"
+      >
+        <img :src="city.flag" class="w-6 h-4 object-cover rounded-sm" />
+        <span>{{ getCityAndCountry(city.name) }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
-  modelValue: String,
-  label: String
-})
-const emit = defineEmits(['update:modelValue'])
-
-// Static city list, could be passed as prop if needed
-const cities = [
-  { name: 'Phnom Penh', flag: 'https://flagcdn.com/kh.svg' },
-  { name: 'New Delhi', flag: 'https://flagcdn.com/in.svg' },
-  { name: 'Bangkok', flag: 'https://flagcdn.com/th.svg' },
-  { name: 'Beijing', flag: 'https://flagcdn.com/cn.svg' },
-  { name: 'Tokyo', flag: 'https://flagcdn.com/jp.svg' },
-  { name: 'Jakarta', flag: 'https://flagcdn.com/id.svg' }
-]
-
-// Generate a unique ID for accessibility, e.g., city-selector-xxxx
-const selectId = `city-selector-${Math.random().toString(36).substr(2, 9)}`
-
-const selected = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  label: String,
+  description: String,
+  cities: Array,
+  modelValue: Object
 })
 
-const selectedCityFlag = computed(() => {
-  const city = cities.find(c => c.name === selected.value)
-  return city ? city.flag : ''
+const emit = defineEmits(['update:modelValue', 'city-changed'])
+
+const isOpen = ref(false)
+const selectedCity = ref(props.modelValue)
+
+watch(() => props.modelValue, (newVal) => {
+  selectedCity.value = newVal
 })
+
+function toggleDropdown() {
+  isOpen.value = !isOpen.value
+}
+
+function selectCity(city) {
+  selectedCity.value = city
+  emit('update:modelValue', city)
+  emit('city-changed', city)
+  isOpen.value = false
+}
+
+function getCityAndCountry(fullName) {
+  if (!fullName) return ''
+  const parts = fullName.split(',').map((p) => p.trim())
+  if (parts.length >= 2) {
+    const city = parts[0]
+    const country = parts[parts.length - 1]
+    return `${city}, ${country}`
+  }
+  return fullName
+}
 </script>

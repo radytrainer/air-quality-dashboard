@@ -1,7 +1,11 @@
 <template>
   <div class="p-6 max-w-screen-xl mx-auto">
     <div class="bg-white shadow-md rounded-lg p-6">
-      <h1 class="text-3xl sm:text-4xl font-extrabold mb-8 text-gray-900 tracking-tight">City AQI</h1>
+      <h1
+        class="text-3xl sm:text-4xl font-extrabold mb-8 text-gray-900 tracking-tight"
+      >
+        City AQI
+      </h1>
 
       <div class="flex flex-wrap gap-4 items-center mb-6">
         <input
@@ -11,7 +15,10 @@
           class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md w-full sm:w-1/4 transition"
         />
 
-        <select v-model="pollutant" class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition">
+        <select
+          v-model="pollutant"
+          class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition"
+        >
           <option value="aqi">AQI</option>
           <option value="pm25">PM2.5</option>
           <option value="pm10">PM10</option>
@@ -19,13 +26,22 @@
           <option value="no2">NO₂</option>
           <option value="so2">SO₂</option>
           <option value="co">CO</option>
+          <option value="temperature">Temperature (°C)</option>
+          <option value="humidity">Humidity (%)</option>
+          <option value="pressure">Pressure (hPa)</option>
+          <option value="wind_speed">Wind Speed (m/s)</option>
         </select>
 
-        <select v-model="levelFilter" class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition">
+        <select
+          v-model="levelFilter"
+          class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition"
+        >
           <option value="">All Levels</option>
           <option value="Good">Good</option>
           <option value="Moderate">Moderate</option>
-          <option value="Unhealthy for Sensitive Groups">Unhealthy for Sensitive Groups</option>
+          <option value="Unhealthy for Sensitive Groups">
+            Unhealthy for Sensitive Groups
+          </option>
           <option value="Unhealthy">Unhealthy</option>
           <option value="Very Unhealthy">Very Unhealthy</option>
           <option value="Hazardous">Hazardous</option>
@@ -64,14 +80,33 @@
       <div v-else-if="error" class="text-red-600">{{ error }}</div>
 
       <div v-else class="overflow-auto rounded-md shadow">
-        <table class="min-w-full border border-gray-300 text-sm divide-y divide-gray-200">
-          <thead class="bg-gray-100 text-gray-800 font-semibold uppercase tracking-wide text-xs">
+        <table
+          class="min-w-full border border-gray-300 text-sm divide-y divide-gray-200"
+        >
+          <thead
+            class="bg-gray-100 text-gray-800 font-semibold uppercase tracking-wide text-xs"
+          >
             <tr>
-              <th class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition" @click="sortBy('name')">City</th>
+              <th
+                class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition"
+                @click="sortBy('name')"
+              >
+                City
+              </th>
+              <th class="p-3 text-left border-b-2 border-gray-300">Flag</th>
               <th class="p-3 text-left border-b-2 border-gray-300">Latitude</th>
-              <th class="p-3 text-left border-b-2 border-gray-300">Longitude</th>
-              <th class="p-3 text-left border-b-2 border-gray-300">Pollutant</th>
-              <th class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition" @click="sortBy('value')">Value</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">
+                Longitude
+              </th>
+              <th class="p-3 text-left border-b-2 border-gray-300">
+                Pollutant
+              </th>
+              <th
+                class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition"
+                @click="sortBy('value')"
+              >
+                Value
+              </th>
               <th class="p-3 text-left border-b-2 border-gray-300">Level</th>
             </tr>
           </thead>
@@ -83,10 +118,20 @@
               :class="rowColor(city.level)"
             >
               <td class="border px-3 py-2">{{ city.name }}</td>
+              <td class="border px-3 py-2">
+                <img
+                  v-if="city.flag"
+                  :src="city.flag"
+                  alt="Flag"
+                  class="w-6 h-4 object-cover rounded border"
+                />
+              </td>
               <td class="border px-3 py-2">{{ city.lat }}</td>
               <td class="border px-3 py-2">{{ city.lon }}</td>
               <td class="border px-3 py-2 uppercase">{{ city.pollutant }}</td>
-              <td class="border px-3 py-2 font-bold text-gray-800">{{ city.value }}</td>
+              <td class="border px-3 py-2 font-bold text-gray-800">
+                {{ city.value }}
+              </td>
               <td class="border px-3 py-2">
                 <span
                   :class="levelBadge(city.level)"
@@ -100,9 +145,12 @@
         </table>
       </div>
 
-      <div class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4"
+      >
         <span class="text-sm text-gray-500">
-          Showing {{ paginatedCities.length }} of {{ filteredCities.length }} entries
+          Showing {{ paginatedCities.length }} of
+          {{ filteredCities.length }} entries
         </span>
         <div class="flex items-center gap-2">
           <button
@@ -112,7 +160,9 @@
           >
             Prev
           </button>
-          <span class="text-sm">Page {{ currentPage }} of {{ totalPages }}</span>
+          <span class="text-sm"
+            >Page {{ currentPage }} of {{ totalPages }}</span
+          >
           <button
             @click="goToPage(currentPage + 1)"
             :disabled="currentPage === totalPages"
@@ -163,23 +213,86 @@ const levelBadge = (level) => {
   }
 };
 
-
 const fetchAQIData = async () => {
   try {
     loading.value = true;
-    const response = await api.get("/admin/city-aqi", {
-      params: { search: search.value, pollutant: pollutant.value },
-    });
-    cities.value = response.data.data || [];
+    const response = await api.get("/aqi"); // global cities
+    const rawData = response.data.data || [];
+
+    // Fetch Phnom Penh separately
+    let phnomPenh = null;
+    try {
+      const ppRes = await api.get("/air-quality/phnom-penh");
+      phnomPenh = {
+        id: 9999,
+        name: "Phnom Penh",
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: ppRes.data.AQI ?? "N/A",
+        pm25: ppRes.data.PM2_5 ?? "N/A",
+        pm10: ppRes.data.PM10 ?? "N/A",
+        co: ppRes.data.CO ?? "N/A",
+        no2: ppRes.data.NO2 ?? "N/A",
+        so2: ppRes.data.SO2 ?? "N/A",
+        o3: ppRes.data.O3 ?? "N/A",
+        temperature: ppRes.data.Temp ?? "N/A",
+        humidity: ppRes.data.Humidity ?? "N/A",
+        pressure: ppRes.data.Pressure ?? "N/A",
+        wind_speed: ppRes.data.Wind ?? "N/A",
+        flag: "https://flagcdn.com/w160/kh.png",
+      };
+    } catch (err) {
+      console.error("Failed to fetch Phnom Penh:", err);
+    }
+
+    // Map global cities
+    let combinedData = rawData.map((city) => ({
+      ...city,
+      pollutant: pollutant.value,
+      value: city[pollutant.value],
+      level: getAQILevel(city[pollutant.value]),
+    }));
+
+    // Merge Phnom Penh
+    if (phnomPenh) {
+      combinedData = combinedData.filter((c) => c.name !== "Phnom Penh");
+      combinedData.push({
+        ...phnomPenh,
+        pollutant: pollutant.value,
+        value: phnomPenh[pollutant.value],
+        level: getAQILevel(phnomPenh[pollutant.value]),
+      });
+    }
+
+    cities.value = combinedData;
     lastUpdated.value = new Date().toLocaleString();
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     error.value = "Failed to load data.";
   } finally {
     loading.value = false;
   }
-  setInterval(fetchAQIData, 300000); // 5 minutes = 300000 ms
 };
+
+
+// helper to classify pollutant levels (basic AQI logic, can be customized)
+const getAQILevel = (value) => {
+  if (value === null || value === undefined) return "Unknown";
+  if (value <= 50) return "Good";
+  if (value <= 100) return "Moderate";
+  if (value <= 150) return "Unhealthy for Sensitive Groups";
+  if (value <= 200) return "Unhealthy";
+  if (value <= 300) return "Very Unhealthy";
+  return "Hazardous";
+};
+watch(pollutant, () => {
+  cities.value = cities.value.map((city) => ({
+    ...city,
+    pollutant: pollutant.value,
+    value: city[pollutant.value],
+    level: getAQILevel(city[pollutant.value]),
+  }));
+});
 
 const exportToCSV = () => {
   if (!cities.value || cities.value.length === 0) return;
@@ -225,12 +338,17 @@ const sortBy = (field) => {
   }
 };
 const filteredCities = computed(() => {
-  return cities.value.filter(
-    (city) =>
+  return cities.value.filter((city) => {
+    const hasValue =
+      city.value !== null && city.value !== undefined && city.value !== "";
+    return (
+      hasValue && // exclude cities with missing data
       (!levelFilter.value || city.level === levelFilter.value) &&
       city.name.toLowerCase().includes(search.value.toLowerCase())
-  );
+    );
+  });
 });
+
 const sortedCities = computed(() => {
   return [...filteredCities.value].sort((a, b) => {
     let valA = a[sortField.value];
@@ -261,8 +379,6 @@ const rowColor = (level) => {
       return "";
   }
 };
-
-
 
 watch([search, pollutant], fetchAQIData, { immediate: true });
 </script>
