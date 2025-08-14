@@ -397,37 +397,39 @@ const searchResults = computed(() => {
 const fetchPhnomPenhAQI = async () => {
   try {
     const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
-    // OpenWeather Air Pollution API returns data in data.list[0]
-    if (data.list && data.list.length > 0) {
-      const airData = data.list[0];
-      // Build a station object similar to your existing ones
-      const phnomPenhStation = {
-        name: "Phnom Penh",
-        lat: 11.562108,
-        lon: 104.888535,
-        aqi: airData.main.aqi,
-        pm25: airData.components.pm2_5,
-        pm10: airData.components.pm10,
-        no2: airData.components.no2,
-        co: airData.components.co,
-        o3: airData.components.o3,
-        temperature: null,  // not provided by this endpoint
-        humidity: null,     // not provided by this endpoint
-        pressure: null,     // not provided by this endpoint
-        wind: null,         // not provided by this endpoint
-        wind_speed: null,
-      };
 
-      // Add Phnom Penh data to your global aqiData array for rendering
+    // Directly use data because your backend returns the flat object, not nested list
+    const phnomPenhStation = {
+      name: "Phnom Penh",
+      lat: 11.562108,
+      lon: 104.888535,
+      aqi: data.AQI,
+      pm25: data.PM2_5,
+      pm10: data.PM10,
+      no2: data.NO2,
+      co: data.CO,
+      o3: data.O3,
+      temperature: data.Temp_C,
+      humidity: data.Humidity_percent,
+      pressure: data.Pressure_hPa,
+      wind: data.Wind_m_s,
+      wind_speed: data.Wind_m_s,
+    };
+
+    const idx = aqiData.value.findIndex(st => st.name === "Phnom Penh");
+    if (idx !== -1) {
+      aqiData.value.splice(idx, 1, phnomPenhStation);
+    } else {
       aqiData.value.push(phnomPenhStation);
-
-      // Render markers again to include Phnom Penh
-      renderMarkers();
     }
+
+    renderMarkers();
   } catch (error) {
     console.error("Error fetching Phnom Penh AQI data:", error);
   }
 };
+
+
 
 const searchLocation = () => {
   searchMarkers.value.forEach((marker) => marker.remove());
