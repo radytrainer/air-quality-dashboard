@@ -28,7 +28,7 @@ yarn-error.log
 
 /storage/
 /backend/storage/
-backend/storage/framework/cache/
+/backend/storage/framework/cache/
 /storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/framework/views/*
