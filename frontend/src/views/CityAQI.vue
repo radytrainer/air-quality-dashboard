@@ -26,6 +26,10 @@
           <option value="no2">NO₂</option>
           <option value="so2">SO₂</option>
           <option value="co">CO</option>
+          <option value="temperature">Temperature (°C)</option>
+          <option value="humidity">Humidity (%)</option>
+          <option value="pressure">Pressure (hPa)</option>
+          <option value="wind_speed">Wind Speed (m/s)</option>
         </select>
 
         <select
@@ -212,29 +216,55 @@ const levelBadge = (level) => {
 const fetchAQIData = async () => {
   try {
     loading.value = true;
-    const response = await api.get("/aqi"); // fetch from your new endpoint
+    const response = await api.get("/aqi"); // global cities
     const rawData = response.data.data || [];
 
-    // Transform data so table shows selected pollutant dynamically
-    cities.value = rawData.map((city) => {
-      return {
-        name: city.name,
-        lat: city.lat,
-        lon: city.lon,
-        pollutant: pollutant.value,
-        value: city[pollutant.value], // pick the value dynamically based on dropdown
-        aqi: city.aqi,
-        pm25: city.pm25,
-        pm10: city.pm10,
-        co: city.co,
-        no2: city.no2,
-        so2: city.so2,
-        o3: city.o3,
-        flag: city.flag,
-        level: getAQILevel(city[pollutant.value]), // new helper to determine level
+    // Fetch Phnom Penh separately
+    let phnomPenh = null;
+    try {
+      const ppRes = await api.get("/air-quality/phnom-penh");
+      phnomPenh = {
+        id: 9999,
+        name: "Phnom Penh",
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: ppRes.data.AQI ?? "N/A",
+        pm25: ppRes.data.PM2_5 ?? "N/A",
+        pm10: ppRes.data.PM10 ?? "N/A",
+        co: ppRes.data.CO ?? "N/A",
+        no2: ppRes.data.NO2 ?? "N/A",
+        so2: ppRes.data.SO2 ?? "N/A",
+        o3: ppRes.data.O3 ?? "N/A",
+        temperature: ppRes.data.Temp ?? "N/A",
+        humidity: ppRes.data.Humidity ?? "N/A",
+        pressure: ppRes.data.Pressure ?? "N/A",
+        wind_speed: ppRes.data.Wind ?? "N/A",
+        flag: "https://flagcdn.com/w160/kh.png",
       };
-    });
+    } catch (err) {
+      console.error("Failed to fetch Phnom Penh:", err);
+    }
 
+    // Map global cities
+    let combinedData = rawData.map((city) => ({
+      ...city,
+      pollutant: pollutant.value,
+      value: city[pollutant.value],
+      level: getAQILevel(city[pollutant.value]),
+    }));
+
+    // Merge Phnom Penh
+    if (phnomPenh) {
+      combinedData = combinedData.filter((c) => c.name !== "Phnom Penh");
+      combinedData.push({
+        ...phnomPenh,
+        pollutant: pollutant.value,
+        value: phnomPenh[pollutant.value],
+        level: getAQILevel(phnomPenh[pollutant.value]),
+      });
+    }
+
+    cities.value = combinedData;
     lastUpdated.value = new Date().toLocaleString();
   } catch (err) {
     console.error(err);
@@ -243,6 +273,7 @@ const fetchAQIData = async () => {
     loading.value = false;
   }
 };
+
 
 // helper to classify pollutant levels (basic AQI logic, can be customized)
 const getAQILevel = (value) => {
