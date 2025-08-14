@@ -7,13 +7,19 @@
       ← Back
     </button>
 
-    <div v-if="loading" class="text-center text-gray-600">Loading city data...</div>
+    <div v-if="loading" class="text-center text-gray-600">
+      Loading city data...
+    </div>
     <div v-else-if="!cityData" class="text-center text-red-600">
       City data not found.
     </div>
     <div v-else class="bg-white rounded-2xl shadow-md p-6">
       <div class="flex items-center gap-4 mb-6">
-        <img :src="cityData.flag" alt="Flag" class="w-16 h-10 object-cover rounded" />
+        <img
+          :src="cityData.flag"
+          alt="Flag"
+          class="w-16 h-10 object-cover rounded"
+        />
         <h1 class="text-3xl font-bold">{{ cityData.name }}</h1>
       </div>
 
@@ -21,39 +27,49 @@
         <tbody>
           <tr>
             <th class="py-2">AQI</th>
-            <td>
-              <span
-                class="px-3 py-1 rounded text-white font-semibold"
-                :style="{ backgroundColor: getColor(cityData.aqi) }"
-              >
-                {{ cityData.aqi }} ({{ getStatus(cityData.aqi) }})
-              </span>
-            </td>
+            <td>{{ cityData.aqi }}</td>
           </tr>
           <tr>
             <th class="py-2">PM10</th>
-            <td>{{ cityData.pm10 }}</td>
+            <td>{{ cityData.pm10 ?? "N/A" }}</td>
           </tr>
           <tr>
             <th class="py-2">PM2.5</th>
-            <td>{{ cityData.pm25 }}</td>
+            <td>{{ cityData.pm25 ?? "N/A" }}</td>
           </tr>
           <tr>
             <th class="py-2">CO</th>
-            <td>{{ cityData.co }}</td>
+            <td>{{ cityData.co ?? "N/A" }}</td>
           </tr>
           <tr>
             <th class="py-2">NO2</th>
-            <td>{{ cityData.no2 }}</td>
+            <td>{{ cityData.no2 ?? "N/A" }}</td>
           </tr>
           <tr>
             <th class="py-2">SO2</th>
-            <td>{{ cityData.so2 }}</td>
+            <td>{{ cityData.so2 ?? "N/A" }}</td>
           </tr>
           <tr>
             <th class="py-2">O3</th>
-            <td>{{ cityData.o3 }}</td>
+            <td>{{ cityData.o3 ?? "N/A" }}</td>
           </tr>
+          <tr>
+            <th class="py-2">Temperature</th>
+            <td>{{ cityData.temperature ?? "N/A" }} °C</td>
+          </tr>
+          <tr>
+            <th class="py-2">Humidity</th>
+            <td>{{ cityData.humidity ?? "N/A" }} %</td>
+          </tr>
+          <tr>
+            <th class="py-2">Pressure</th>
+            <td>{{ cityData.pressure ?? "N/A" }} hPa</td>
+          </tr>
+          <tr>
+            <th class="py-2">Wind</th>
+            <td>{{ cityData.wind_speed ?? cityData.wind ?? "N/A" }} m/s</td>
+          </tr>
+
           <tr>
             <th class="py-2">Coordinates</th>
             <td>{{ cityData.lat }}, {{ cityData.lon }}</td>
@@ -65,101 +81,75 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 
-const route = useRoute()
-const cityIdParam = route.params.id 
-const cityData = ref(null)
-const loading = ref(false)
+const route = useRoute();
+const cityIdParam = route.params.id;
+const cityData = ref(null);
+const loading = ref(false);
 
-const getColor = (aqi) => {
-  const val = parseInt(aqi)
-  if (val <= 50) return '#3cb43c'
-  if (val <= 100) return '#e6e600'
-  if (val <= 150) return '#ff9900'
-  if (val <= 200) return '#ff4d4d'
-  if (val <= 300) return '#9b59b6'
-  return '#c0392b'
-}
-
-const getStatus = (aqi) => {
-  const val = parseInt(aqi)
-  if (val <= 50) return 'Good'
-  if (val <= 100) return 'Moderate'
-  if (val <= 150) return 'Unhealthy for Sensitive Groups'
-  if (val <= 200) return 'Unhealthy'
-  if (val <= 300) return 'Very Unhealthy'
-  return 'Hazardous'
-}
+// Assign local IDs just like in home page
+const assignIDs = (data) =>
+  data.map((station, index) => ({
+    ...station,
+    id: station.id || index + 1,
+  }));
 
 const fetchCityData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    // Fetch both global AQI data and Phnom Penh data
-    const [globalRes, phnomRes] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/api/aqi'),
-      axios.get('http://127.0.0.1:8000/api/air-quality/phnom-penh')
-    ])
-
-    let allCities = []
-
-    // Global cities data
-    if (globalRes.data.status === 'ok' && Array.isArray(globalRes.data.data)) {
-      allCities = [...globalRes.data.data]
+    // 1. Fetch all cities
+    const response = await axios.get("http://127.0.0.1:8000/api/aqi");
+    let allCities = [];
+    if (response.data.status === "ok" && Array.isArray(response.data.data)) {
+      allCities = assignIDs(response.data.data);
     }
 
-    // Phnom Penh data from OpenWeather
-    if (phnomRes.data && phnomRes.data.list && phnomRes.data.list.length > 0) {
-      const ppm = phnomRes.data.list[0]
-      const phnomPenhAQI = ppm.main.aqi
-
-      // Convert 1–5 scale to 0–500 scale
-      const scaleMap = { 1: 50, 2: 100, 3: 150, 4: 200, 5: 300 }
-      const convertedAQI = scaleMap[phnomPenhAQI] || 0
-
-      const phnomPenhData = {
-        name: 'Phnom Penh',
-        country: 'Cambodia',
-        flag: 'https://flagcdn.com/w320/kh.png',
+    // 2. Fetch Phnom Penh real-time
+    try {
+      const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
+      const phnomPenhStation = {
+        id: 9999, // unique local ID
+        name: "Phnom Penh",
         lat: 11.562108,
         lon: 104.888535,
-        aqi: convertedAQI,
-        pm10: ppm.components.pm10,
-        pm25: ppm.components.pm2_5,
-        co: ppm.components.co,
-        no2: ppm.components.no2,
-        so2: ppm.components.so2,
-        o3: ppm.components.o3
-      }
+        aqi: data.AQI ?? "N/A",
+        pm25: data.PM2_5 ?? "N/A",
+        pm10: data.PM10 ?? "N/A",
+        no2: data.NO2 ?? "N/A",
+        co: data.CO ?? "N/A",
+        o3: data.O3 ?? "N/A",
+        temperature: data.Temp_C ?? "N/A",
+        humidity: data.Humidity_percent ?? "N/A",
+        pressure: data.Pressure_hPa ?? "N/A",
+        wind_speed: data.Wind_m_s ?? "N/A",
+        flag: "https://flagcdn.com/w160/kh.png",
+      };
 
-      allCities.push(phnomPenhData)
+      // Remove previous Phnom Penh if already exists
+      allCities = allCities.filter(c => c.name !== "Phnom Penh");
+      allCities.push(phnomPenhStation);
+    } catch (err) {
+      console.error("Failed to fetch Phnom Penh AQI:", err);
     }
 
-    // Match the city by lat-lon from the route
-    const [latStr, lonStr] = cityIdParam.split('-')
-    const lat = parseFloat(latStr)
-    const lon = parseFloat(lonStr)
-
-    cityData.value = allCities.find(c =>
-      parseFloat(c.lat) === lat && parseFloat(c.lon) === lon
-    ) || null
-
+    // 3. Find city by ID
+    cityData.value = allCities.find((c) => c.id == cityIdParam) || null;
   } catch (error) {
-    console.error('Error fetching city AQI:', error)
-    cityData.value = null
+    console.error("Error fetching city data:", error);
+    cityData.value = null;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
-
-
+};
 
 onMounted(() => {
-  fetchCityData()
-})
+  fetchCityData();
+});
 </script>
+
 
 <style scoped>
 th {

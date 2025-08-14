@@ -192,17 +192,50 @@ const aqiCategories = computed(() => {
 
 const fetchAQIData = async () => {
   try {
-    const { data } = await axios.get('http://127.0.0.1:8000/api/aqi-global')
+    // 1️⃣ Fetch global AQI data
+    const { data } = await axios.get('http://127.0.0.1:8000/api/aqi');
+    let cities = [];
     if (data.status === 'ok' && Array.isArray(data.data)) {
-      aqiData.value = data.data
-      updateTop10()
-      renderMarkers()
-      updateChart()
+      cities = data.data;
     }
+
+    // 2️⃣ Fetch Phnom Penh AQI separately
+    try {
+      const ppRes = await axios.get('http://127.0.0.1:8000/api/air-quality/phnom-penh');
+      const phnomPenh = {
+        id: 9999, // unique local ID
+        name: 'Phnom Penh',
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: ppRes.data.AQI ?? 'N/A',
+        pm25: ppRes.data.PM2_5 ?? 'N/A',
+        pm10: ppRes.data.PM10 ?? 'N/A',
+        no2: ppRes.data.NO2 ?? 'N/A',
+        co: ppRes.data.CO ?? 'N/A',
+        o3: ppRes.data.O3 ?? 'N/A',
+        temperature: ppRes.data.Temp_C ?? 'N/A',
+        humidity: ppRes.data.Humidity_percent ?? 'N/A',
+        pressure: ppRes.data.Pressure_hPa ?? 'N/A',
+        wind_speed: ppRes.data.Wind_m_s ?? 'N/A',
+        flag: 'https://flagcdn.com/w160/kh.png',
+      };
+
+      // Remove old Phnom Penh if exists
+      cities = cities.filter(c => c.name !== 'Phnom Penh');
+      cities.push(phnomPenh);
+    } catch (err) {
+      console.error('Failed to fetch Phnom Penh AQI:', err);
+    }
+
+    // 3️⃣ Update state
+    aqiData.value = cities;
+    updateTop10();
+    renderMarkers();
+    updateChart();
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
-}
+};
 
 const initMap = () => {
   map = L.map('map', {
