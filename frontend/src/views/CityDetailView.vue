@@ -100,11 +100,43 @@ const assignIDs = (data) =>
 const fetchCityData = async () => {
   loading.value = true;
   try {
+    // 1. Fetch all cities
     const response = await axios.get("http://127.0.0.1:8000/api/aqi");
+    let allCities = [];
     if (response.data.status === "ok" && Array.isArray(response.data.data)) {
-      const allCities = assignIDs(response.data.data);
-      cityData.value = allCities.find((c) => c.id == cityIdParam) || null;
+      allCities = assignIDs(response.data.data);
     }
+
+    // 2. Fetch Phnom Penh real-time
+    try {
+      const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
+      const phnomPenhStation = {
+        id: 9999, // unique local ID
+        name: "Phnom Penh",
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: data.AQI ?? "N/A",
+        pm25: data.PM2_5 ?? "N/A",
+        pm10: data.PM10 ?? "N/A",
+        no2: data.NO2 ?? "N/A",
+        co: data.CO ?? "N/A",
+        o3: data.O3 ?? "N/A",
+        temperature: data.Temp_C ?? "N/A",
+        humidity: data.Humidity_percent ?? "N/A",
+        pressure: data.Pressure_hPa ?? "N/A",
+        wind_speed: data.Wind_m_s ?? "N/A",
+        flag: "https://flagcdn.com/w160/kh.png",
+      };
+
+      // Remove previous Phnom Penh if already exists
+      allCities = allCities.filter(c => c.name !== "Phnom Penh");
+      allCities.push(phnomPenhStation);
+    } catch (err) {
+      console.error("Failed to fetch Phnom Penh AQI:", err);
+    }
+
+    // 3. Find city by ID
+    cityData.value = allCities.find((c) => c.id == cityIdParam) || null;
   } catch (error) {
     console.error("Error fetching city data:", error);
     cityData.value = null;
@@ -117,6 +149,7 @@ onMounted(() => {
   fetchCityData();
 });
 </script>
+
 
 <style scoped>
 th {
