@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-gray-500 text-sm mb-1">Current AQI</span>
+          <span class="text-gray-500 text-sm mb-2">Current AQI</span>
           <div class="flex items-center gap-2">
             <div :class="aqiBadge(cityData?.aqi) +
               ' text-3xl font-bold rounded-full w-20 h-20 flex items-center justify-center'
@@ -124,11 +124,11 @@
         class="bg-gradient-to-br from-blue-50 via-green-50 to-teal-50 rounded-3xl shadow-lg p-6 flex flex-col gap-4 border border-white/50 backdrop-blur-sm">
         <!-- Title -->
         <div class="font-semibold text-lg mb-4 flex items-center gap-2 text-teal-700">
-           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500 mb-1" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 12h13a4 4 0 100-8 4 4 0 00-4 4m-6 8h9a2 2 0 110 4 2 2 0 01-2-2" />
-            </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500 mb-1" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12h13a4 4 0 100-8 4 4 0 00-4 4m-6 8h9a2 2 0 110 4 2 2 0 01-2-2" />
+          </svg>
           Air Quality Metrics
         </div>
 
@@ -164,20 +164,19 @@
       </div>
     </div>
 
-  <!-- Pollutant Guide -->
-<div v-if="cityData" class="max-w-6xl mx-auto mt-8">
-  <div class="bg-white rounded-2xl shadow p-6 flex flex-col gap-3">
-    <div class="font-semibold text-lg mb-2">Top 3 Pollutants</div>
+    <!-- Pollutant Guide -->
+    <div v-if="cityData" class="max-w-6xl mx-auto mt-8">
+      <div class="bg-white rounded-2xl shadow p-6 flex flex-col gap-3">
+        <div class="font-semibold text-lg mb-2">Top 3 Pollutants</div>
 
-    <div v-for="pollutant in topPollutants" :key="pollutant.label"
-         class="border-l-4 border-blue-500 pl-4 mb-4">
-      <div class="font-bold">{{ pollutant.label }}</div>
-      <div class="text-gray-600 text-sm">{{ pollutant.description }}</div>
-      <div class="text-red-500 text-xs">Health Impact: {{ pollutant.healthImpact }}</div>
-      <div class="text-gray-500 text-xs mt-1">Value: {{ pollutant.value }} {{ pollutant.unit }}</div>
+        <div v-for="pollutant in topPollutants" :key="pollutant.label" class="border-l-4 border-blue-500 pl-4 mb-4">
+          <div class="font-bold">{{ pollutant.label }}</div>
+          <div class="text-gray-600 text-sm">{{ pollutant.description }}</div>
+          <div class="text-red-500 text-xs">Health Impact: {{ pollutant.healthImpact }}</div>
+          <div class="text-gray-500 text-xs mt-1">Value: {{ pollutant.value }} {{ pollutant.unit }}</div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
     <!-- Health Advisory at the end -->
     <div class="max-w-6xl mx-auto mt-8">
@@ -199,8 +198,8 @@
           </div>
         </div>
         <div class="mt-3 text-xs text-gray-700">
-          <div class="font-semibold mb-1">General Recommendations:</div>
-          <ul class="list-disc ml-5 space-y-1">
+          <div class="font-semibold mb-1 text-[16px]">General Recommendations:</div>
+          <ul class="list-disc ml-6 space-y-1 text-[14px]">
             <li>Check AQI before outdoor activities</li>
             <li>Keep windows closed during high pollution</li>
             <li>Use air purifiers indoors</li>
