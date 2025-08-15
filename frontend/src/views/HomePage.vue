@@ -3,27 +3,15 @@
     <!-- Map -->
     <div class="bg-white shadow-lg rounded-xl p-6 relative">
       <h2 class="text-xl font-semibold mb-6 text-gray-800">Air Quality Map</h2>
-      <div
-        id="map"
-        class="h-[500px] w-full overflow-hidden relative rounded-lg"
-      >
+      <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg">
         <!-- Dynamic Legend on left -->
-        <div
-          class="absolute bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg z-[1000] max-w-[200px]"
-        >
+        <div class="absolute bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg z-[1000] max-w-[200px]">
           <div class="text-sm font-semibold mb-3 text-gray-800">
             {{ legendTitle }}
           </div>
           <div class="space-y-2 text-xs">
-            <div
-              v-for="item in legendItems"
-              :key="item.color"
-              class="flex items-center"
-            >
-              <div
-                class="w-4 h-4 mr-3 rounded-sm"
-                :style="{ backgroundColor: item.color }"
-              ></div>
+            <div v-for="item in legendItems" :key="item.color" class="flex items-center">
+              <div class="w-4 h-4 mr-3 rounded-sm" :style="{ backgroundColor: item.color }"></div>
               <span class="text-gray-700">{{ item.label }}</span>
             </div>
           </div>
@@ -32,56 +20,33 @@
         <!-- Search control on top right - Made bigger -->
         <div class="absolute top-4 right-4 z-[1000]">
           <div class="bg-white shadow-lg rounded-lg overflow-hidden relative">
-            <input
-              type="text"
-              placeholder="Search location..."
+            <input type="text" placeholder="Search location..."
               class="px-4 py-3 w-64 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-              v-model="searchQuery"
-              @keyup="searchLocation"
-            />
-            <button
-              v-if="searchQuery"
-              @click="clearSearch"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center"
-            >
+              v-model="searchQuery" @keyup="searchLocation" />
+            <button v-if="searchQuery" @click="clearSearch"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center">
               ×
             </button>
           </div>
 
           <!-- Zoom controls moved under search and to the right -->
           <div class="flex justify-end mt-3 space-x-2">
-            <button
-              @click="zoomIn"
-              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-gray-700"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
+            <button @click="zoomIn"
+              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
                   d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                  clip-rule="evenodd"
-                />
+                  clip-rule="evenodd" />
               </svg>
             </button>
-            <button
-              @click="zoomOut"
-              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-gray-700"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
+            <button @click="zoomOut"
+              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
                   d="M5 10a1 1 0 011-1h8a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                  clip-rule="evenodd"
-                />
+                  clip-rule="evenodd" />
               </svg>
             </button>
           </div>
@@ -89,45 +54,32 @@
 
         <!-- Pollutant Selector in Map -->
         <div
-          class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg"
-        >
-          <button
-            v-for="option in pollutantOptions"
-            :key="option.value"
-            @click="selectedPollutant = option.value"
+          class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg">
+          <button v-for="option in pollutantOptions" :key="option.value" @click="selectedPollutant = option.value"
             :class="[
               'p-1.5 hover:bg-gray-700 transition-colors flex items-center justify-center rounded-md text-xs',
               selectedPollutant === option.value
                 ? 'bg-yellow-500 text-black'
                 : '',
-            ]"
-            :title="option.label"
-          >
+            ]" :title="option.label">
             <span v-html="option.icon" class="w-4 h-4"></span>
           </button>
         </div>
 
         <!-- Search Results - Collapsible with "States" header like the provided image -->
-        <div
-          v-if="searchResults.length > 0"
-          class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-72 border border-gray-700"
-        >
+        <div v-if="searchResults.length > 0"
+          class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-72 border border-gray-700">
           <!-- Added States header and show more/less functionality -->
-          <div
-            class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg"
-          >
+          <div class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg">
             <h3 class="text-white font-medium text-sm">States</h3>
           </div>
 
           <div class="max-h-80 overflow-y-auto">
-            <div
-              v-for="(result, index) in showAllResults
-                ? searchResults
-                : searchResults.slice(0, maxVisibleResults)"
-              :key="result.name"
+            <div v-for="(result, index) in showAllResults
+              ? searchResults
+              : searchResults.slice(0, maxVisibleResults)" :key="result.name"
               class="flex items-center justify-between p-2.5 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 cursor-pointer transition-colors"
-              @click="goToLocation(result)"
-            >
+              @click="goToLocation(result)">
               <div class="flex items-center space-x-2.5 flex-1 min-w-0">
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-white truncate">
@@ -139,22 +91,16 @@
                 <!-- Updated AQI badge styling to match the provided image -->
                 <span
                   class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold text-white min-w-[2.5rem] justify-center"
-                  :style="{ backgroundColor: getColor(result.aqi, 'aqi') }"
-                >
+                  :style="{ backgroundColor: getColor(result.aqi, 'aqi') }">
                   {{ result.aqi || "N/A" }}
                 </span>
               </div>
             </div>
 
             <!-- Added show more/less button -->
-            <div
-              v-if="searchResults.length > maxVisibleResults"
-              class="p-2 border-t border-gray-700 bg-gray-800"
-            >
-              <button
-                @click="showAllResults = !showAllResults"
-                class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors"
-              >
+            <div v-if="searchResults.length > maxVisibleResults" class="p-2 border-t border-gray-700 bg-gray-800">
+              <button @click="showAllResults = !showAllResults"
+                class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors">
                 {{
                   showAllResults
                     ? "Show Less"
@@ -491,14 +437,23 @@ const renderMarkers = () => {
     };
 
     const popupContent = `
-      <div>
-           <strong>${station.name}</strong><br/>
-           AQI: ${station.aqi}<br/>
-      </div>
+      <div style="
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #000000; /* vibrant blue */
+  border-bottom: 1px solid #000000;
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+  text-align: center;
+">
+  ${station.name}
+</div>
+
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
           ${renderRow(selectedPollutant.value.toUpperCase(), value)}
           ${renderRow("Status", status)}
-          ${renderRow("AQI", station.aqi)}
           ${renderRow("PM2.5", station.pm25)}
           ${renderRow("PM10", station.pm10)}
           ${renderRow("NO₂", station.no2)}
@@ -509,12 +464,26 @@ const renderMarkers = () => {
           ${renderRow("Pressure", station.pressure, " hPa")}
           ${renderRow("Wind", windValue, " m/s")}
         </div>
-        <div style="margin-top: 6px; text-align: center;">
-      <button id="view-detail-${station.id}" 
-        style="color: #3b82f6; font-size: 12px; font-weight: 500; background: none; border: none; text-decoration: underline; cursor: pointer;">
-        View City Details
-      </button>
-    </div>
+        <div style="margin-top: 8px; text-align: center;">
+  <button id="view-detail-${station.id}" 
+  style="
+    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+  "
+  onmouseover="this.style.backgroundColor='#3b82f6'; this.style.color='#ffffff'; this.style.transform='scale(1.05)';"
+  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3b82f6'; this.style.transform='scale(1)';"
+>
+  View City Details
+</button>
+</div>
+
       </div>
     `;
 
@@ -531,12 +500,12 @@ const renderMarkers = () => {
 
     // Add SPA-friendly navigation
     marker.on('popupopen', () => {
-  const btn = document.getElementById(`view-detail-${station.id}`);
-  if (btn) {
-    btn.addEventListener('click', () => {
-      router.push({ name: 'city-detail', params: { id: station.id } });
-    });
-  }
+      const btn = document.getElementById(`view-detail-${station.id}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          router.push({ name: 'city-detail', params: { id: station.id } });
+        });
+      }
     });
 
     markers.push(marker);
@@ -569,15 +538,13 @@ const searchLocation = () => {
 
       marker.bindPopup(`
         <div style="text-align: center; font-family: system-ui, -apple-system, sans-serif;">
-          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${
-            result.name
-          }</h4>
+          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name
+        }</h4>
           <div style="color: ${getColor(
-            result.aqi,
-            "aqi"
-          )}; font-weight: 600; font-size: 12px;">AQI: ${
-        result.aqi || "N/A"
-      }</div>
+          result.aqi,
+          "aqi"
+        )}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || "N/A"
+        }</div>
         </div>
       `);
       searchMarkers.value.push(marker);
