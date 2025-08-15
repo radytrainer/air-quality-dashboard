@@ -224,6 +224,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 // --------------------------
 // ROUTE & STATE
@@ -444,12 +445,96 @@ const fetchCityData = async () => {
     loading.value = false;
   }
 };
+function getAQILevelKey(aqi) {
+  const val = Number(aqi);
+  if (isNaN(val)) return "good";
+  if (val <= 50) return "good";
+  if (val <= 100) return "moderate";
+  if (val <= 150) return "usg";
+  if (val <= 200) return "unhealthy";
+  if (val <= 300) return "very_unhealthy";
+  return "hazardous";
+}
+function getHealthMessage(aqi) {
+  const stored = localStorage.getItem("aqiHealthMessages");
+  const defaultMessages = {
+    good: {
+      public: "Air quality is good. Enjoy your outdoor activities!",
+      sensitive: "No special precautions needed for sensitive groups.",
+    },
+    moderate: {
+      public: "Air quality is moderate. Sensitive groups should take care.",
+      sensitive: "Sensitive individuals should consider limiting prolonged outdoor exertion.",
+    },
+    unhealthySensitive: {
+      public: "Unhealthy for sensitive groups. Limit prolonged outdoor exertion.",
+      sensitive: "Sensitive groups should avoid outdoor activities.",
+      actions: "Consider wearing masks and staying indoors.",
+    },
+    unhealthy: {
+      public: "Unhealthy air quality. Everyone should reduce outdoor activities.",
+      sensitive: "Critical alert for sensitive groups.",
+      emergency: "Follow emergency precautions.",
+      restrictions: "Outdoor activity restrictions in effect.",
+    },
+    veryUnhealthy: {
+      public: "Very unhealthy air quality. Health alert for everyone.",
+      sensitive: "Serious risk for sensitive groups.",
+      emergency: "Avoid all outdoor activities. Follow emergency instructions.",
+      restrictions: "Strict outdoor activity restrictions in effect.",
+    },
+    hazardous: {
+      public: "Hazardous air quality. Health emergency for everyone.",
+      sensitive: "Severe risk for sensitive groups.",
+      emergency: "Remain indoors. Follow all emergency instructions.",
+      restrictions: "All outdoor activities prohibited.",
+    },
+  };
+  const messages = stored ? JSON.parse(stored) : defaultMessages;
+  const keyMap = {
+    good: "good",
+    moderate: "moderate",
+    usg: "unhealthySensitive",
+    unhealthy: "unhealthy",
+    very_unhealthy: "veryUnhealthy",
+    hazardous: "hazardous",
+  };
+  let key = getAQILevelKey(aqi);
+  key = keyMap[key] || key;
+
+  const msg = messages[key] || {};
+  let html = "<ul style='padding-left:1.2em'>";
+  if (msg.public) html += `<li><strong>Public:</strong> ${msg.public}</li>`;
+  if (msg.sensitive) html += `<li><strong>Sensitive Groups:</strong> ${msg.sensitive}</li>`;
+  if (msg.actions) html += `<li><strong>Recommended Actions:</strong> ${msg.actions}</li>`;
+  if (msg.emergency) html += `<li><strong>Emergency Actions:</strong> ${msg.emergency}</li>`;
+  if (msg.restrictions) html += `<li><strong>Activity Restrictions:</strong> ${msg.restrictions}</li>`;
+  html += "</ul>";
+  return html;
+}
+
+function showHealthAlert(aqi, cityName) {
+  Swal.fire({
+    title: `Health Alert for ${cityName}`,
+    html: getHealthMessage(aqi), // Use html instead of text
+    icon: "warning",
+    confirmButtonText: "OK",
+    customClass: {
+      popup: "rounded-xl",
+      title: "font-bold",
+    },
+  });
+}
 
 // --------------------------
 // ON MOUNT
 // --------------------------
 onMounted(() => {
-  fetchCityData();
+  fetchCityData().then(() => {
+    if (cityData.value) {
+      showHealthAlert(cityData.value.aqi, cityData.value.name);
+    }
+  });
 });
 </script>
 <style scoped>
