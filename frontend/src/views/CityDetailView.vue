@@ -368,6 +368,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const route = useRoute();
 const cityIdParam = route.params.id;
@@ -486,9 +487,64 @@ const fetchCityData = async () => {
     loading.value = false;
   }
 };
+function getAQILevelKey(aqi) {
+  const val = Number(aqi);
+  if (isNaN(val)) return "good";
+  if (val <= 50) return "good";
+  if (val <= 100) return "moderate";
+  if (val <= 150) return "usg";
+  if (val <= 200) return "unhealthy";
+  if (val <= 300) return "very_unhealthy";
+  return "hazardous";
+}
+function getHealthMessage(aqi) {
+  const stored = localStorage.getItem("aqiHealthMessages");
+  const messages = stored
+    ? JSON.parse(stored)
+    : {
+        good: { public: "Air quality is good. Enjoy your outdoor activities!" },
+        moderate: { public: "Air quality is moderate. Sensitive groups should take care." },
+        unhealthySensitive: { public: "Unhealthy for sensitive groups. Limit prolonged outdoor exertion." },
+        unhealthy: { public: "Unhealthy air quality. Everyone should reduce outdoor activities." },
+      };
+  const keyMap = {
+    usg: "unhealthySensitive",
+    very_unhealthy: "unhealthy",
+    hazardous: "unhealthy",
+  };
+  let key = getAQILevelKey(aqi);
+  key = keyMap[key] || key;
+
+  const msg = messages[key] || {};
+  let html = "<ul style='padding-left:1.2em'>";
+  if (msg.public) html += `<li><strong>Public:</strong> ${msg.public}</li>`;
+  if (msg.sensitive) html += `<li><strong>Sensitive Groups:</strong> ${msg.sensitive}</li>`;
+  if (msg.actions) html += `<li><strong>Recommended Actions:</strong> ${msg.actions}</li>`;
+  if (msg.emergency) html += `<li><strong>Emergency Actions:</strong> ${msg.emergency}</li>`;
+  if (msg.restrictions) html += `<li><strong>Activity Restrictions:</strong> ${msg.restrictions}</li>`;
+  html += "</ul>";
+  return html;
+}
+
+function showHealthAlert(aqi, cityName) {
+  Swal.fire({
+    title: `Health Alert for ${cityName}`,
+    html: getHealthMessage(aqi), // Use html instead of text
+    icon: "warning",
+    confirmButtonText: "OK",
+    customClass: {
+      popup: "rounded-xl",
+      title: "font-bold",
+    },
+  });
+}
 
 onMounted(() => {
-  fetchCityData();
+  fetchCityData().then(() => {
+    if (cityData.value) {
+      showHealthAlert(cityData.value.aqi, cityData.value.name);
+    }
+  });
 });
 </script>
 

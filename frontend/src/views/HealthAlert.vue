@@ -1,183 +1,281 @@
 <template>
-  <div class="p-6 space-y-6">
-    <h2 class="text-2xl font-bold">Health Alert Admin Panel</h2>
-
-    <!-- Current AQI display -->
-    <div class="bg-white p-4 shadow rounded">
-      <h3 class="text-xl font-semibold mb-2">Current AQI Data</h3>
-      <div v-if="aqiData">
-        <p>PM2.5: {{ aqiData.pm25 }}</p>
-        <p>PM10: {{ aqiData.pm10 }}</p>
-        <p>CO: {{ aqiData.co }}</p>
-        <p>NO₂: {{ aqiData.no2 }}</p>
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div class="px-8 py-6 border-b border-gray-200">
+          <h1 class="text-2xl font-bold text-gray-900">Health Alert Message Configuration</h1>
+          <p class="text-gray-600 mt-2">Customize health advisory messages for different air quality levels</p>
+        </div>
       </div>
-      <div v-else>Loading AQI data...</div>
+
+      <!-- Alert Messages Form -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-8 py-6">
+          <form @submit.prevent="saveMessages" class="space-y-8">
+            <!-- Good Air Quality -->
+            <div class="border-l-4 border-green-500 bg-green-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-green-800">Good (0-50 AQI)</h3>
+                <span class="ml-auto text-sm text-green-600 bg-green-100 px-3 py-1 rounded-full">Minimal Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Message</label>
+                  <textarea
+                    v-model="messages.good.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    rows="3"
+                    placeholder="Message for general public..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups</label>
+                  <textarea
+                    v-model="messages.good.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    rows="3"
+                    placeholder="Message for sensitive individuals..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Moderate Air Quality -->
+            <div class="border-l-4 border-yellow-500 bg-yellow-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-yellow-500 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-yellow-800">Moderate (51-100 AQI)</h3>
+                <span class="ml-auto text-sm text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Low Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Message</label>
+                  <textarea
+                    v-model="messages.moderate.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                    rows="3"
+                    placeholder="Message for general public..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups</label>
+                  <textarea
+                    v-model="messages.moderate.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                    rows="3"
+                    placeholder="Message for sensitive individuals..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unhealthy for Sensitive Groups -->
+            <div class="border-l-4 border-orange-500 bg-orange-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-orange-500 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-orange-800">Unhealthy for Sensitive Groups (101-150 AQI)</h3>
+                <span class="ml-auto text-sm text-orange-600 bg-orange-100 px-3 py-1 rounded-full">Moderate Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Message</label>
+                  <textarea
+                    v-model="messages.unhealthySensitive.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    rows="3"
+                    placeholder="Message for general public..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups Alert</label>
+                  <textarea
+                    v-model="messages.unhealthySensitive.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    rows="3"
+                    placeholder="Important alert for sensitive individuals..."
+                  ></textarea>
+                </div>
+              </div>
+              <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Recommended Actions</label>
+                <textarea
+                  v-model="messages.unhealthySensitive.actions"
+                  class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  rows="2"
+                  placeholder="Specific actions and precautions..."
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Unhealthy Air Quality -->
+            <div class="border-l-4 border-red-500 bg-red-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-red-800">Unhealthy (151-200 AQI)</h3>
+                <span class="ml-auto text-sm text-red-600 bg-red-100 px-3 py-1 rounded-full">High Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Health Warning</label>
+                  <textarea
+                    v-model="messages.unhealthy.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    rows="3"
+                    placeholder="Health warning for everyone..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups Alert</label>
+                  <textarea
+                    v-model="messages.unhealthy.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    rows="3"
+                    placeholder="Critical alert for sensitive groups..."
+                  ></textarea>
+                </div>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Actions</label>
+                  <textarea
+                    v-model="messages.unhealthy.emergency"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    rows="2"
+                    placeholder="Emergency precautions and actions..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Activity Restrictions</label>
+                  <textarea
+                    v-model="messages.unhealthy.restrictions"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    rows="2"
+                    placeholder="Outdoor activity restrictions..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+              <div class="flex items-center space-x-4">
+                <button
+                  type="submit"
+                  class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
+                >
+                  Save All Messages
+                </button>
+                <button
+                  type="button"
+                  class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium"
+                  @click="openPreview"
+                >
+                  Preview Messages
+                </button>
+              </div>
+              <div class="flex items-center">
+                <span v-if="saved" class="text-green-600 font-medium flex items-center">
+                  <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  Messages Saved Successfully!
+                </span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
-    <!-- Last API fetch info -->
-    <div class="bg-white p-4 shadow rounded">
-      <h3 class="text-xl font-semibold mb-2">Last API Fetch Info</h3>
-      <p>✅ Last Fetch Time: {{ meta.last_fetch_time }}</p>
-      <p class="mt-2 font-medium">Cache Keys:</p>
-      <ul>
-        <li v-for="(status, key) in meta.cache_keys" :key="key">
-          - {{ key }}: <span :class="status === 'active' ? 'text-green-600' : 'text-red-600'">{{ status }}</span>
-        </li>
-      </ul>
-      <p class="mt-4 font-medium">Recent Logs:</p>
-      <ul class="text-sm text-gray-600 max-h-40 overflow-y-auto">
-        <li v-for="(log, index) in meta.logs" :key="index">• {{ log.trim() }}</li>
-      </ul>
-    </div>
-
-    <!-- AQI Threshold Config -->
-    <div class="bg-white p-4 shadow rounded">
-      <h3 class="text-xl font-semibold mb-2">AQI Threshold Configuration</h3>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block">PM2.5 Threshold</label>
-          <input v-model.number="config.pm25_threshold" type="number" class="input" />
-        </div>
-        <div>
-          <label class="block">PM10 Threshold</label>
-          <input v-model.number="config.pm10_threshold" type="number" class="input" />
-        </div>
-        <div>
-          <label class="block">CO Threshold</label>
-          <input v-model.number="config.co_threshold" type="number" class="input" />
-        </div>
-        <div>
-          <label class="block">NO₂ Threshold</label>
-          <input v-model.number="config.no2_threshold" type="number" class="input" />
+    <!-- Preview Modal -->
+    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" @click="showModal = false">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+        <h2 class="text-xl font-bold mb-4">Preview Health Messages</h2>
+        <div v-for="(msg, key) in messages" :key="key" class="mb-4 border-b pb-3 last:border-b-0 last:pb-0">
+          <div class="font-semibold capitalize mb-1">{{ getAQILabel(key) }}</div>
+          <div class="text-sm mb-1"><strong>Public:</strong> {{ msg.public }}</div>
+          <div class="text-sm mb-1" v-if="msg.sensitive"><strong>Sensitive Groups:</strong> {{ msg.sensitive }}</div>
+          <div class="text-sm mb-1" v-if="msg.actions"><strong>Recommended Actions:</strong> {{ msg.actions }}</div>
+          <div class="text-sm mb-1" v-if="msg.emergency"><strong>Emergency Actions:</strong> {{ msg.emergency }}</div>
+          <div class="text-sm" v-if="msg.restrictions"><strong>Activity Restrictions:</strong> {{ msg.restrictions }}</div>
         </div>
       </div>
-      <div class="mt-4">
-        <label class="flex items-center space-x-2">
-          <input type="checkbox" v-model="config.enable_alert" />
-          <span>Enable Alert Popups</span>
-        </label>
-      </div>
-      <div class="mt-2">
-        <label class="block">Custom Alert Message</label>
-        <textarea v-model="config.alert_message" class="input" rows="2"></textarea>
-      </div>
-
-      <button @click="saveConfig" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Settings</button>
-
-      <button @click="triggerTestAlert" class="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Test Alert</button>
-    </div>
-
-    <!-- Alert Message History -->
-    <div class="bg-white p-4 shadow rounded max-h-64 overflow-y-auto">
-      <h3 class="text-xl font-semibold mb-2">Alert Message History</h3>
-      <ul class="text-sm text-gray-700">
-        <li v-for="message in alertHistory" :key="message.id" class="border-b py-1">
-          <p><strong>{{ new Date(message.created_at).toLocaleString() }}:</strong> {{ message.message }}</p>
-        </li>
-      </ul>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import api from '@/services/api'
-import Swal from 'sweetalert2'
+import { ref, onMounted } from "vue";
 
-const meta = ref({
-  last_fetch_time: '',
-  cache_keys: {},
-  logs: [],
-})
+const defaultMessages = {
+  good: {
+    public: "Air quality is good. Enjoy your outdoor activities!",
+    sensitive: "No special precautions needed for sensitive groups.",
+  },
+  moderate: {
+    public: "Air quality is moderate. Sensitive groups should take care.",
+    sensitive: "Sensitive individuals should consider limiting prolonged outdoor exertion.",
+  },
+  unhealthySensitive: {
+    public: "Unhealthy for sensitive groups. Limit prolonged outdoor exertion.",
+    sensitive: "Sensitive groups should avoid outdoor activities.",
+    actions: "Consider wearing masks and staying indoors.",
+  },
+  unhealthy: {
+    public: "Unhealthy air quality. Everyone should reduce outdoor activities.",
+    sensitive: "Critical alert for sensitive groups.",
+    emergency: "Follow emergency precautions.",
+    restrictions: "Outdoor activity restrictions in effect.",
+  },
+};
+const messages = ref(JSON.parse(JSON.stringify(defaultMessages)));
+const saved = ref(false);
+const showModal = ref(false);
 
-const config = ref({
-  pm25_threshold: 25,
-  pm10_threshold: 50,
-  co_threshold: 10,
-  no2_threshold: 40,
-  enable_alert: true,
-  alert_message: '',
-})
-
-const alertHistory = ref([])
-const aqiData = ref(null)
-
-// Load initial data
-onMounted(async () => {
-  try {
-    const [resMeta, resConfig, resHistory, resAqi] = await Promise.all([
-      api.get('/admin/aqi-meta'),
-      api.get('/admin/alert-config'),
-      api.get('/admin/alert-history'),
-      api.get('/admin/current-aqi'),
-    ])
-
-    meta.value = resMeta.data
-    config.value = resConfig.data
-    alertHistory.value = resHistory.data
-    aqiData.value = resAqi.data
-
-    checkAlerts() // Check if alert needs to show on page load
-  } catch (error) {
-    console.error(error)
+onMounted(() => {
+  const stored = localStorage.getItem("aqiHealthMessages");
+  if (stored) {
+    // Deep merge to ensure all keys exist
+    const loaded = JSON.parse(stored);
+    messages.value = {
+      good: { ...defaultMessages.good, ...(loaded.good || {}) },
+      moderate: { ...defaultMessages.moderate, ...(loaded.moderate || {}) },
+      unhealthySensitive: { ...defaultMessages.unhealthySensitive, ...(loaded.unhealthySensitive || {}) },
+      unhealthy: { ...defaultMessages.unhealthy, ...(loaded.unhealthy || {}) },
+    };
   }
-})
+});
 
-// Save config
-const saveConfig = async () => {
-  try {
-    await api.post('/admin/alert-config', config.value)
-    Swal.fire('Success', 'Alert settings updated!', 'success')
-  } catch {
-    Swal.fire('Error', 'Failed to save settings.', 'error')
-  }
+function saveMessages() {
+  // Save to backend or localStorage
+  localStorage.setItem("aqiHealthMessages", JSON.stringify(messages.value));
+  saved.value = true;
+  setTimeout(() => (saved.value = false), 1500);
 }
 
-// Trigger a test alert popup to admin
-const triggerTestAlert = () => {
-  Swal.fire({
-    icon: 'info',
-    title: 'Test Alert',
-    text: config.value.alert_message || 'This is a test alert message.',
-  })
+function openPreview() {
+  showModal.value = true;
 }
 
-// Check AQI values vs thresholds and alert if needed
-const checkAlerts = () => {
-  if (!config.value.enable_alert) return
-
-  const exceeded =
-    (aqiData.value.pm25 > config.value.pm25_threshold) ||
-    (aqiData.value.pm10 > config.value.pm10_threshold) ||
-    (aqiData.value.co > config.value.co_threshold) ||
-    (aqiData.value.no2 > config.value.no2_threshold)
-
-  if (exceeded) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Health Alert',
-      text: config.value.alert_message || 'Air quality levels have exceeded thresholds!',
-      confirmButtonText: 'OK',
-    })
-    saveAlertMessage(config.value.alert_message) // Save alert message to history
-  }
-}
-
-// Save alert message to backend history
-const saveAlertMessage = async (message) => {
-  if (!message) return
-  try {
-    await api.post('/admin/alert-history', { message })
-    const resHistory = await api.get('/admin/alert-history')
-    alertHistory.value = resHistory.data
-  } catch (error) {
-    console.error('Failed to save alert message history', error)
+function getAQILabel(key) {
+  switch (key) {
+    case "good":
+      return "Good (0-50 AQI)";
+    case "moderate":
+      return "Moderate (51-100 AQI)";
+    case "unhealthySensitive":
+      return "Unhealthy for Sensitive Groups (101-150 AQI)";
+    case "unhealthy":
+      return "Unhealthy (151-200 AQI)";
+    default:
+      return key;
   }
 }
 </script>
-
-<style scoped>
-.input {
-  @apply border p-2 rounded w-full;
-}
-</style>
