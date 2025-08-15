@@ -499,18 +499,47 @@ function getAQILevelKey(aqi) {
 }
 function getHealthMessage(aqi) {
   const stored = localStorage.getItem("aqiHealthMessages");
-  const messages = stored
-    ? JSON.parse(stored)
-    : {
-        good: { public: "Air quality is good. Enjoy your outdoor activities!" },
-        moderate: { public: "Air quality is moderate. Sensitive groups should take care." },
-        unhealthySensitive: { public: "Unhealthy for sensitive groups. Limit prolonged outdoor exertion." },
-        unhealthy: { public: "Unhealthy air quality. Everyone should reduce outdoor activities." },
-      };
+  const defaultMessages = {
+    good: {
+      public: "Air quality is good. Enjoy your outdoor activities!",
+      sensitive: "No special precautions needed for sensitive groups.",
+    },
+    moderate: {
+      public: "Air quality is moderate. Sensitive groups should take care.",
+      sensitive: "Sensitive individuals should consider limiting prolonged outdoor exertion.",
+    },
+    unhealthySensitive: {
+      public: "Unhealthy for sensitive groups. Limit prolonged outdoor exertion.",
+      sensitive: "Sensitive groups should avoid outdoor activities.",
+      actions: "Consider wearing masks and staying indoors.",
+    },
+    unhealthy: {
+      public: "Unhealthy air quality. Everyone should reduce outdoor activities.",
+      sensitive: "Critical alert for sensitive groups.",
+      emergency: "Follow emergency precautions.",
+      restrictions: "Outdoor activity restrictions in effect.",
+    },
+    veryUnhealthy: {
+      public: "Very unhealthy air quality. Health alert for everyone.",
+      sensitive: "Serious risk for sensitive groups.",
+      emergency: "Avoid all outdoor activities. Follow emergency instructions.",
+      restrictions: "Strict outdoor activity restrictions in effect.",
+    },
+    hazardous: {
+      public: "Hazardous air quality. Health emergency for everyone.",
+      sensitive: "Severe risk for sensitive groups.",
+      emergency: "Remain indoors. Follow all emergency instructions.",
+      restrictions: "All outdoor activities prohibited.",
+    },
+  };
+  const messages = stored ? JSON.parse(stored) : defaultMessages;
   const keyMap = {
+    good: "good",
+    moderate: "moderate",
     usg: "unhealthySensitive",
-    very_unhealthy: "unhealthy",
-    hazardous: "unhealthy",
+    unhealthy: "unhealthy",
+    very_unhealthy: "veryUnhealthy",
+    hazardous: "hazardous",
   };
   let key = getAQILevelKey(aqi);
   key = keyMap[key] || key;
