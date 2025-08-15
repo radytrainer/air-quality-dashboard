@@ -454,7 +454,6 @@ const renderMarkers = () => {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
           ${renderRow(selectedPollutant.value.toUpperCase(), value)}
           ${renderRow("Status", status)}
-          ${renderRow("AQI", station.aqi)}
           ${renderRow("PM2.5", station.pm25)}
           ${renderRow("PM10", station.pm10)}
           ${renderRow("NO₂", station.no2)}
