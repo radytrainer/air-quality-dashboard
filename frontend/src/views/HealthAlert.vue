@@ -158,6 +158,104 @@
               </div>
             </div>
 
+            <!-- Very Unhealthy Air Quality -->
+            <div class="border-l-4 border-purple-500 bg-purple-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-purple-500 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-purple-800">Very Unhealthy (201-300 AQI)</h3>
+                <span class="ml-auto text-sm text-purple-600 bg-purple-100 px-3 py-1 rounded-full">Very High Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Health Warning</label>
+                  <textarea
+                    v-model="messages.veryUnhealthy.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    rows="3"
+                    placeholder="Health warning for everyone..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups Alert</label>
+                  <textarea
+                    v-model="messages.veryUnhealthy.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    rows="3"
+                    placeholder="Critical alert for sensitive groups..."
+                  ></textarea>
+                </div>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Actions</label>
+                  <textarea
+                    v-model="messages.veryUnhealthy.emergency"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    rows="2"
+                    placeholder="Emergency precautions and actions..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Activity Restrictions</label>
+                  <textarea
+                    v-model="messages.veryUnhealthy.restrictions"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    rows="2"
+                    placeholder="Outdoor activity restrictions..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hazardous Air Quality -->
+            <div class="border-l-4 border-rose-700 bg-rose-50 p-6 rounded-r-lg">
+              <div class="flex items-center mb-4">
+                <div class="w-4 h-4 bg-rose-700 rounded-full mr-3"></div>
+                <h3 class="text-lg font-semibold text-rose-800">Hazardous (301+ AQI)</h3>
+                <span class="ml-auto text-sm text-rose-700 bg-rose-100 px-3 py-1 rounded-full">Extreme Risk</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Health Emergency</label>
+                  <textarea
+                    v-model="messages.hazardous.public"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-rose-700 focus:border-rose-700"
+                    rows="3"
+                    placeholder="Health emergency for everyone..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups Emergency</label>
+                  <textarea
+                    v-model="messages.hazardous.sensitive"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-rose-700 focus:border-rose-700"
+                    rows="3"
+                    placeholder="Critical emergency for sensitive groups..."
+                  ></textarea>
+                </div>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Actions</label>
+                  <textarea
+                    v-model="messages.hazardous.emergency"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-rose-700 focus:border-rose-700"
+                    rows="2"
+                    placeholder="Strict emergency precautions and actions..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Activity Restrictions</label>
+                  <textarea
+                    v-model="messages.hazardous.restrictions"
+                    class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-rose-700 focus:border-rose-700"
+                    rows="2"
+                    placeholder="All outdoor activities prohibited..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
             <!-- Action Buttons -->
             <div class="flex items-center justify-between pt-6 border-t border-gray-200">
               <div class="flex items-center space-x-4">
@@ -173,6 +271,13 @@
                   @click="openPreview"
                 >
                   Preview Messages
+                </button>
+                <button
+                  type="button"
+                  class="bg-red-100 text-red-700 px-6 py-3 rounded-lg hover:bg-red-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors font-medium"
+                  @click="resetDefaults"
+                >
+                  Reset to Default
                 </button>
               </div>
               <div class="flex items-center">
@@ -200,7 +305,7 @@
         <h2 class="text-xl font-bold mb-4">Preview Health Messages</h2>
         <div v-for="(msg, key) in messages" :key="key" class="mb-4 border-b pb-3 last:border-b-0 last:pb-0">
           <div class="font-semibold capitalize mb-1">{{ getAQILabel(key) }}</div>
-          <div class="text-sm mb-1"><strong>Public:</strong> {{ msg.public }}</div>
+          <div class="text-sm mb-1" v-if="msg.public"><strong>Public:</strong> {{ msg.public }}</div>
           <div class="text-sm mb-1" v-if="msg.sensitive"><strong>Sensitive Groups:</strong> {{ msg.sensitive }}</div>
           <div class="text-sm mb-1" v-if="msg.actions"><strong>Recommended Actions:</strong> {{ msg.actions }}</div>
           <div class="text-sm mb-1" v-if="msg.emergency"><strong>Emergency Actions:</strong> {{ msg.emergency }}</div>
@@ -234,6 +339,18 @@ const defaultMessages = {
     emergency: "Follow emergency precautions.",
     restrictions: "Outdoor activity restrictions in effect.",
   },
+  veryUnhealthy: {
+    public: "Very unhealthy air quality. Health alert for everyone.",
+    sensitive: "Serious risk for sensitive groups.",
+    emergency: "Avoid all outdoor activities. Follow emergency instructions.",
+    restrictions: "Strict outdoor activity restrictions in effect.",
+  },
+  hazardous: {
+    public: "Hazardous air quality. Health emergency for everyone.",
+    sensitive: "Severe risk for sensitive groups.",
+    emergency: "Remain indoors. Follow all emergency instructions.",
+    restrictions: "All outdoor activities prohibited.",
+  },
 };
 const messages = ref(JSON.parse(JSON.stringify(defaultMessages)));
 const saved = ref(false);
@@ -249,12 +366,13 @@ onMounted(() => {
       moderate: { ...defaultMessages.moderate, ...(loaded.moderate || {}) },
       unhealthySensitive: { ...defaultMessages.unhealthySensitive, ...(loaded.unhealthySensitive || {}) },
       unhealthy: { ...defaultMessages.unhealthy, ...(loaded.unhealthy || {}) },
+      veryUnhealthy: { ...defaultMessages.veryUnhealthy, ...(loaded.veryUnhealthy || {}) },
+      hazardous: { ...defaultMessages.hazardous, ...(loaded.hazardous || {}) },
     };
   }
 });
 
 function saveMessages() {
-  // Save to backend or localStorage
   localStorage.setItem("aqiHealthMessages", JSON.stringify(messages.value));
   saved.value = true;
   setTimeout(() => (saved.value = false), 1500);
@@ -262,6 +380,11 @@ function saveMessages() {
 
 function openPreview() {
   showModal.value = true;
+}
+
+function resetDefaults() {
+  messages.value = JSON.parse(JSON.stringify(defaultMessages));
+  localStorage.setItem("aqiHealthMessages", JSON.stringify(defaultMessages));
 }
 
 function getAQILabel(key) {
@@ -274,6 +397,10 @@ function getAQILabel(key) {
       return "Unhealthy for Sensitive Groups (101-150 AQI)";
     case "unhealthy":
       return "Unhealthy (151-200 AQI)";
+    case "veryUnhealthy":
+      return "Very Unhealthy (201-300 AQI)";
+    case "hazardous":
+      return "Hazardous (301+ AQI)";
     default:
       return key;
   }
