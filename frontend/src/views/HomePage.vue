@@ -145,7 +145,7 @@ const getColor = (value, pollutant) => {
     case "pm10":
     case "aqi":
       if (val <= 50) return "#00e400";
-      if (val <= 100) return "#ffff00";
+      if (val <= 100) return "#FFEB3B";
       if (val <= 150) return "#ff7e00";
       if (val <= 200) return "#ff0000";
       if (val <= 300) return "#99004c";
@@ -153,20 +153,20 @@ const getColor = (value, pollutant) => {
     case "no2":
     case "o3":
       if (val <= 40) return "#00e400";
-      if (val <= 80) return "#ffff00";
+      if (val <= 80) return "#FFEB3B";
       if (val <= 180) return "#ff7e00";
       if (val <= 280) return "#ff0000";
       return "#99004c";
     case "co":
       if (val <= 1) return "#00e400";
-      if (val <= 2) return "#ffff00";
+      if (val <= 2) return "#FFEB3B";
       if (val <= 10) return "#ff7e00";
       return "#ff0000";
     case "temperature":
       if (val < 0) return "#0000ff";
       if (val < 15) return "#00ffff";
       if (val < 25) return "#00e400";
-      if (val < 35) return "#ffff00";
+      if (val < 35) return "#FFEB3B";
       return "#ff0000";
     case "humidity":
       if (val < 30) return "#ff7e00";
@@ -179,7 +179,7 @@ const getColor = (value, pollutant) => {
       return "#00ff00";
     case "wind":
       if (val < 5) return "#00e400";
-      if (val < 10) return "#ffff00";
+      if (val < 10) return "#FFEB3B";
       if (val < 15) return "#ff7e00";
       return "#ff0000";
     default:
@@ -190,7 +190,7 @@ const getColor = (value, pollutant) => {
 // Status text
 const getStatus = (value, pollutant) => {
   const val = parseFloat(value);
-  if (isNaN(val)) return "N/A";
+  if (isNaN(val)) return "0";
 
   switch (pollutant) {
     case "pm25":
@@ -235,7 +235,7 @@ const getStatus = (value, pollutant) => {
       if (val < 15) return "Moderate";
       return "Strong";
     default:
-      return "N/A";
+      return "0";
   }
 };
 
@@ -247,7 +247,7 @@ const getLegendItems = (pollutant) => {
     case "aqi":
       return [
         { color: "#00e400", label: "Good (0-50)" },
-        { color: "#ffff00", label: "Moderate (51-100)" },
+        { color: "#FFEB3B", label: "Moderate (51-100)" },
         { color: "#ff7e00", label: "Unhealthy for SG (101-150)" },
         { color: "#ff0000", label: "Unhealthy (151-200)" },
         { color: "#99004c", label: "Very Unhealthy (201-300)" },
@@ -257,7 +257,7 @@ const getLegendItems = (pollutant) => {
     case "o3":
       return [
         { color: "#00e400", label: "Good (0-40)" },
-        { color: "#ffff00", label: "Moderate (41-80)" },
+        { color: "#FFEB3B", label: "Moderate (41-80)" },
         { color: "#ff7e00", label: "Unhealthy for SG (81-180)" },
         { color: "#ff0000", label: "Unhealthy (181-280)" },
         { color: "#99004c", label: "Very Unhealthy (281+)" },
@@ -265,7 +265,7 @@ const getLegendItems = (pollutant) => {
     case "co":
       return [
         { color: "#00e400", label: "Good (0-1)" },
-        { color: "#ffff00", label: "Moderate (1.1-2)" },
+        { color: "#FFEB3B", label: "Moderate (1.1-2)" },
         { color: "#ff7e00", label: "Unhealthy (2.1-10)" },
         { color: "#ff0000", label: "Hazardous (10.1+)" },
       ];
@@ -274,7 +274,7 @@ const getLegendItems = (pollutant) => {
         { color: "#0000ff", label: "Freezing (<0°C)" },
         { color: "#00ffff", label: "Cold (0-15°C)" },
         { color: "#00e400", label: "Mild (15-25°C)" },
-        { color: "#ffff00", label: "Warm (25-35°C)" },
+        { color: "#FFEB3B", label: "Warm (25-35°C)" },
         { color: "#ff0000", label: "Hot (>35°C)" },
       ];
     case "humidity":
@@ -293,7 +293,7 @@ const getLegendItems = (pollutant) => {
     case "wind":
       return [
         { color: "#00e400", label: "Calm (0-5 m/s)" },
-        { color: "#ffff00", label: "Light (5-10 m/s)" },
+        { color: "#FFEB3B", label: "Light (5-10 m/s)" },
         { color: "#ff7e00", label: "Moderate (10-15 m/s)" },
         { color: "#ff0000", label: "Strong (>15 m/s)" },
       ];
@@ -304,6 +304,7 @@ const getLegendItems = (pollutant) => {
 
 const legendItems = computed(() => getLegendItems(selectedPollutant.value));
 const legendTitle = computed(() => `${selectedPollutant.value.toUpperCase()} Levels`);
+
 
 // Fetch data
 const fetchAQIData = async () => {
@@ -340,7 +341,7 @@ const renderMarkers = () => {
 
     const color = getColor(value, selectedPollutant.value);
     const status = getStatus(value, selectedPollutant.value);
-    const windValue = station.wind_speed || station.wind || "N/A";
+    const windValue = station.wind_speed || station.wind || "0";
 
     const popupContent = `
       <div style="min-width: 220px; font-family: system-ui, -apple-system, sans-serif;">
@@ -348,17 +349,17 @@ const renderMarkers = () => {
           <h3 style="margin: 0; font-size: 14px; font-weight: 600;">${station.name}</h3>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
-          <div><strong>${selectedPollutant.value.toUpperCase()}:</strong> ${value ?? "N/A"}</div>
+          <div><strong>${selectedPollutant.value.toUpperCase()}:</strong> ${value ?? "0"}</div>
           <div><strong>Status:</strong> <span style="color:${color}; font-weight: 600;">${status}</span></div>
-          <div><strong>AQI:</strong> ${station.aqi ?? "N/A"}</div>
-          <div><strong>PM2.5:</strong> ${station.pm25 ?? "N/A"}</div>
-          <div><strong>PM10:</strong> ${station.pm10 ?? "N/A"}</div>
-          <div><strong>NO₂:</strong> ${station.no2 ?? "N/A"}</div>
-          <div><strong>CO:</strong> ${station.co ?? "N/A"}</div>
-          <div><strong>O₃:</strong> ${station.o3 ?? "N/A"}</div>
-          <div><strong>Temp:</strong> ${station.temperature ?? "N/A"} °C</div>
-          <div><strong>Humidity:</strong> ${station.humidity ?? "N/A"} %</div>
-          <div><strong>Pressure:</strong> ${station.pressure ?? "N/A"} hPa</div>
+          <div><strong>AQI:</strong> ${station.aqi ?? "0"}</div>
+          <div><strong>PM2.5:</strong> ${station.pm25 ?? "0"}</div>
+          <div><strong>PM10:</strong> ${station.pm10 ?? "0"}</div>
+          <div><strong>NO₂:</strong> ${station.no2 ?? "0"}</div>
+          <div><strong>CO:</strong> ${station.co ?? "0"}</div>
+          <div><strong>O₃:</strong> ${station.o3 ?? "0"}</div>
+          <div><strong>Temp:</strong> ${station.temperature ?? "0"} °C</div>
+          <div><strong>Humidity:</strong> ${station.humidity ?? "0"} %</div>
+          <div><strong>Pressure:</strong> ${station.pressure ?? "0"} hPa</div>
           <div><strong>Wind:</strong> ${windValue} m/s</div>
         </div>
       </div>
@@ -389,6 +390,41 @@ const searchResults = computed(() => {
   ).slice(0, 12);
 });
 
+const fetchPhnomPenhAQI = async () => {
+  try {
+    const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
+    // OpenWeather Air Pollution API returns data in data.list[0]
+    if (data.list && data.list.length > 0) {
+      const airData = data.list[0];
+      // Build a station object similar to your existing ones
+      const phnomPenhStation = {
+        name: "Phnom Penh",
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: airData.main.aqi,
+        pm25: airData.components.pm2_5,
+        pm10: airData.components.pm10,
+        no2: airData.components.no2,
+        co: airData.components.co,
+        o3: airData.components.o3,
+        temperature: null,  // not provided by this endpoint
+        humidity: null,     // not provided by this endpoint
+        pressure: null,     // not provided by this endpoint
+        wind: null,         // not provided by this endpoint
+        wind_speed: null,
+      };
+
+      // Add Phnom Penh data to your global aqiData array for rendering
+      aqiData.value.push(phnomPenhStation);
+
+      // Render markers again to include Phnom Penh
+      renderMarkers();
+    }
+  } catch (error) {
+    console.error("Error fetching Phnom Penh AQI data:", error);
+  }
+};
+
 const searchLocation = () => {
   searchMarkers.value.forEach((marker) => marker.remove());
   searchMarkers.value = [];
@@ -402,7 +438,7 @@ const searchLocation = () => {
                      <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
                    </div>
                    <div style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 1px 3px; border-radius: 2px; font-size: 9px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                     ${result.aqi || 'N/A'}
+                     ${result.aqi || '0'}
                    </div>
                  </div>`,
           className: "custom-search-marker",
@@ -414,7 +450,7 @@ const searchLocation = () => {
       marker.bindPopup(`
         <div style="text-align: center; font-family: system-ui, -apple-system, sans-serif;">
           <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name}</h4>
-          <div style="color: ${getColor(result.aqi, 'aqi')}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || 'N/A'}</div>
+          <div style="color: ${getColor(result.aqi, 'aqi')}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || '0'}</div>
         </div>
       `);
       searchMarkers.value.push(marker);
@@ -463,11 +499,41 @@ const initMap = () => {
     maxZoom: 19,
   }).addTo(map);
 };
+const detectUserLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Center map on user location
+        map.setView([lat, lon], 5);
+
+        // Add a marker for the user's location
+        L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup("You are here!")
+          .openPopup();
+      },
+      (error) => {
+        console.warn("Geolocation error:", error.message);
+      }
+    );
+  } else {
+    console.warn("Geolocation is not supported by this browser.");
+  }
+};
+
 
 onMounted(() => {
   initMap();
   fetchAQIData();
-  setInterval(fetchAQIData, 30000);
+  fetchPhnomPenhAQI();
+  detectUserLocation(); 
+   setInterval(() => {
+    fetchAQIData();
+    fetchPhnomPenhAQI();  
+  }, 30000);
 });
 
 watch(selectedPollutant, () => {
