@@ -22,7 +22,7 @@
               type="text"
               placeholder="Search location..."
               class="px-4 py-3 w-64 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-              v-model="searchQuery"
+              v-model="searchQuery" 
               @keyup="searchLocation"
             >
             <button v-if="searchQuery" @click="clearSearch" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center">×</button>
@@ -102,6 +102,80 @@
         </div>
       </div>
     </div>
+    <section class="mt-12 px-2 md:px-6 space-y-8">
+      <h2 class="text-2xl font-bold text-gray-800">🌐 Global AQI Rankings</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Most Polluted -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-red-200">
+          <h3 class="text-xl font-semibold text-red-600 mb-4">Top 10 Most Polluted Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10MostPolluted" :key="'polluted-' + index" class="hover:bg-red-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cleanest -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-green-200">
+          <h3 class="text-xl font-semibold text-green-600 mb-4">Top 10 Cleanest Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10LeastPolluted" :key="'cleanest-' + index" class="hover:bg-green-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+
   </div>
 </template>
 
@@ -120,8 +194,60 @@ let markerMap = ref({});
 let searchMarkers = ref([]);
 const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
+// In <script setup>
+// --- TOP 10 COMPUTED ---
+const top10MostPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => b.aqi - a.aqi)
+    .slice(0, 10)
+);
 
-// Inline SVG icons
+const top10LeastPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => a.aqi - b.aqi)
+    .slice(0, 10)
+);
+
+// --- COLOR & STATUS FUNCTIONS ---
+const getColorAQI = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "#999";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "#00e400";
+    if (val <= 100) return "#FFEB3B";
+    if (val <= 150) return "#ff7e00";
+    if (val <= 200) return "#ff0000";
+    if (val <= 300) return "#99004c";
+    return "#7e0023";
+  }
+
+  return "#999";
+};
+
+const getStatusAqi = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "N/A";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "Good";
+    if (val <= 100) return "Moderate";
+    if (val <= 150) return "Unhealthy for SG";
+    if (val <= 200) return "Unhealthy";
+    if (val <= 300) return "Very Unhealthy";
+    return "Hazardous";
+  }
+
+  return "N/A";
+};
+
+// For template usage
+const getStatusLabelAQI = (value) => getStatusAqi(value, "aqi");
+
+
+// Inline SVG icon
 const pollutantOptions = [
   { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 17h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2v-2H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 9v2h14V9H7zm0-4v2h14V5H7z"/></svg>` },
   { value: "pm25", label: "PM2.5", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M4 16a4 4 0 1 1 0-8 6 6 0 1 1 12 0h1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>` },
@@ -311,8 +437,8 @@ const fetchAQIData = async () => {
   try {
     const { data } = await axios.get("http://127.0.0.1:8000/api/aqi");
     if (data.status === "ok" && Array.isArray(data.data)) {
-      aqiData.value = data.data;
-      renderMarkers();
+      aqiData.value = data.data; // set global AQI array
+      renderMarkers();           // update map
     }
   } catch (error) {
     console.error("Error fetching AQI data:", error);
@@ -397,10 +523,8 @@ const searchResults = computed(() => {
 const fetchPhnomPenhAQI = async () => {
   try {
     const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
-    // OpenWeather Air Pollution API returns data in data.list[0]
     if (data.list && data.list.length > 0) {
       const airData = data.list[0];
-      // Build a station object similar to your existing ones
       const phnomPenhStation = {
         name: "Phnom Penh",
         lat: 11.562108,
@@ -411,17 +535,13 @@ const fetchPhnomPenhAQI = async () => {
         no2: airData.components.no2,
         co: airData.components.co,
         o3: airData.components.o3,
-        temperature: null,  // not provided by this endpoint
-        humidity: null,     // not provided by this endpoint
-        pressure: null,     // not provided by this endpoint
-        wind: null,         // not provided by this endpoint
+        temperature: null,
+        humidity: null,
+        pressure: null,
+        wind: null,
         wind_speed: null,
       };
-
-      // Add Phnom Penh data to your global aqiData array for rendering
       aqiData.value.push(phnomPenhStation);
-
-      // Render markers again to include Phnom Penh
       renderMarkers();
     }
   } catch (error) {
@@ -530,6 +650,7 @@ const detectUserLocation = () => {
 
 
 onMounted(() => {
+
   initMap();
   fetchAQIData();
   fetchPhnomPenhAQI();
