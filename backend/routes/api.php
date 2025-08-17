@@ -17,7 +17,11 @@ use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\PollutionDataController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
-use App\Http\Controllers\Admin\CityAQIAdminController;
+use App\Http\Controllers\Api\ApiAnalyController;
+use App\Http\Controllers\Api\AqiCompareController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -54,7 +58,15 @@ Route::get('/aqi-global', [AqiController::class, 'global']);
 Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
 Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
 
+
+Route::get('/waqi-city', [AqiCompareController::class, 'getCityPollution']);
+Route::get('/global-aqi', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/country-aqi-info', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/aqi-global', [AqiCompareController::class, 'global']);
 Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
+// Analy Page
+Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
+
 
 // Routes protected by authentication
 Route::middleware('auth:sanctum')->group(function () {

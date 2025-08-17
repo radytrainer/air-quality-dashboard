@@ -45,4 +45,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+  'waqi' => [
+    'token' => env('WAQI_API_TOKEN'),
+],
 ];

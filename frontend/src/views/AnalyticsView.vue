@@ -2,6 +2,7 @@
   <div class="container mx-auto p-6 space-y-8">
     <!-- Top Metrics Row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Highest AQI -->
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
           <span class="bg-red-100 text-red-600 p-3 rounded-full text-2xl">
@@ -9,13 +10,12 @@
           </span>
           <div>
             <p class="text-sm text-gray-500">Highest AQI</p>
-            <p class="text-2xl font-semibold">
-              {{ top10HighAQI[0]?.aqi || 'N/A' }}
-            </p>
+            <p class="text-2xl font-semibold">{{ top10HighAQI[0]?.aqi || 'N/A' }}</p>
           </div>
         </div>
       </div>
 
+      <!-- Lowest AQI -->
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
           <span class="bg-green-100 text-green-600 p-3 rounded-full text-2xl">
@@ -23,13 +23,12 @@
           </span>
           <div>
             <p class="text-sm text-gray-500">Lowest AQI</p>
-            <p class="text-2xl font-semibold">
-              {{ top10LowAQI[0]?.aqi || 'N/A' }}
-            </p>
+            <p class="text-2xl font-semibold">{{ lowestAQI?.aqi || 'N/A'}}</p>
           </div>
         </div>
       </div>
 
+      <!-- Average AQI -->
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
           <span class="bg-blue-100 text-blue-600 p-3 rounded-full text-2xl">
@@ -37,13 +36,12 @@
           </span>
           <div>
             <p class="text-sm text-gray-500">Average AQI</p>
-            <p class="text-2xl font-semibold">
-              {{ avgAQI }}
-            </p>
+            <p class="text-2xl font-semibold">{{ avgAQI }}</p>
           </div>
         </div>
       </div>
 
+      <!-- Cities Tracked -->
       <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-start">
         <div class="flex items-center gap-3">
           <span class="bg-purple-100 text-purple-600 p-3 rounded-full text-2xl">
@@ -51,22 +49,20 @@
           </span>
           <div>
             <p class="text-sm text-gray-500">Cities Tracked</p>
-            <p class="text-2xl font-semibold">
-              {{ aqiData.length }}
-            </p>
+            <p class="text-2xl font-semibold">{{ aqiData.length }}</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Middle Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div class="bg-white rounded-xl shadow-md p-4 relative">
-  <h2 class="text-lg font-semibold mb-4">AQI Map</h2>
-  <div class="map-wrapper rounded-lg overflow-hidden pt-16">
-    <div id="map" class="h-[400px] w-full"></div>
-  </div>
-</div>
+        <h2 class="text-lg font-semibold mb-4">AQI Map</h2>
+        <div class="map-wrapper rounded-lg overflow-hidden pt-16">
+          <div id="map" class="h-[400px] w-full"></div>
+        </div>
+      </div>
 
       <div class="bg-white rounded-xl shadow-md p-4">
         <h2 class="text-lg font-semibold mb-4">AQI Trend</h2>
@@ -82,9 +78,7 @@
           class="p-4 rounded-lg border flex flex-col items-center justify-center">
           <div class="w-10 h-10 rounded-full mb-2" :style="{ backgroundColor: category.color }"></div>
           <p class="font-semibold">{{ category.name }}</p>
-          <p class="text-2xl font-bold" :style="{ color: category.color }">
-            {{ category.count }}
-          </p>
+          <p class="text-2xl font-bold" :style="{ color: category.color }">{{ category.count }}</p>
         </div>
       </div>
     </div>
@@ -92,7 +86,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
@@ -100,38 +94,67 @@ import Chart from 'chart.js/auto'
 
 const aqiData = ref([])
 const top10HighAQI = ref([])
-const top10LowAQI = ref([])
-
+const lowestAQI = ref(null)
 let map = null
 let markers = []
 let aqiChart = null
 
+// AQI color helper
 const getColor = (aqi) => {
   const val = parseInt(aqi)
-  if (val <= 50) return '#00e400'        // Good - Green
-  if (val <= 100) return '#ffff00'       // Moderate - Yellow
-  if (val <= 150) return '#ff7e00'       // Unhealthy for Sensitive Groups - Orange
-  if (val <= 200) return '#ff0000'       // Unhealthy - Red
-  if (val <= 300) return '#99004c'       // Very Unhealthy - Purple
-  return '#7e0023'                       // Hazardous - Maroon
+  if (val <= 50) return '#00e400'
+  if (val <= 100) return '#ffff00'
+  if (val <= 150) return '#ff7e00'
+  if (val <= 200) return '#ff0000'
+  if (val <= 300) return '#99004c'
+  return '#7e0023'
 }
 
+// Computed average AQI
 const avgAQI = computed(() => {
   if (!aqiData.value.length) return 'N/A'
   const sum = aqiData.value.reduce((acc, s) => acc + (parseInt(s.aqi) || 0), 0)
   return Math.round(sum / aqiData.value.length)
 })
 
+// Computed AQI categories
+const aqiCategories = computed(() => {
+  const categories = [
+    { name: 'Good', range: [0, 50], color: '#00e400', count: 0 },
+    { name: 'Moderate', range: [51, 100], color: '#ffff00', count: 0 },
+    { name: 'Unhealthy SG', range: [101, 150], color: '#ff7e00', count: 0 },
+    { name: 'Unhealthy', range: [151, 200], color: '#ff0000', count: 0 },
+    { name: 'Very Unhealthy', range: [201, 300], color: '#99004c', count: 0 },
+    { name: 'Hazardous', range: [301, Infinity], color: '#7e0023', count: 0 },
+  ]
+  aqiData.value.forEach(station => {
+    const aqi = parseInt(station.aqi)
+    if (isNaN(aqi)) return
+    const cat = categories.find(c => aqi >= c.range[0] && aqi <= c.range[1])
+    if (cat) cat.count++
+  })
+  return categories
+})
+
+// Update top AQI lists
 const updateTop10 = () => {
-  const sorted = [...aqiData.value]
-    .filter(s => !isNaN(parseInt(s.aqi)))
-    .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
-  top10HighAQI.value = sorted.slice(0, 10)
-  top10LowAQI.value = sorted.slice(-10).reverse()
+  const validData = aqiData.value
+    .filter(s => !isNaN(parseInt(s.aqi)) && parseInt(s.aqi) > 0)
+    .map(s => ({ ...s, aqi: parseInt(s.aqi) }))
+
+  // Highest AQI
+  top10HighAQI.value = [...validData].sort((a, b) => b.aqi - a.aqi).slice(0, 10)
+
+  // Lowest AQI — pick lowest but at least 1
+  const lowestCity = [...validData].sort((a, b) => a.aqi - b.aqi)[0] 
+                     || { name: 'No Data', aqi: 1 }
+  lowestAQI.value = lowestCity
 }
 
+
+// Render map markers
 const renderMarkers = () => {
-  markers.forEach(marker => marker.remove())
+  markers.forEach(marker => map.removeLayer(marker))
   markers = []
   aqiData.value.forEach(station => {
     if (!station.lat || !station.lon) return
@@ -144,84 +167,88 @@ const renderMarkers = () => {
       opacity: 1,
       fillOpacity: 0.8,
     }).addTo(map)
-    marker.bindPopup(
-      `<b>${station.name}</b><br/>AQI: <span style="color:${color}">${station.aqi}</span>`
-    )
+    marker.bindPopup(`<b>${station.name}</b><br/>AQI: <span style="color:${color}">${station.aqi}</span>`)
     markers.push(marker)
   })
 }
 
+// Shorten labels for chart
 const truncateLabel = (label, maxLength = 10) => {
   if (label.length <= maxLength) return label
   return label.slice(0, maxLength - 1) + '…'
 }
 
+// Update AQI chart
 const updateChart = () => {
   if (!aqiChart) return
   const dataPoints = top10HighAQI.value.map(station => parseInt(station.aqi) || 0)
   const labels = top10HighAQI.value.map(station => truncateLabel(station.name, 10))
   const maxAQI = Math.max(...dataPoints)
   const pointColors = dataPoints.map(val => val === maxAQI ? '#ff0000' : 'rgba(16, 185, 129, 1)')
+
   aqiChart.data.labels = labels
   aqiChart.data.datasets[0].data = dataPoints
   aqiChart.data.datasets[0].pointBackgroundColor = pointColors
   aqiChart.update()
 }
 
-// New computed for AQI categories count
-const aqiCategories = computed(() => {
-  const categories = [
-    { name: 'Good', range: [0, 50], color: '#00e400', count: 0 },
-    { name: 'Moderate', range: [51, 100], color: '#ffff00', count: 0 },
-    { name: 'Unhealthy SG', range: [101, 150], color: '#ff7e00', count: 0 },
-    { name: 'Unhealthy', range: [151, 200], color: '#ff0000', count: 0 },
-    { name: 'Very Unhealthy', range: [201, 300], color: '#99004c', count: 0 },
-    { name: 'Hazardous', range: [301, Infinity], color: '#7e0023', count: 0 },
-  ]
-
-  aqiData.value.forEach(station => {
-    const aqi = parseInt(station.aqi)
-    if (isNaN(aqi)) return
-    const cat = categories.find(c => aqi >= c.range[0] && aqi <= c.range[1])
-    if (cat) cat.count++
-  })
-
-  return categories
-})
-
+// Fetch AQI data from API
 const fetchAQIData = async () => {
   try {
-    const { data } = await axios.get('http://127.0.0.1:8000/api/aqi-global')
-    if (data.status === 'ok' && Array.isArray(data.data)) {
-      aqiData.value = data.data
-      updateTop10()
-      renderMarkers()
-      updateChart()
+    const { data } = await axios.get('http://127.0.0.1:8000/api/aqi')
+    let cities = Array.isArray(data.data) ? data.data : []
+
+    try {
+      const ppRes = await axios.get('http://127.0.0.1:8000/api/air-quality/phnom-penh')
+      const pp = ppRes.data || {}
+      const phnomPenh = {
+        id: 9999,
+        name: 'Phnom Penh',
+        lat: 11.562108,
+        lon: 104.888535,
+        aqi: pp.AQI ?? 'N/A',
+        pm25: pp.PM2_5 ?? 'N/A',
+        pm10: pp.PM10 ?? 'N/A',
+        no2: pp.NO2 ?? 'N/A',
+        co: pp.CO ?? 'N/A',
+        o3: pp.O3 ?? 'N/A',
+        temperature: pp.Temp_C ?? 'N/A',
+        humidity: pp.Humidity_percent ?? 'N/A',
+        pressure: pp.Pressure_hPa ?? 'N/A',
+        wind_speed: pp.Wind_m_s ?? 'N/A',
+        flag: 'https://flagcdn.com/w160/kh.png',
+      }
+      cities = cities.filter(c => c.name !== 'Phnom Penh')
+      cities.push(phnomPenh)
+    } catch (err) {
+      console.error('Failed to fetch Phnom Penh AQI:', err)
     }
+
+    aqiData.value = cities
+    updateTop10()
+    renderMarkers()
+    updateChart()
   } catch (err) {
-    console.error(err)
+    console.error('Error fetching AQI data:', err)
   }
 }
 
+// Initialize Leaflet map
 const initMap = () => {
-  map = L.map('map', {
-    center: [20, 100],
-    zoom: 4,
-    zoomControl: true,
-    scrollWheelZoom: false,
-  })
-  L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {
-      attribution: '&copy; OpenStreetMap & CARTO',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    }
-  ).addTo(map)
+  map = L.map('map', { center: [20, 100], zoom: 4, zoomControl: true, scrollWheelZoom: false })
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap & CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map)
+
+  setTimeout(() => map.invalidateSize(), 200)
 }
 
-onMounted(() => {
+// On component mount
+onMounted(async () => {
   initMap()
+  await nextTick()
 
   const ctx = document.getElementById('aqiChart').getContext('2d')
   const gradient = ctx.createLinearGradient(0, 0, 0, 400)
@@ -230,43 +257,11 @@ onMounted(() => {
 
   aqiChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'AQI',
-        data: [],
-        borderColor: 'rgba(16, 185, 129, 1)',
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
-      }]
-    },
+    data: { labels: [], datasets: [{ label: 'AQI', data: [], borderColor: 'rgba(16, 185, 129, 1)', backgroundColor: gradient, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: 'rgba(16, 185, 129, 1)' }] },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#fff',
-          titleColor: '#000',
-          bodyColor: '#000',
-          borderColor: '#ccc',
-          borderWidth: 1,
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: '#666', font: { size: 12 } }
-        },
-        y: {
-          beginAtZero: true,
-          grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { color: '#666', font: { size: 12 } }
-        }
-      }
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#000', bodyColor: '#000', borderColor: '#ccc', borderWidth: 1 } },
+      scales: { x: { grid: { display: false }, ticks: { color: '#666', font: { size: 12 } } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#666', font: { size: 12 } } } }
     }
   })
 
@@ -274,6 +269,7 @@ onMounted(() => {
   setInterval(fetchAQIData, 30000)
 })
 </script>
+
 <style scoped>
 .map-wrapper {
   height: 500px;
@@ -283,5 +279,4 @@ onMounted(() => {
   position: relative;
   z-index: 0;
 }
-
 </style>
