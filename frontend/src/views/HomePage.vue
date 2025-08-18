@@ -3,15 +3,27 @@
     <!-- Map -->
     <div class="bg-white shadow-lg rounded-xl p-6 relative">
       <h2 class="text-xl font-semibold mb-6 text-gray-800">Air Quality Map</h2>
-      <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg">
+      <div
+        id="map"
+        class="h-[500px] w-full overflow-hidden relative rounded-lg"
+      >
         <!-- Dynamic Legend on left -->
-        <div class="absolute bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg z-[1000] max-w-[200px]">
+        <div
+          class="absolute bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg z-[1000] max-w-[200px]"
+        >
           <div class="text-sm font-semibold mb-3 text-gray-800">
             {{ legendTitle }}
           </div>
           <div class="space-y-2 text-xs">
-            <div v-for="item in legendItems" :key="item.color" class="flex items-center">
-              <div class="w-4 h-4 mr-3 rounded-sm" :style="{ backgroundColor: item.color }"></div>
+            <div
+              v-for="item in legendItems"
+              :key="item.color"
+              class="flex items-center"
+            >
+              <div
+                class="w-4 h-4 mr-3 rounded-sm"
+                :style="{ backgroundColor: item.color }"
+              ></div>
               <span class="text-gray-700">{{ item.label }}</span>
             </div>
           </div>
@@ -20,33 +32,56 @@
         <!-- Search control on top right - Made bigger -->
         <div class="absolute top-4 right-4 z-[1000]">
           <div class="bg-white shadow-lg rounded-lg overflow-hidden relative">
-            <input type="text" placeholder="Search location..."
+            <input
+              type="text"
+              placeholder="Search location..."
               class="px-4 py-3 w-64 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-              v-model="searchQuery" @keyup="searchLocation" />
-            <button v-if="searchQuery" @click="clearSearch"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center">
+              v-model="searchQuery"
+              @keyup="searchLocation"
+            />
+            <button
+              v-if="searchQuery"
+              @click="clearSearch"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center"
+            >
               ×
             </button>
           </div>
 
           <!-- Zoom controls moved under search and to the right -->
           <div class="flex justify-end mt-3 space-x-2">
-            <button @click="zoomIn"
-              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
+            <button
+              @click="zoomIn"
+              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-700"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
                   d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                  clip-rule="evenodd" />
+                  clip-rule="evenodd"
+                />
               </svg>
             </button>
-            <button @click="zoomOut"
-              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
+            <button
+              @click="zoomOut"
+              class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-700"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
                   d="M5 10a1 1 0 011-1h8a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                  clip-rule="evenodd" />
+                  clip-rule="evenodd"
+                />
               </svg>
             </button>
           </div>
@@ -54,32 +89,45 @@
 
         <!-- Pollutant Selector in Map -->
         <div
-          class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg">
-          <button v-for="option in pollutantOptions" :key="option.value" @click="selectedPollutant = option.value"
+          class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg"
+        >
+          <button
+            v-for="option in pollutantOptions"
+            :key="option.value"
+            @click="selectedPollutant = option.value"
             :class="[
               'p-1.5 hover:bg-gray-700 transition-colors flex items-center justify-center rounded-md text-xs',
               selectedPollutant === option.value
                 ? 'bg-yellow-500 text-black'
                 : '',
-            ]" :title="option.label">
+            ]"
+            :title="option.label"
+          >
             <span v-html="option.icon" class="w-4 h-4"></span>
           </button>
         </div>
 
         <!-- Search Results - Collapsible with "States" header like the provided image -->
-        <div v-if="searchResults.length > 0"
-          class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-72 border border-gray-700">
+        <div
+          v-if="searchResults.length > 0"
+          class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-72 border border-gray-700"
+        >
           <!-- Added States header and show more/less functionality -->
-          <div class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg">
+          <div
+            class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg"
+          >
             <h3 class="text-white font-medium text-sm">States</h3>
           </div>
 
           <div class="max-h-80 overflow-y-auto">
-            <div v-for="(result, index) in showAllResults
-              ? searchResults
-              : searchResults.slice(0, maxVisibleResults)" :key="result.name"
+            <div
+              v-for="(result, index) in showAllResults
+                ? searchResults
+                : searchResults.slice(0, maxVisibleResults)"
+              :key="result.name"
               class="flex items-center justify-between p-2.5 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 cursor-pointer transition-colors"
-              @click="goToLocation(result)">
+              @click="goToLocation(result)"
+            >
               <div class="flex items-center space-x-2.5 flex-1 min-w-0">
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-white truncate">
@@ -91,16 +139,22 @@
                 <!-- Updated AQI badge styling to match the provided image -->
                 <span
                   class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold text-white min-w-[2.5rem] justify-center"
-                  :style="{ backgroundColor: getColor(result.aqi, 'aqi') }">
+                  :style="{ backgroundColor: getColor(result.aqi, 'aqi') }"
+                >
                   {{ result.aqi || "N/A" }}
                 </span>
               </div>
             </div>
 
             <!-- Added show more/less button -->
-            <div v-if="searchResults.length > maxVisibleResults" class="p-2 border-t border-gray-700 bg-gray-800">
-              <button @click="showAllResults = !showAllResults"
-                class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors">
+            <div
+              v-if="searchResults.length > maxVisibleResults"
+              class="p-2 border-t border-gray-700 bg-gray-800"
+            >
+              <button
+                @click="showAllResults = !showAllResults"
+                class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors"
+              >
                 {{
                   showAllResults
                     ? "Show Less"
@@ -117,7 +171,7 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
@@ -132,40 +186,82 @@ const markerMap = ref({});
 const searchMarkers = ref([]);
 const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
+const favouriteCities = ref([]);
+const route = useRoute();
+
 
 // Inline SVG icons
 const pollutantOptions = [
   // AQI - green/yellow/red gauge
-  { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+  {
+    value: "aqi",
+    label: "AQI",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>`,
+  },
 
   // PM2.5 - small gray particles
-  { value: "pm25", label: "PM2.5", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="#888"/><circle cx="12" cy="8" r="1.5" fill="#888"/><circle cx="17" cy="14" r="2" fill="#888"/><circle cx="10" cy="16" r="1.5" fill="#888"/></svg>` },
+  {
+    value: "pm25",
+    label: "PM2.5",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="#888"/><circle cx="12" cy="8" r="1.5" fill="#888"/><circle cx="17" cy="14" r="2" fill="#888"/><circle cx="10" cy="16" r="1.5" fill="#888"/></svg>`,
+  },
 
   // PM10 - bigger brownish particles
-  { value: "pm10", label: "PM10", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="5" cy="10" r="2" fill="#A0522D"/><circle cx="12" cy="7" r="3" fill="#A0522D"/><circle cx="18" cy="15" r="2.5" fill="#A0522D"/><circle cx="9" cy="17" r="1.5" fill="#A0522D"/></svg>` },
+  {
+    value: "pm10",
+    label: "PM10",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="5" cy="10" r="2" fill="#A0522D"/><circle cx="12" cy="7" r="3" fill="#A0522D"/><circle cx="18" cy="15" r="2.5" fill="#A0522D"/><circle cx="9" cy="17" r="1.5" fill="#A0522D"/></svg>`,
+  },
 
   // NO2 - dark gray factory
-  { value: "no2", label: "NO₂", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="8" fill="#555"/><polygon points="4,10 8,4 12,10" fill="#777"/></svg>` },
+  {
+    value: "no2",
+    label: "NO₂",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="8" fill="#555"/><polygon points="4,10 8,4 12,10" fill="#777"/></svg>`,
+  },
 
   // CO - molecule circles in red
-  { value: "co", label: "CO", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="#FF4D4D"/><circle cx="17" cy="12" r="3" fill="#FF6666"/></svg>` },
+  {
+    value: "co",
+    label: "CO",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="#FF4D4D"/><circle cx="17" cy="12" r="3" fill="#FF6666"/></svg>`,
+  },
 
   // O3 - ozone in blue
-  { value: "o3", label: "O₃", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3" fill="#3399FF"/><circle cx="15" cy="9" r="3" fill="#33CCFF"/><circle cx="15" cy="15" r="3" fill="#3399FF"/></svg>` },
+  {
+    value: "o3",
+    label: "O₃",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3" fill="#3399FF"/><circle cx="15" cy="9" r="3" fill="#33CCFF"/><circle cx="15" cy="15" r="3" fill="#3399FF"/></svg>`,
+  },
 
   // Temperature - red thermometer
-  { value: "temperature", label: "Temperature", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="12" fill="#FF3300"/><circle cx="12" cy="18" r="3" fill="#FF3300"/></svg>` },
+  {
+    value: "temperature",
+    label: "Temperature",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="12" fill="#FF3300"/><circle cx="12" cy="18" r="3" fill="#FF3300"/></svg>`,
+  },
 
   // Humidity - blue water droplet
-  { value: "humidity", label: "Humidity", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l5 7a8 8 0 1 1-10 0z" fill="#3399FF"/></svg>` },
+  {
+    value: "humidity",
+    label: "Humidity",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l5 7a8 8 0 1 1-10 0z" fill="#3399FF"/></svg>`,
+  },
 
   // Pressure - gauge in green
-  { value: "pressure", label: "Pressure", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+  {
+    value: "pressure",
+    label: "Pressure",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>`,
+  },
 
   // Wind - light blue flowing lines
-  { value: "wind", label: "Wind", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>` }
+  {
+    value: "wind",
+    label: "Wind",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>`,
+  },
 ];
-
 
 // Color scale
 const getColor = (value, pollutant) => {
@@ -396,14 +492,18 @@ const fetchPhnomPenhAQI = async () => {
   }
 };
 
-
 const assignIDs = (data) => {
   return data.map((station, index) => ({
     ...station,
     id: station.id || index + 1, // Use existing id or fallback to index
   }));
 };
-
+const favouriteIcon = L.icon({
+  iconUrl: 'https://www.svgrepo.com/show/171188/favorite-place.svg', // your special icon image
+  iconSize: [32, 32], // size of the icon
+  iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
+  popupAnchor: [0, -32], // point from which the popup should open
+});
 
 // Render markers
 const renderMarkers = () => {
@@ -487,23 +587,32 @@ const renderMarkers = () => {
       </div>
     `;
 
-    const marker = L.circleMarker([station.lat, station.lon], {
-      radius: 8,
-      fillColor: color,
-      color: "#fff",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.8,
-    }).addTo(map);
-
+    const isFavourite = favouriteCities.value.some(fav => fav.id === station.id);
+    let marker;
+if (isFavourite) {
+  // Use special icon for favourite city
+  marker = L.marker([station.lat, station.lon], { icon: favouriteIcon }).addTo(map);
+} else {
+  // Normal circle marker for others
+  const markerColor = getColor(station[selectedPollutant.value], selectedPollutant.value);
+  marker = L.circleMarker([station.lat, station.lon], {
+    radius: 8,
+    fillColor: markerColor,
+    color: "#fff",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.9,
+    stationId: station.id,
+  }).addTo(map);
+}
     marker.bindPopup(popupContent);
 
     // Add SPA-friendly navigation
-    marker.on('popupopen', () => {
+    marker.on("popupopen", () => {
       const btn = document.getElementById(`view-detail-${station.id}`);
       if (btn) {
-        btn.addEventListener('click', () => {
-          router.push({ name: 'city-detail', params: { id: station.id } });
+        btn.addEventListener("click", () => {
+          router.push({ name: "city-detail", params: { id: station.id } });
         });
       }
     });
@@ -511,6 +620,20 @@ const renderMarkers = () => {
     markers.push(marker);
     markerMap.value[station.name] = marker;
   });
+};
+const zoomToFavouriteCity = (cityId) => {
+  const marker = markers.find(m => {
+    // circleMarker has stationId, favourite marker may not
+    return (m.options.stationId === cityId) || 
+           (m.getPopup()?.getContent().includes(`id="view-detail-${cityId}"`));
+  });
+  if (!marker) return;
+
+  // Smooth zoom to the city
+  map.flyTo(marker.getLatLng(), 12, { duration: 1.2 });
+
+  // Open popup
+  marker.openPopup();
 };
 
 // Search location with results panel
@@ -538,13 +661,15 @@ const searchLocation = () => {
 
       marker.bindPopup(`
         <div style="text-align: center; font-family: system-ui, -apple-system, sans-serif;">
-          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name
-        }</h4>
+          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${
+            result.name
+          }</h4>
           <div style="color: ${getColor(
-          result.aqi,
-          "aqi"
-        )}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || "N/A"
-        }</div>
+            result.aqi,
+            "aqi"
+          )}; font-weight: 600; font-size: 12px;">AQI: ${
+        result.aqi || "N/A"
+      }</div>
         </div>
       `);
       searchMarkers.value.push(marker);
@@ -620,6 +745,15 @@ onMounted(() => {
   fetchAQIData();
   fetchPhnomPenhAQI();
   detectUserLocation();
+  renderMarkers();
+
+  // Zoom to favourite city if query exists
+  const favCityId = route.query.favouriteCityId;
+  if (favCityId) {
+    // ensure number comparison
+    zoomToFavouriteCity(Number(favCityId));
+  }
+
   setInterval(() => {
     fetchAQIData();
     fetchPhnomPenhAQI();
