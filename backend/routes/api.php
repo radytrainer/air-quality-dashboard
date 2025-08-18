@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminHealthAlertController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ContactController;
@@ -10,10 +11,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\AqiEuropeController;
-use App\Http\Controllers\Api\AqiAmericasController;
-use App\Http\Controllers\Api\AqiAsiaController;
-use App\Http\Controllers\Api\AqiAfricanController;
+
 use App\Http\Controllers\Api\AqiController;
 use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\PollutionDataController;
@@ -36,23 +34,25 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Air quality public data
 Route::prefix('air-quality')->group(function () {
-    Route::get('/{lat}/{lon}', [AirQualityController::class, 'getAirQuality']);
-    Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQuality']);
-    Route::get('/locations', [AirQualityController::class, 'getLocations']);
-    Route::get('/global', [AirQualityController::class, 'getGlobalAirQuality']);
-    Route::get('/latest', [AirQualityController::class, 'getLatestAirQuality']);
-    Route::get('/countries', [AirQualityController::class, 'getCountries']);
-    Route::get('/counts', [AirQualityController::class, 'getAllCountriesMeasurementCounts']);
-    Route::get('/latest/{country}', [AirQualityController::class, 'getLatestByCountry']);
-    Route::get('/iqair', [AirQualityController::class, 'getIqAirData']);
-    Route::get('/cambodia-all-cities', [AirQualityController::class, 'getAllCitiesAirQuality']);
-    Route::get('/pm25', [AirQualityController::class, 'getPm25Concentration']);
+    Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQualityOpenWeather']);
+
 });
+
+Route::prefix('admin')->group(function () {
+    Route::get('/aqi-meta', [AdminHealthAlertController::class, 'fetchMeta']);
+    Route::get('/alert-config', [AdminHealthAlertController::class, 'getAlertConfig']);
+    Route::post('/alert-config', [AdminHealthAlertController::class, 'updateAlertConfig']);
+    Route::get('/alert-history', [AdminHealthAlertController::class, 'alertHistory']);
+    Route::post('/alert-history', [AdminHealthAlertController::class, 'storeAlertHistory']);
+    Route::get('/current-aqi', [AdminHealthAlertController::class, 'currentAqi']);
+});
+
 
 // Additional AQI endpoints
 Route::get('/aqi', [AqiController::class, 'getCityAqi']);
 Route::get('/aqi-global', [AqiController::class, 'global']);
 Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
+Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
 
 Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
 

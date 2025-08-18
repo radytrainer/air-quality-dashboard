@@ -7,7 +7,7 @@
       <!-- Logo -->
       <div class="w-16 h-16 rounded-2xl">
         <img
-          src="../assets/images/Logo.png"
+          src="../assets/videos/18454482.gif"
           alt="Air Quality Icon"
           class="w-full h-full object-cover"
         />
@@ -34,7 +34,7 @@
         />
       </RouterLink>
 
-      <RouterLink
+      <!-- <RouterLink
         :to="auth.userRole === 'admin' ? '/cityaqi' : '/city-detail'"
         class="px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 relative group whitespace-nowrap"
         :class="[$route.path === '/city-detail' || $route.path === '/cityaqi' ? 'text-blue-600 bg-blue-50' : 'text-gray-700']"
@@ -44,7 +44,7 @@
           v-if="$route.path === '/city-detail' || $route.path === '/cityaqi'"
           class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
         />
-      </RouterLink>
+      </RouterLink> -->
 
       <RouterLink
         to="/compare-cities"

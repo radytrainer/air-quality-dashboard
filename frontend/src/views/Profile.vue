@@ -1,112 +1,198 @@
 <template>
-  <div class="max-w-xl mx-auto mt-10 p-5 bg-white rounded-xl shadow">
-    <h1 class="text-xl font-semibold mb-4 text-gray-800">{{ t('profile.editProfile') }}</h1>
-
-    <div v-if="loading" class="text-center py-8">
-      <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-      <p class="mt-2 text-sm text-gray-500">{{ t('profile.loadingProfile') }}</p>
-    </div>
-
-    <div v-else>
-      <div v-if="error" class="bg-red-50 text-red-600 text-sm p-3 rounded mb-4">
-        <ul v-if="error.errors">
-          <li v-for="(errs, field) in error.errors" :key="field">
-            {{ field }}: {{ errs.join(', ') }}
-          </li>
-        </ul>
-        <p v-else>{{ error }}</p>
-      </div>
-
-      <form @submit.prevent="updateProfile" class="space-y-4 text-sm text-gray-700">
-        <!-- Profile Image -->
-        <div class="flex justify-center mb-4">
-          <div class="relative">
-            <img
-              :src="form.profile_image_url || '/default-avatar.png'"
-              class="w-24 h-24 rounded-full object-cover border shadow"
-              :alt="t('profile.profileImageAlt')"
-            />
-            <button
-              type="button"
-              @click="openFileInput"
-              class="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full text-xs hover:bg-blue-700"
-              :title="t('profile.changeProfileImage')"
-            >
-              <i class="fas fa-camera"></i>
-            </button>
-            <input
-              type="file"
-              ref="fileInput"
-              class="hidden"
-              accept="image/*"
-              @change="handleImageUpload"
-            />
-          </div>
-        </div>
-
-        <!-- Name -->
-        <div>
-          <label class="block mb-1">{{ t('profile.name') }}</label>
-          <input type="text" v-model="form.name" class="w-full px-3 py-1.5 border rounded" required />
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label class="block mb-1">{{ t('profile.email') }}</label>
-          <input type="email" v-model="form.email" class="w-full px-3 py-1.5 border rounded" required />
-        </div>
-
-        <!-- Phone -->
-        <div>
-          <label class="block mb-1">{{ t('profile.phone') }}</label>
-          <input type="text" v-model="form.phone" class="w-full px-3 py-1.5 border rounded" />
-        </div>
-
-        <!-- Bio -->
-        <div>
-          <label class="block mb-1">{{ t('profile.bio') }}</label>
-          <textarea v-model="form.bio" rows="2" class="w-full px-3 py-1.5 border rounded"></textarea>
-        </div>
-
-        <!-- Password Section -->
-        <div class="border-t pt-4">
-          <h3 class="text-sm font-medium mb-2">{{ t('profile.changePassword') }}</h3>
-
-          <div>
-            <label class="block mb-1">{{ t('profile.currentPassword') }}</label>
-            <input type="password" v-model="form.current_password" class="w-full px-3 py-1.5 border rounded" />
-          </div>
-
-          <div class="mt-2">
-            <label class="block mb-1">{{ t('profile.newPassword') }}</label>
-            <input type="password" v-model="form.new_password" class="w-full px-3 py-1.5 border rounded" />
-          </div>
-
-          <div class="mt-2">
-            <label class="block mb-1">{{ t('profile.confirmPassword') }}</label>
-            <input type="password" v-model="form.new_password_confirmation" class="w-full px-3 py-1.5 border rounded" />
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="flex justify-end gap-2 pt-4">
+ <div class="flex flex-col md:flex-row min-h-screen bg-gray-50 rounded-2xl">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md p-4 rounded-lg">
+      <div class="flex flex-col items-center py-6 border-b">
+        <div class="relative mb-4">
+          <img
+            :src="form.profile_image_url || '/default-avatar.png'"
+            class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+            :alt="t('profile.profileImageAlt')"
+          />
           <button
             type="button"
-            @click="resetForm"
-            class="px-3 py-1.5 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+            @click="openFileInput"
+            class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
+            :title="t('profile.changeProfileImage')"
           >
-            {{ t('profile.cancel') }}
+            <i class="fas fa-camera text-sm"></i>
           </button>
-          <button
-            type="submit"
-            :disabled="updating"
-            class="px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
-          >
-            <span v-if="updating"><i class="fas fa-spinner fa-spin mr-1"></i> {{ t('profile.saving') }}</span>
-            <span v-else>{{ t('profile.save') }}</span>
-          </button>
+          <input
+            type="file"
+            ref="fileInput"
+            class="hidden"
+            accept="image/*"
+            @change="handleImageUpload"
+          />
         </div>
-      </form>
+        <h2 class="text-lg font-semibold text-gray-800">{{ form.name }}</h2>
+        <p class="text-sm text-gray-500">{{ form.email }}</p>
+      </div>
+
+      <nav class="mt-4">
+        <button
+          @click="activeTab = 'profile'"
+          :class="activeTab === 'profile' ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm' : ''"
+          class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
+        >
+          <i class="fas fa-user-circle mr-2 text-orange-500"></i> Profile Information
+        </button>
+        <button
+          @click="activeTab = 'password'"
+          :class="activeTab === 'password' ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm' : ''"
+          class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
+        >
+          <i class="fas fa-lock mr-2 text-orange-500"></i> Reset Password
+        </button>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+      <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-semibold mb-6 text-gray-800">
+          {{ activeTab === 'profile' ? 'Profile Information' : 'Reset Password' }}
+        </h1>
+
+        <div v-if="loading" class="text-center py-8">
+          <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
+          <p class="mt-2 text-sm text-gray-500">{{ t('profile.loadingProfile') }}</p>
+        </div>
+
+        <div v-else>
+          <div v-if="error" class="bg-red-50 text-red-600 text-sm p-3 rounded mb-4">
+            <ul v-if="error.errors">
+              <li v-for="(errs, field) in error.errors" :key="field">
+                {{ field }}: {{ errs.join(', ') }}
+              </li>
+            </ul>
+            <p v-else>{{ error }}</p>
+          </div>
+
+          <!-- Profile Information Form -->
+          <form 
+            v-if="activeTab === 'profile'"
+            @submit.prevent="updateProfile" 
+            class="space-y-4 bg-white p-6 rounded-lg shadow"
+          >
+            <!-- Name -->
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.name') }}</label>
+              <input 
+                type="text" 
+                v-model="form.name" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                required 
+              />
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.email') }}</label>
+              <input 
+                type="email" 
+                v-model="form.email" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                required 
+              />
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.phone') }}</label>
+              <input 
+                type="text" 
+                v-model="form.phone" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+              />
+            </div>
+
+            <!-- Bio -->
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.bio') }}</label>
+              <textarea 
+                v-model="form.bio" 
+                rows="3" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+              ></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                @click="resetForm"
+                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                {{ t('profile.cancel') }}
+              </button>
+              <button
+                type="submit"
+                :disabled="updating"
+                class="px-5 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:bg-orange-400"
+              >
+                <span v-if="updating"><i class="fas fa-spinner fa-spin mr-1"></i> {{ t('profile.saving') }}</span>
+                <span v-else>{{ t('Save Changes') }}</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Password Reset Form -->
+          <form 
+            v-if="activeTab === 'password'"
+            @submit.prevent="updatePassword" 
+            class="space-y-4 bg-white p-6 rounded-lg shadow"
+          >
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.currentPassword') }}</label>
+              <input 
+                type="password" 
+                v-model="passwordForm.current_password" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.newPassword') }}</label>
+              <input 
+                type="password" 
+                v-model="passwordForm.new_password" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 font-medium text-gray-700">{{ t('profile.confirmPassword') }}</label>
+              <input 
+                type="password" 
+                v-model="passwordForm.new_password_confirmation" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500" 
+                required
+              />
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                @click="resetPasswordForm"
+                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                {{ t('profile.cancel') }}
+              </button>
+              <button
+                type="submit"
+                :disabled="updatingPassword"
+                class="px-5 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:bg-orange-400"
+              >
+                <span v-if="updatingPassword"><i class="fas fa-spinner fa-spin mr-1"></i> {{ t('profile.updating') }}</span>
+                <span v-else>{{ t('Update Password') }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -122,8 +208,10 @@ const { t } = useI18n()
 const auth = useAuthStore()
 const loading = ref(true)
 const updating = ref(false)
+const updatingPassword = ref(false)
 const error = ref(null)
 const fileInput = ref(null)
+const activeTab = ref('profile')
 
 const form = ref({
   name: '',
@@ -132,6 +220,9 @@ const form = ref({
   bio: '',
   profile_image: null,
   profile_image_url: '',
+})
+
+const passwordForm = ref({
   current_password: '',
   new_password: '',
   new_password_confirmation: ''
@@ -165,17 +256,6 @@ const handleImageUpload = (e) => {
   }
 }
 
-const removeProfileImage = async () => {
-  try {
-    await api.delete('/profile/image')
-    form.value.profile_image = null
-    form.value.profile_image_url = ''
-    auth.userProfileImage = ''
-  } catch (err) {
-    error.value = err.response?.data || { message: t('profile.removeImageFailed') }
-  }
-}
-
 const updateProfile = async () => {
   updating.value = true
   error.value = null
@@ -185,12 +265,6 @@ const updateProfile = async () => {
   formData.append('email', form.value.email)
   formData.append('phone', form.value.phone)
   formData.append('bio', form.value.bio)
-
-  if (form.value.current_password) {
-    formData.append('current_password', form.value.current_password)
-    formData.append('new_password', form.value.new_password)
-    formData.append('new_password_confirmation', form.value.new_password_confirmation)
-  }
 
   if (form.value.profile_image) {
     formData.append('profile_image', form.value.profile_image)
@@ -205,10 +279,6 @@ const updateProfile = async () => {
     auth.userEmail = res.data.user.email
     auth.userProfileImage = res.data.user.profile_image || ''
 
-    form.value.current_password = ''
-    form.value.new_password = ''
-    form.value.new_password_confirmation = ''
-
     alert(t('profile.updateSuccess'))
   } catch (err) {
     error.value = err.response?.data || { message: t('profile.updateFailed') }
@@ -217,11 +287,31 @@ const updateProfile = async () => {
   }
 }
 
+const updatePassword = async () => {
+  updatingPassword.value = true
+  error.value = null
+
+  try {
+    await api.post('/profile/password', passwordForm.value)
+    alert(t('profile.passwordUpdateSuccess'))
+    resetPasswordForm()
+  } catch (err) {
+    error.value = err.response?.data || { message: t('profile.updateFailed') }
+  } finally {
+    updatingPassword.value = false
+  }
+}
+
 const resetForm = () => {
   fetchProfile()
-  form.value.current_password = ''
-  form.value.new_password = ''
-  form.value.new_password_confirmation = ''
+}
+
+const resetPasswordForm = () => {
+  passwordForm.value = {
+    current_password: '',
+    new_password: '',
+    new_password_confirmation: ''
+  }
 }
 
 onMounted(() => {

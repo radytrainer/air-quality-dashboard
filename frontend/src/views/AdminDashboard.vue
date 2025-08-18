@@ -1,227 +1,447 @@
 <template>
-  <div class="dashboard">
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Summary Cards -->
-      <section class="summary-section">
-        <div class="summary-cards">
-          <div class="summary-card" @click="viewCitiesDetail">
-            <div class="card-header">
-              <h3>Total Cities Monitored</h3>
-              <MapPin />
-            </div>
-            <div class="card-content">
-              <div class="card-value">{{ summaryData.totalCities }}</div>
-              <div class="card-subtitle">+12 from last month</div>
-            </div>
-          </div>
-
-          <div class="summary-card" @click="viewAPIStatus">
-            <div class="card-header">
-              <h3>API Status</h3>
-              <Server />
-            </div>
-            <div class="card-content">
-              <div class="status-indicator">
-                <CheckCircle class="status-icon" />
-                <span class="card-value">{{ summaryData.apiStatus }}</span>
-              </div>
-              <div class="card-subtitle">99.9% uptime this month</div>
-            </div>
-          </div>
-
-          <div class="summary-card" @click="viewPollutedCity">
-            <div class="card-header">
-              <h3>Most Polluted City Today</h3>
-              <AlertTriangle />
-            </div>
-            <div class="card-content">
-              <div class="card-value">{{ summaryData.mostPollutedCity.name }}</div>
-              <div class="pollution-info">
-                <span :class="['aqi-badge', getAQIClass(summaryData.mostPollutedCity.aqi)]">
-                  AQI {{ summaryData.mostPollutedCity.aqi }}
-                </span>
-                <span class="card-subtitle">{{ summaryData.mostPollutedCity.level }}</span>
-              </div>
-            </div>
-          </div>
+  <div class="container mx-auto p-4">
+    <!-- Overview Boxes -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow">
+        <h3 class="text-gray-400 mb-2 text-sm font-semibold">TOTAL COUNTRIES</h3>
+        <p class="text-2xl font-bold">{{ totalCountries }}</p>
+        <p class="text-xs text-gray-400 mt-1">Monitoring air quality</p>
+      </div>
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow">
+        <h3 class="text-gray-400 mb-2 text-sm font-semibold">HIGHEST POLLUTION</h3>
+        <p class="text-xl font-bold text-red-500 truncate">{{ highestPollutionStation.name }}</p>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-lg font-mono">{{ highestPollutionStation.aqi }} AQI</span>
+          <span class="text-xs px-2 py-1 rounded" :style="{ backgroundColor: getColor(highestPollutionStation.aqi, 0.2), color: getColor(highestPollutionStation.aqi) }">
+            {{ getStatus(highestPollutionStation.aqi) }}
+          </span>
         </div>
-      </section>
+      </div>
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow">
+        <h3 class="text-gray-400 mb-2 text-sm font-semibold">LOWEST POLLUTION</h3>
+        <p class="text-xl font-bold text-green-500 truncate">{{ lowestPollutionStation.name }}</p>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-lg font-mono">{{ lowestPollutionStation.aqi }} AQI</span>
+          <span class="text-xs px-2 py-1 rounded" :style="{ backgroundColor: getColor(lowestPollutionStation.aqi, 0.2), color: getColor(lowestPollutionStation.aqi) }">
+            {{ getStatus(lowestPollutionStation.aqi) }}
+          </span>
+        </div>
+      </div>
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow">
+        <h3 class="text-gray-400 mb-2 text-sm font-semibold">GLOBAL AVERAGE</h3>
+        <p class="text-2xl font-bold">{{ globalAverageAQI }} AQI</p>
+        <p class="text-xs text-gray-400 mt-1">Across all stations</p>
+      </div>
+    </div>
 
-      <!-- Main Dashboard Grid -->
-      <section class="dashboard-grid">
-        <!-- Real-time AQI Map -->
-        <div class="dashboard-card map-card">
-          <div class="card-header-with-action">
-            <div>
-              <h2>Real-time AQI Map</h2>
-              <p>Current air quality across monitored cities</p>
-            </div>
-            <button class="refresh-btn" @click="refreshMapData" :disabled="isRefreshing">
-              <RefreshCw :class="{ 'animate-spin': isRefreshing }" />
-              Refresh
+    <!-- Map Section -->
+    <div class="map-wrapper relative mb-6 rounded-lg overflow-hidden shadow-lg">
+      <div id="map" class="w-full h-full border border-gray-700"></div>
+      <div class="absolute bottom-4 left-4 z-[1000] bg-gray-900 bg-opacity-70 text-white text-xs p-2 rounded">
+        Wind Speed Visualization Enabled
+      </div>
+    </div>
+
+    <!-- Data Tables and Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Top 10 Most Polluted -->
+      <div class="bg-gray-900 rounded-lg shadow-lg border border-gray-800 overflow-hidden">
+        <div class="p-4 border-b border-gray-800 bg-gray-950">
+          <h2 class="text-xl font-bold text-red-400 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+            </svg>
+            TOP 10 MOST POLLUTED
+          </h2>
+          <p class="text-xs text-gray-400">Updated: {{ lastUpdated }}</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-gray-200">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-950">
+                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase">RANK</th>
+                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase">LOCATION</th>
+                <th class="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase">AQI</th>
+                <th class="py-3 px-4 text-center text-xs font-semibold text-gray-400 uppercase">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(station, index) in top10HighAQI" :key="'high-'+index" class="border-b border-gray-800 hover:bg-gray-850 transition-colors">
+                <td class="py-3 px-4 font-mono">{{ index + 1 }}</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center">
+                    <img :src="station.flag" alt="Flag" class="w-5 h-3 mr-2 rounded-sm" v-if="station.flag" />
+                    <div>
+                      <div class="font-medium">{{ extractCityName(station.name) }}</div>
+                      <div class="text-xs text-gray-400">{{ extractCountryName(station.name) }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-right font-mono">
+                  <span :style="{ color: getColor(station.aqi) }" class="font-bold">{{ station.aqi }}</span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <span class="text-xs px-2 py-1 rounded-full" :style="{ backgroundColor: getColor(station.aqi, 0.2), color: getColor(station.aqi) }">
+                    {{ getStatus(station.aqi) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top 10 Least Polluted -->
+      <div class="bg-gray-900 rounded-lg shadow-lg border border-gray-800 overflow-hidden">
+        <div class="p-4 border-b border-gray-800 bg-gray-950">
+          <h2 class="text-xl font-bold text-green-400 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            TOP 10 LEAST POLLUTED
+          </h2>
+          <p class="text-xs text-gray-400">Updated: {{ lastUpdated }}</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-gray-200">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-950">
+                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase">RANK</th>
+                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase">LOCATION</th>
+                <th class="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase">AQI</th>
+                <th class="py-3 px-4 text-center text-xs font-semibold text-gray-400 uppercase">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(station, index) in top10LowAQI" :key="'low-'+index" class="border-b border-gray-800 hover:bg-gray-850 transition-colors">
+                <td class="py-3 px-4 font-mono">{{ index + 1 }}</td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center">
+                    <img :src="station.flag" alt="Flag" class="w-5 h-3 mr-2 rounded-sm" v-if="station.flag" />
+                    <div>
+                      <div class="font-medium">{{ extractCityName(station.name) }}</div>
+                      <div class="text-xs text-gray-400">{{ extractCountryName(station.name) }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-right font-mono">
+                  <span :style="{ color: getColor(station.aqi) }" class="font-bold">{{ station.aqi }}</span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <span class="text-xs px-2 py-1 rounded-full" :style="{ backgroundColor: getColor(station.aqi, 0.2), color: getColor(station.aqi) }">
+                    {{ getStatus(station.aqi) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="bg-gray-900 rounded-lg shadow-lg border border-gray-800 p-4 col-span-1 lg:col-span-2">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-white">AQI TRENDS: TOP 10 HIGHEST & LOWEST</h2>
+          <div class="flex space-x-2">
+            <button @click="changeChartType('line')" :class="{'bg-blue-600 text-white': chartType === 'line', 'bg-gray-800 text-gray-300': chartType !== 'line'}" class="px-3 py-1 rounded text-xs">
+              Line Chart
+            </button>
+            <button @click="changeChartType('bar')" :class="{'bg-blue-600 text-white': chartType === 'bar', 'bg-gray-800 text-gray-300': chartType !== 'bar'}" class="px-3 py-1 rounded text-xs">
+              Bar Chart
             </button>
           </div>
-          <div id="map" class="map-container"></div>
         </div>
-
-        <!-- AQI Graphs -->
-        <div class="dashboard-card graph-card">
-          <h2>Top 10 Most Polluted Cities</h2>
-          <canvas id="mostPollutedChart"></canvas>
-        </div>
-        <div class="dashboard-card graph-card">
-          <h2>Top 10 Least Polluted Cities</h2>
-          <canvas id="leastPollutedChart"></canvas>
-        </div>
-      </section>
-
-      <!-- Quick Actions -->
-      <section class="quick-actions-section">
-        <div class="dashboard-card">
-          <div class="card-header">
-            <h2>Quick Actions</h2>
-            <p>Common administrative tasks</p>
-          </div>
-          <div class="quick-actions">
-            <button class="action-btn" @click="refreshAllData" :disabled="isLoading">
-              <RefreshCw :class="{ 'animate-spin': isLoading }" />
-              Refresh All Data
-            </button>
-            <button class="action-btn" @click="clearCache" :disabled="isLoading">
-              <Server />
-              Clear Cache
-            </button>
-            <button class="action-btn" @click="addNewCity" :disabled="isLoading">
-              <MapPin />
-              Add New City
-            </button>
-            <button class="action-btn" @click="viewFullLogs">
-              <Activity />
-              View Full Logs
-            </button>
-          </div>
-        </div>
-      </section>
-    </main>
+        <canvas id="aqiChart" class="w-full" style="height: 350px;"></canvas>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-velocity/dist/leaflet-velocity.min.js'
 import 'leaflet-velocity/dist/leaflet-velocity.min.css'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
-import {
-  MapPin,
-  Server,
-  CheckCircle,
-  AlertTriangle,
-  RefreshCw,
-  Activity
-} from 'lucide-vue-next'
 
-// API keys
-const NINJA_API_KEY = 'ymN5uLOtTZ0lIYjWUBD30w==OgcDgtbkNz5YMqTo'
-const WAQI_TOKEN = '9c81a4f2fcf022539c917fdefba185ff9369865d'
-
-// City coordinates mapping
-const cityCoordinates = {
-  'New York': { lat: 40.7128, lng: -74.0060 },
-  'Los Angeles': { lat: 34.0522, lng: -118.2437 },
-  'London': { lat: 51.5074, lng: -0.1278 },
-  'Tokyo': { lat: 35.6762, lng: 139.6503 },
-  'Delhi': { lat: 28.7041, lng: 77.1025 },
-  'Beijing': { lat: 39.9042, lng: 116.4074 },
-  'Mumbai': { lat: 19.0760, lng: 72.8777 },
-  'Sydney': { lat: -33.8688, lng: 151.2093 },
-  'Paris': { lat: 48.8566, lng: 2.3522 },
-  'Berlin': { lat: 52.5200, lng: 13.4050 },
-  'Toronto': { lat: 43.6532, lng: -79.3832 },
-  'Singapore': { lat: 1.3521, lng: 103.8198 },
-  'Dubai': { lat: 25.2048, lng: 55.2708 }
-}
-
-// Reactive data
-const summaryData = reactive({
-  totalCities: 0,
-  apiStatus: 'Operational',
-  mostPollutedCity: {
-    name: '',
-    aqi: 0,
-    level: ''
-  }
-})
-
-const cityData = ref([])
-
-// State management
-const isLoading = ref(false)
-const isRefreshing = ref(false)
-const hoveredCity = ref(null)
-let realTimeInterval = null
+const aqiData = ref([])
+const top10HighAQI = ref([])
+const top10LowAQI = ref([])
+const lastUpdated = ref(new Date().toLocaleString())
+const chartType = ref('line') // Default to line chart
+let aqiChart = null
 let map = null
 let markers = []
-let mostPollutedChart = null
-let leastPollutedChart = null
+let velocityLayer = null
 
-// Computed properties
-const mostPollutedCity = computed(() => {
-  return cityData.value.reduce((max, city) => 
-    city.aqi > max.aqi ? city : max, { aqi: 0 })
+// Helper functions to extract city and country names
+const extractCityName = (name) => {
+  if (!name) return 'Unknown'
+  const parts = name.split(',')
+  return parts[0].trim()
+}
+
+const extractCountryName = (name) => {
+  if (!name) return 'Unknown'
+  const parts = name.split(',')
+  if (parts.length > 1) {
+    return parts[1].split('(')[0].trim()
+  }
+  return 'Unknown'
+}
+
+// Computed properties for overview boxes
+const totalCountries = computed(() => {
+  if (aqiData.value.length === 0) return 0
+  const countries = new Set()
+  aqiData.value.forEach(station => {
+    const country = extractCountryName(station.name)
+    if (country && country !== 'Unknown') {
+      countries.add(country)
+    }
+  })
+  return countries.size
 })
 
-const top10HighAQI = computed(() => {
-  return cityData.value
-    .filter(s => !isNaN(parseInt(s.aqi)))
-    .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
-    .slice(0, 10)
+const highestPollutionStation = computed(() => {
+  if (aqiData.value.length === 0) return { name: 'Loading...', aqi: 0 }
+  const sorted = [...aqiData.value].sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+  return sorted[0] || { name: 'N/A', aqi: 0 }
 })
 
-const top10LowAQI = computed(() => {
-  return cityData.value
-    .filter(s => !isNaN(parseInt(s.aqi)))
-    .sort((a, b) => parseInt(a.aqi) - parseInt(b.aqi))
-    .slice(0, 10)
+const lowestPollutionStation = computed(() => {
+  if (aqiData.value.length === 0) return { name: 'Loading...', aqi: 0 }
+  const sorted = [...aqiData.value].sort((a, b) => parseInt(a.aqi) - parseInt(b.aqi))
+  return sorted[0] || { name: 'N/A', aqi: 0 }
 })
 
-// Utility functions
-const getAQILevel = (aqi) => {
-  if (aqi <= 50) return 'Good'
-  if (aqi <= 100) return 'Moderate'
-  if (aqi <= 150) return 'Unhealthy for Sensitive Groups'
-  if (aqi <= 200) return 'Unhealthy'
-  if (aqi <= 300) return 'Very Unhealthy'
+const globalAverageAQI = computed(() => {
+  if (aqiData.value.length === 0) return 0
+  const validStations = aqiData.value.filter(station => !isNaN(parseInt(station.aqi)))
+  if (validStations.length === 0) return 0
+  const total = validStations.reduce((sum, item) => sum + parseInt(item.aqi), 0)
+  return Math.round(total / validStations.length)
+})
+
+const getColor = (aqi, opacity = 1) => {
+  const val = parseInt(aqi)
+  if (val <= 50) return `rgba(0, 228, 0, ${opacity})`      // Good - Green
+  if (val <= 100) return `rgba(255, 255, 0, ${opacity})`   // Moderate - Yellow
+  if (val <= 150) return `rgba(255, 126, 0, ${opacity})`   // Unhealthy for Sensitive Groups - Orange
+  if (val <= 200) return `rgba(255, 0, 0, ${opacity})`     // Unhealthy - Red
+  if (val <= 300) return `rgba(153, 0, 76, ${opacity})`    // Very Unhealthy - Purple
+  return `rgba(126, 0, 35, ${opacity})`                    // Hazardous - Maroon
+}
+
+const getStatus = (aqi) => {
+  const val = parseInt(aqi)
+  if (val <= 50) return 'Good'
+  if (val <= 100) return 'Moderate'
+  if (val <= 150) return 'Unhealthy (Sensitive)'
+  if (val <= 200) return 'Unhealthy'
+  if (val <= 300) return 'Very Unhealthy'
   return 'Hazardous'
 }
 
-const getAQIClass = (aqi) => {
-  if (aqi <= 50) return 'aqi-good'
-  if (aqi <= 100) return 'aqi-moderate'
-  if (aqi <= 150) return 'aqi-unhealthy-sensitive'
-  if (aqi <= 200) return 'aqi-unhealthy'
-  return 'aqi-very-unhealthy'
+const updateTop10 = () => {
+  const validStations = [...aqiData.value].filter(s => !isNaN(parseInt(s.aqi)))
+  const sortedHigh = [...validStations].sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+  const sortedLow = [...validStations].sort((a, b) => parseInt(a.aqi) - parseInt(b.aqi))
+  
+  top10HighAQI.value = sortedHigh.slice(0, 10)
+  top10LowAQI.value = sortedLow.slice(0, 10)
+  lastUpdated.value = new Date().toLocaleString()
 }
 
-const getColor = (aqi) => {
-  if (aqi <= 50) return '#00e400'
-  if (aqi <= 100) return '#ffff00'
-  if (aqi <= 150) return '#ff7e00'
-  if (aqi <= 200) return '#ff0000'
-  if (aqi <= 300) return '#99004c'
-  return '#7e0023'
+const changeChartType = (type) => {
+  chartType.value = type
+  updateChart()
 }
 
-// New function to add wind layer
+const updateChart = () => {
+  const ctx = document.getElementById('aqiChart')
+  if (!ctx) return
+  
+  if (aqiChart) aqiChart.destroy()
+
+  // Prepare data for chart - showing top 10 high and low separately
+  const highLabels = top10HighAQI.value.map(station => extractCityName(station.name))
+  const highData = top10HighAQI.value.map(station => parseInt(station.aqi) || 0)
+  const lowLabels = top10LowAQI.value.map(station => extractCityName(station.name))
+  const lowData = top10LowAQI.value.map(station => parseInt(station.aqi) || 0)
+
+  const chartData = {
+    labels: [...highLabels, ...lowLabels],
+    datasets: [
+      {
+        label: 'Most Polluted',
+        data: [...highData, ...Array(lowData.length).fill(null)],
+        borderColor: '#ff6b6b',
+        backgroundColor: 'rgba(255, 107, 107, 0.2)',
+        tension: 0.3,
+        fill: true,
+        pointBackgroundColor: highData.map(aqi => getColor(aqi)),
+        pointRadius: 5,
+        pointHoverRadius: 7
+      },
+      {
+        label: 'Least Polluted',
+        data: [...Array(highData.length).fill(null), ...lowData],
+        borderColor: '#51cf66',
+        backgroundColor: 'rgba(81, 207, 102, 0.2)',
+        tension: 0.3,
+        fill: true,
+        pointBackgroundColor: lowData.map(aqi => getColor(aqi)),
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }
+    ]
+  }
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#e0e0e0',
+          font: {
+            size: 12
+          }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let station
+            if (context.datasetIndex === 0 && context.dataIndex < highLabels.length) {
+              station = top10HighAQI.value[context.dataIndex]
+            } else if (context.datasetIndex === 1) {
+              station = top10LowAQI.value[context.dataIndex - highLabels.length]
+            }
+            return [
+              `AQI: ${context.raw}`,
+              `Status: ${getStatus(context.raw)}`,
+              `Location: ${station?.name || ''}`
+            ]
+          }
+        },
+        displayColors: true,
+        usePointStyle: true,
+        bodyFont: {
+          size: 12
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'AQI Value',
+          color: '#9ca3af',
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          color: 'rgba(55, 65, 81, 0.5)'
+        },
+        ticks: {
+          color: '#9ca3af',
+          font: {
+            size: 11
+          }
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Monitoring Stations',
+          color: '#9ca3af',
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: '#9ca3af',
+          font: {
+            size: 11
+          }
+        }
+      }
+    }
+  }
+
+  aqiChart = new Chart(ctx, {
+    type: chartType.value,
+    data: chartData,
+    options: chartOptions
+  })
+}
+
+const renderMarkers = () => {
+  if (!map) return
+  
+  // Clear existing markers
+  markers.forEach(marker => marker.remove())
+  markers = []
+
+  // Add new markers
+  aqiData.value.forEach(station => {
+    if (!station.lat || !station.lon) return
+
+    const color = getColor(station.aqi)
+    const status = getStatus(station.aqi)
+
+    const marker = L.circleMarker([station.lat, station.lon], {
+      radius: 6,
+      fillColor: color,
+      color: '#000',
+      weight: 0.8,
+      opacity: 1,
+      fillOpacity: 0.8,
+    }).addTo(map)
+
+    marker.bindPopup(`
+      <div class="text-sm">
+        <div class="font-bold">${station.name}</div>
+        <div class="mt-1">
+          <span class="font-semibold">AQI:</span> 
+          <span style="color: ${color}">${station.aqi}</span>
+        </div>
+        <div><span class="font-semibold">Status:</span> ${status}</div>
+        <div class="text-xs text-gray-400 mt-1">Click for details</div>
+      </div>
+    `)
+
+    markers.push(marker)
+  })
+
+  // Fit bounds to show all markers if we have any
+  if (markers.length > 0) {
+    const group = new L.featureGroup(markers)
+    map.fitBounds(group.getBounds().pad(0.2))
+  }
+}
+
 const addWindLayer = async () => {
   try {
+    // Remove existing layer if it exists
+    if (velocityLayer) {
+      map.removeLayer(velocityLayer)
+    }
+
     const res = await axios.get('https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json')
     const windData = res.data
 
-    const velocityLayer = L.velocityLayer({
+    velocityLayer = L.velocityLayer({
       displayValues: true,
       displayOptions: {
         velocityType: 'Global Wind',
@@ -232,6 +452,23 @@ const addWindLayer = async () => {
       },
       data: windData,
       maxVelocity: 15,
+      colorScale: [
+        "rgb(36,104, 180)",
+        "rgb(60,157, 194)",
+        "rgb(128,205,193 )",
+        "rgb(151,218,168 )",
+        "rgb(198,231,181)",
+        "rgb(238,247,217)",
+        "rgb(255,238,159)",
+        "rgb(252,217,125)",
+        "rgb(255,182,100)",
+        "rgb(252,150,75)",
+        "rgb(250,112,52)",
+        "rgb(245,64,32)",
+        "rgb(237,45,28)",
+        "rgb(220,24,32)",
+        "rgb(180,0,35)"
+      ]
     })
 
     velocityLayer.addTo(map)
@@ -240,79 +477,28 @@ const addWindLayer = async () => {
   }
 }
 
-// API fetching and map rendering
-const cities = Object.keys(cityCoordinates).filter(city => !['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai'].includes(city))
-const fetchAllAQI = async () => {
-  isLoading.value = true
-  cityData.value = []
-
-  // Fetch data from API-Ninjas
-  for (const city of cities) {
-    try {
-      const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${city}`, {
-        headers: { 'X-Api-Key': NINJA_API_KEY }
-      })
-      const aqi = response.data.overall_aqi
-      cityData.value.push({
-        name: city,
-        aqi: aqi,
-        level: getAQILevel(aqi),
-        lat: cityCoordinates[city].lat,
-        lng: cityCoordinates[city].lng
-      })
-    } catch (err) {
-      console.error(`Failed to fetch AQI for ${city}`, err)
-    }
-  }
-
-  // Fetch data from WAQI API
+const fetchAQIData = async () => {
   try {
-    const bounds = '-85,-180,85,180'
-    const url = `https://api.waqi.info/map/bounds/?latlng=${bounds}&token=${WAQI_TOKEN}`
+    const url = 'http://127.0.0.1:8000/api/aqi-global'
     const { data } = await axios.get(url)
 
-    if (data.status === 'ok') {
-      const waqiData = data.data.map(station => ({
-        name: station.station.name.split(',')[1]?.trim() || station.station.name,
-        aqi: parseInt(station.aqi),
-        level: getAQILevel(parseInt(station.aqi)),
-        lat: station.lat,
-        lng: station.lon
-      }))
-
-      const cityNames = new Set(cityData.value.map(city => city.name.toLowerCase()))
-      for (const station of waqiData) {
-        if (!cityNames.has(station.name.toLowerCase()) && station.lat && station.lng) {
-          cityData.value.push(station)
-          cityNames.add(station.name.toLowerCase())
-        }
-      }
+    if (data.status === 'ok' && Array.isArray(data.data)) {
+      aqiData.value = data.data
+      updateTop10()
+      renderMarkers()
+      updateChart()
+    } else {
+      console.error('API returned unexpected data:', data)
     }
   } catch (err) {
-    console.error('Failed to fetch WAQI AQI:', err)
+    console.error('Failed to fetch AQI:', err)
   }
-
-  // Update summary data
-  summaryData.totalCities = cityData.value.length
-  const newMostPolluted = mostPollutedCity.value
-  summaryData.mostPollutedCity = {
-    name: newMostPolluted.name,
-    aqi: newMostPolluted.aqi,
-    level: newMostPolluted.level
-  }
-  summaryData.apiStatus = cityData.value.length > 0 ? 'Operational' : 'Issues Detected'
-
-  // Update map and charts
-  renderMap()
-  updateCharts()
-
-  isLoading.value = false
 }
 
 const initMap = () => {
   map = L.map('map', {
     center: [20, 100],
-    zoom: 4,
+    zoom: 3,
     zoomControl: true,
     scrollWheelZoom: false,
     attributionControl: false,
@@ -324,532 +510,71 @@ const initMap = () => {
     maxZoom: 19,
   }).addTo(map)
 
+  // Add wind layer
+  addWindLayer()
+
   map.on('focus', () => map.scrollWheelZoom.enable())
   map.on('blur', () => map.scrollWheelZoom.disable())
-  map.on('mousewheel', e => {
-    if (!e.originalEvent.ctrlKey) {
-      map.scrollWheelZoom.disable()
-      e.originalEvent.preventDefault()
-    } else {
-      map.scrollWheelZoom.enable()
-    }
-  })
-
-  addWindLayer()
 }
 
-const renderMap = () => {
-  if (markers) markers.forEach(marker => marker.remove())
-  markers = []
-
-  cityData.value.forEach(city => {
-    const color = getColor(parseInt(city.aqi))
-    const marker = L.circleMarker([city.lat, city.lng], {
-      radius: 6,
-      fillColor: color,
-      color: '#000',
-      weight: 0.8,
-      opacity: 1,
-      fillOpacity: 0.8,
-    }).addTo(map)
-
-    marker.bindPopup(`
-      <div style="font-family: Arial; font-size: 13px;">
-        <b>${city.name}</b><br/>
-        AQI: <strong style="color: ${color}">${city.aqi}</strong><br/>
-        Level: ${city.level}
-      </div>
-    `)
-
-    markers.push(marker)
-  })
-}
-
-const updateCharts = () => {
-  // Destroy existing charts if they exist
-  if (mostPollutedChart) mostPollutedChart.destroy()
-  if (leastPollutedChart) leastPollutedChart.destroy()
-
-  // Most Polluted Chart
-  const mostPollutedCtx = document.getElementById('mostPollutedChart').getContext('2d')
-  mostPollutedChart = new Chart(mostPollutedCtx, {
-    type: 'bar',
-    data: {
-      labels: top10HighAQI.value.map(city => city.name),
-      datasets: [{
-        label: 'AQI Levels',
-        data: top10HighAQI.value.map(city => parseInt(city.aqi)),
-        backgroundColor: top10HighAQI.value.map(city => getColor(parseInt(city.aqi))),
-        borderColor: '#000',
-        borderWidth: 1,
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true } },
-    },
-  })
-
-  // Least Polluted Chart
-  const leastPollutedCtx = document.getElementById('leastPollutedChart').getContext('2d')
-  leastPollutedChart = new Chart(leastPollutedCtx, {
-    type: 'bar',
-    data: {
-      labels: top10LowAQI.value.map(city => city.name),
-      datasets: [{
-        label: 'AQI Levels',
-        data: top10LowAQI.value.map(city => parseInt(city.aqi)),
-        backgroundColor: top10LowAQI.value.map(city => getColor(parseInt(city.aqi))),
-        borderColor: '#000',
-        borderWidth: 1,
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true } },
-    },
-  })
-}
-
-// Methods
-const viewCitiesDetail = () => { console.log('Opening cities detail view...') }
-const viewAPIStatus = () => { console.log('Opening API status dashboard...') }
-const viewPollutedCity = () => { console.log(`Viewing details for ${summaryData.mostPollutedCity.name}`) }
-const refreshMapData = async () => {
-  isRefreshing.value = true
-  await fetchAllAQI()
-  isRefreshing.value = false
-}
-const refreshAllData = async () => {
-  isLoading.value = true
-  await fetchAllAQI()
-  isLoading.value = false
-}
-const clearCache = async () => {
-  isLoading.value = true
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-  } finally { isLoading.value = false }
-}
-const addNewCity = async () => {
-  const availableCities = ['Paris', 'Berlin', 'Toronto', 'Singapore', 'Dubai']
-  const randomCity = availableCities[Math.floor(Math.random() * availableCities.length)]
-  if (cityData.value.some(city => city.name.toLowerCase() === randomCity.toLowerCase())) {
-    return
-  }
-  isLoading.value = true
-  try {
-    const response = await axios.get(`https://api.api-ninjas.com/v1/airquality?city=${randomCity}`, {
-      headers: { 'X-Api-Key': NINJA_API_KEY }
-    })
-    const aqi = response.data.overall_aqi
-    cityData.value.push({
-      name: randomCity,
-      aqi: aqi,
-      level: getAQILevel(aqi),
-      lat: cityCoordinates[randomCity].lat,
-      lng: cityCoordinates[randomCity].lng
-    })
-    summaryData.totalCities++
-    const newMostPolluted = mostPollutedCity.value
-    summaryData.mostPollutedCity = { name: newMostPolluted.name, aqi: newMostPolluted.aqi, level: newMostPolluted.level }
-    renderMap()
-    updateCharts()
-  } finally { isLoading.value = false }
-}
-const viewFullLogs = () => { console.log('Opening full logs view...') }
-
-const startRealTimeUpdates = () => {
-  realTimeInterval = setInterval(async () => {
-    await fetchAllAQI()
-  }, 300000)
-}
-
-// Lifecycle hooks
 onMounted(() => {
   initMap()
-  fetchAllAQI()
-  startRealTimeUpdates()
-})
-
-onUnmounted(() => {
-  if (realTimeInterval) clearInterval(realTimeInterval)
-  if (map) map.remove()
-  if (mostPollutedChart) mostPollutedChart.destroy()
-  if (leastPollutedChart) leastPollutedChart.destroy()
+  fetchAQIData()
+  setInterval(fetchAQIData, 30000) // refresh every 30 seconds
 })
 </script>
 
 <style scoped>
-/* Reset and Base Styles */
-.dashboard {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #f8fafc;
-  color: #334155;
-  line-height: 1.6;
-  min-height: 100vh;
+.container {
+  margin-top: 6px;
+  background-color: #1a1a2e;
+  color: #e0e0e0;
 }
 
-/* Header Styles */
-.header {
-  background: linear-gradient(90deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #e2e8f0;
-  padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-icon {
-  width: 32px;
-  height: 32px;
-  color: #3b82f6;
-}
-
-.header-info h1 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0;
-}
-
-.header-info p {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: #64748b;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-btn:hover {
-  background-color: #f1f5f9;
-  color: #3b82f6;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #e0f2fe;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #0369a1;
-}
-
-/* Main Content */
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* Summary Cards */
-.summary-section {
-  margin-bottom: 24px;
-}
-
-.summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.summary-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.summary-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.card-header h3 {
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
-  margin: 0;
-}
-
-.card-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.card-subtitle {
-  font-size: 12px;
-  color: #64748b;
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-icon {
-  color: #10b981;
-  width: 20px;
-  height: 20px;
-}
-
-.pollution-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-/* AQI Badges and Colors */
-.aqi-badge {
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-}
-
-.aqi-good {
-  background-color: #10b981;
-}
-.aqi-moderate {
-  background-color: #f59e0b;
-}
-.aqi-unhealthy-sensitive {
-  background-color: #f97316;
-}
-.aqi-unhealthy {
-  background-color: #ef4444;
-}
-.aqi-very-unhealthy {
-  background-color: #8b5cf6;
-}
-
-/* Dashboard Grid */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.dashboard-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.card-header-with-action {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
-.card-header-with-action h2 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 4px 0;
-}
-
-.card-header-with-action p {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
-}
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #475569;
-  transition: all 0.2s ease;
-}
-
-.refresh-btn:hover:not(:disabled) {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-}
-
-.refresh-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Map Styles */
-.map-container {
-  height: 300px;
+.map-wrapper {
+  height: 500px;
   width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 0;
 }
 
-/* Quick Actions */
-.quick-actions-section {
-  margin-bottom: 24px;
+#map {
+  width: 100%;
+  height: 100%;
+  background-color: #2a2a3e;
 }
 
-.quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+.stats-grid {
+  margin-top: 20px;
 }
 
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #475569;
-  transition: all 0.2s ease;
+.stats-card {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #2a2a3e 0%, #3a3a5e 100%);
 }
 
-.action-btn:hover:not(:disabled) {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.stats-card table {
+  border-collapse: collapse;
 }
 
-.action-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.stats-card th, .stats-card td {
+  padding: 0.5rem;
 }
 
-/* Animations */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+.stats-card th {
+  font-weight: bold;
+  color: #b0b0b0;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.stats-card tbody tr:hover {
+  background-color: #33334d;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .header-content {
-    padding: 0 16px;
-  }
-
-  .header-info h1 {
-    font-size: 18px;
-  }
-
-  .main-content {
-    padding: 16px;
-  }
-
-  .summary-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .quick-actions {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .header-right {
-    gap: 8px;
-  }
-
-  .user-info span {
-    display: none;
-  }
-
-  .card-header-with-action {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
-  .action-btn {
-    flex: 1;
-    justify-content: center;
-    min-width: 140px;
-  }
+#aqiChart {
+  max-height: 350px;
+  background-color: #2a2a3e;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 </style>
