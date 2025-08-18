@@ -17,6 +17,7 @@
     "apexcharts": "^5.2.0",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
+    "chartjs-plugin-annotation": "^3.1.0",
     "leaflet": "^1.9.4",
     "leaflet-velocity": "^2.1.4",
     "leaflet-velocity-ts": "^1.2.0",
