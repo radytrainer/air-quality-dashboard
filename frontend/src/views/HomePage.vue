@@ -112,6 +112,77 @@
         </div>
       </div>
     </div>
+    <section class="mt-12 px-2 md:px-6 space-y-8">
+      <h2 class="text-2xl font-bold text-gray-800">🌐 Global AQI Rankings</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Most Polluted -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-red-200">
+          <h3 class="text-xl font-semibold text-red-600 mb-4">Top 10 Most Polluted Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10MostPolluted" :key="'polluted-' + index" class="hover:bg-red-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cleanest -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-green-200">
+          <h3 class="text-xl font-semibold text-green-600 mb-4">Top 10 Cleanest Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10LeastPolluted" :key="'cleanest-' + index" class="hover:bg-green-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section> 
   </div>
 </template>
 
@@ -132,6 +203,55 @@ const markerMap = ref({});
 const searchMarkers = ref([]);
 const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
+const top10MostPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => b.aqi - a.aqi)
+    .slice(0, 10)
+);
+
+const top10LeastPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => a.aqi - b.aqi)
+    .slice(0, 10)
+);
+
+// --- COLOR & STATUS FUNCTIONS ---
+const getColorAQI = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "#999";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "#00e400";
+    if (val <= 100) return "#FFEB3B";
+    if (val <= 150) return "#ff7e00";
+    if (val <= 200) return "#ff0000";
+    if (val <= 300) return "#99004c";
+    return "#7e0023";
+  }
+
+  return "#999";
+};
+
+const getStatusAqi = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "N/A";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "Good";
+    if (val <= 100) return "Moderate";
+    if (val <= 150) return "Unhealthy for SG";
+    if (val <= 200) return "Unhealthy";
+    if (val <= 300) return "Very Unhealthy";
+    return "Hazardous";
+  }
+
+  return "N/A";
+};
+
+// For template usage
+const getStatusLabelAQI = (value) => getStatusAqi(value, "aqi");
 
 // Inline SVG icons
 const pollutantOptions = [
