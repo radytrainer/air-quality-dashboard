@@ -11,9 +11,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -27,9 +29,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllHighPollutionData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllHighPollutionData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -43,9 +47,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllLowPollutionData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllLowPollutionData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -54,13 +60,16 @@
       <div class="bg-red-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topHighPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...' }}</div>
+          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...'
+          }}</div>
           <div class="text-xs text-gray-600">Top High Pollution</div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportTopHighPollutionData" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportTopHighPollutionData"
+          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -69,13 +78,16 @@
       <div class="bg-blue-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topLowPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...' }}</div>
+          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...'
+          }}</div>
           <div class="text-xs text-gray-600">Top Low Pollution</div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportTopLowPollutionData" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportTopLowPollutionData"
+          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -131,8 +143,10 @@
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-800">Status Distribution</h3>
-          <select v-model="selectedStatusMetric" class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          <select v-model="selectedStatusMetric"
+            class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}
+            </option>
           </select>
         </div>
         <div class="relative h-48">
@@ -158,10 +172,8 @@
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-800">Top Polluted Areas</h3>
-            <button
-              @click="exportData"
-              class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors"
-            >
+            <button @click="exportData"
+              class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
               Export
             </button>
           </div>
@@ -175,26 +187,20 @@
             <div class="flex items-center space-x-2">
               <span class="text-sm font-medium text-gray-700 min-w-[45px]">Level:</span>
               <div class="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  @click="pollutionFilter = 'high'"
-                  :class="[
-                    'px-3 py-1 text-xs font-medium rounded-md transition-colors',
-                    pollutionFilter === 'high' 
-                      ? 'bg-red-500 text-white' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  ]"
-                >
+                <button @click="pollutionFilter = 'high'" :class="[
+                  'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                  pollutionFilter === 'high'
+                    ? 'bg-red-500 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                ]">
                   High
                 </button>
-                <button
-                  @click="pollutionFilter = 'low'"
-                  :class="[
-                    'px-3 py-1 text-xs font-medium rounded-md transition-colors',
-                    pollutionFilter === 'low' 
-                      ? 'bg-green-500 text-white' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  ]"
-                >
+                <button @click="pollutionFilter = 'low'" :class="[
+                  'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                  pollutionFilter === 'low'
+                    ? 'bg-green-500 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                ]">
                   Low
                 </button>
               </div>
@@ -203,10 +209,8 @@
             <!-- Metric Selector -->
             <div class="flex items-center space-x-2">
               <span class="text-sm font-medium text-gray-700 min-w-[45px]">Metric:</span>
-              <select 
-                v-model="selectedMetric"
-                class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
-              >
+              <select v-model="selectedMetric"
+                class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1">
                 <option value="aqi">AQI</option>
                 <option value="pm25">PM2.5</option>
                 <option value="pm10">PM10</option>
@@ -219,35 +223,29 @@
 
           <!-- Top 5 List -->
           <div class="space-y-2 mb-4">
-            <div v-for="(location, index) in filteredTop5Locations" :key="index" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div v-for="(location, index) in filteredTop5Locations" :key="index"
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div class="flex items-center space-x-2 min-w-0 flex-1">
                 <div class="text-xs font-bold text-gray-500 w-5">{{ String(index + 1).padStart(2, '0') }}</div>
-                
+
                 <!-- Country Flag -->
                 <div class="w-6 h-4 rounded overflow-hidden border border-gray-200 flex-shrink-0">
-                  <img 
-                    :src="getCountryFlag(location.name)" 
-                    :alt="`${extractCountryName(location.name)} flag`"
-                    class="w-full h-full object-cover"
-                    @error="handleFlagError"
-                  />
+                  <img :src="getCountryFlag(location.name)" :alt="`${extractCountryName(location.name)} flag`"
+                    class="w-full h-full object-cover" @error="handleFlagError" />
                 </div>
-                
+
                 <div class="min-w-0 flex-1">
                   <div class="text-xs font-medium text-gray-900 truncate">{{ extractCityName(location.name) }}</div>
                   <div class="text-xs text-gray-500 truncate">{{ extractCountryName(location.name) }}</div>
                 </div>
               </div>
-              
+
               <div class="flex items-center space-x-2 flex-shrink-0">
                 <div class="w-16 bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    class="h-1.5 rounded-full transition-all duration-300" 
-                    :style="{ 
-                      width: `${getProgressWidth(location[selectedMetric], selectedMetric)}%`, 
-                      backgroundColor: getColor(location[selectedMetric], selectedMetric) 
-                    }"
-                  ></div>
+                  <div class="h-1.5 rounded-full transition-all duration-300" :style="{
+                    width: `${getProgressWidth(location[selectedMetric], selectedMetric)}%`,
+                    backgroundColor: getColor(location[selectedMetric], selectedMetric)
+                  }"></div>
                 </div>
                 <div class="text-xs font-bold text-gray-900 min-w-[2.5rem] text-right">
                   {{ formatValue(location[selectedMetric], selectedMetric) }}
@@ -263,11 +261,13 @@
                 <div class="font-bold text-lg" :style="{ color: pollutionFilter === 'high' ? '#ef4444' : '#10b981' }">
                   {{ filteredTop5Locations.length }}
                 </div>
-                <div class="text-gray-600">{{ pollutionFilter === 'high' ? 'High' : 'Low' }} {{ selectedMetric.toUpperCase() }}</div>
+                <div class="text-gray-600">{{ pollutionFilter === 'high' ? 'High' : 'Low' }} {{
+                  selectedMetric.toUpperCase() }}</div>
               </div>
               <div class="text-center">
                 <div class="font-bold text-lg text-blue-600">
-                  {{ Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0), 0) / filteredTop5Locations.length) || 0 }}
+                  {{Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0),
+                    0) / filteredTop5Locations.length) || 0}}
                 </div>
                 <div class="text-gray-600">Average</div>
               </div>
@@ -277,10 +277,10 @@
       </div>
 
       <!-- Pollution Map with Selection -->
-     <div class="lg:col-span-2 bg-white rounded-lg p-1 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Air Quality Map</h3>
-          <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">Export</button>
+      <div class="lg:col-span-2 bg-white rounded-md p-1 shadow-sm">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-semibold text-gray-800">Air Quality Map</h3>
+          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">Export</button>
         </div>
         <div class="relative">
           <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg bg-gray-100">
@@ -448,14 +448,14 @@ const lowPollutionCountComputed = computed(() => {
 
 const topHighPollutionLocation = computed(() => {
   if (aqiData.value.length === 0) return null;
-  return aqiData.value.reduce((highest, current) => 
+  return aqiData.value.reduce((highest, current) =>
     (current.aqi > highest.aqi) ? current : highest
   );
 });
 
 const topLowPollutionLocation = computed(() => {
   if (aqiData.value.length === 0) return null;
-  return aqiData.value.reduce((lowest, current) => 
+  return aqiData.value.reduce((lowest, current) =>
     (current.aqi < lowest.aqi) ? current : lowest
   );
 });
@@ -528,12 +528,12 @@ const extractCountryName = (name) => {
 const getCountryFlag = (locationName) => {
   const country = extractCountryName(locationName);
   const countryCode = countryCodeMap[country] || 'XX';
-  
+
   if (countryCode === 'XX') {
     // Return a generic flag or placeholder for unknown countries
     return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" fill="#e5e7eb"><rect width="32" height="24" fill="#f3f4f6"/><text x="16" y="14" text-anchor="middle" font-family="Arial" font-size="8" fill="#6b7280">?</text></svg>`)}`;
   }
-  
+
   return `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
 };
 
@@ -545,9 +545,9 @@ const handleFlagError = (event) => {
 // Format value based on metric
 const formatValue = (value, metric) => {
   if (value === null || value === undefined || isNaN(parseFloat(value))) return 'N/A';
-  
+
   const val = parseFloat(value);
-  
+
   switch (metric) {
     case 'co':
       return val.toFixed(1);
@@ -567,9 +567,9 @@ const formatValue = (value, metric) => {
 // Get progress bar width
 const getProgressWidth = (value, metric) => {
   if (value === null || value === undefined || isNaN(parseFloat(value))) return 0;
-  
+
   const val = parseFloat(value);
-  
+
   switch (metric) {
     case 'aqi':
     case 'pm25':
@@ -773,7 +773,7 @@ const filteredTop5Locations = computed(() => {
   });
 
   let filteredStations;
-  
+
   if (pollutionFilter.value === 'high') {
     // Sort by highest values
     filteredStations = validStations.sort((a, b) => {
@@ -874,7 +874,7 @@ const getAQIStatus = (aqi) => {
 const exportTopHighPollutionData = () => {
   const location = topHighPollutionLocation.value;
   if (!location) return;
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     [
@@ -905,7 +905,7 @@ const exportTopHighPollutionData = () => {
 const exportTopLowPollutionData = () => {
   const location = topLowPollutionLocation.value;
   if (!location) return;
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     [
@@ -935,7 +935,7 @@ const exportTopLowPollutionData = () => {
 
 const exportAllHighPollutionData = () => {
   const highPollutionLocations = aqiData.value.filter(location => parseInt(location.aqi) > 100);
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     ...highPollutionLocations.map(location => [
@@ -965,7 +965,7 @@ const exportAllHighPollutionData = () => {
 
 const exportAllLowPollutionData = () => {
   const lowPollutionLocations = aqiData.value.filter(location => parseInt(location.aqi) <= 50);
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     ...lowPollutionLocations.map(location => [
@@ -1073,7 +1073,7 @@ const createTrendsChart = () => {
 
   const highData = top5HighPM10.value.map(loc => parseFloat(loc.pm10));
   const lowData = top5LowPM10.value.map(loc => parseFloat(loc.pm10));
-  
+
   trendsChartInstance = new Chart(trendsChartRef.value, {
     type: 'line',
     data: {
@@ -1106,7 +1106,7 @@ const createTrendsChart = () => {
         },
         tooltip: {
           callbacks: {
-            title: function(context) {
+            title: function (context) {
               const datasetIndex = context[0].datasetIndex;
               const dataIndex = context[0].dataIndex;
               let loc;
@@ -1117,7 +1117,7 @@ const createTrendsChart = () => {
               }
               return loc ? loc.name : '';
             },
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset.label}: ${context.parsed.y} μg/m³`;
             }
           }
@@ -1175,12 +1175,12 @@ const createDistributionChart = () => {
         },
         tooltip: {
           callbacks: {
-            title: function(context) {
+            title: function (context) {
               const datasetIndex = context[0].datasetIndex;
               const dataIndex = context[0].dataIndex;
               return datasetIndex === 0 ? top5HighPM25.value[dataIndex].name : top5LowPM25.value[dataIndex].name;
             },
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset.label}: ${context.parsed.y} μg/m³`;
             }
           }
@@ -1206,7 +1206,7 @@ const createStatusChart = () => {
   const labels = Object.keys(counts)
   const data = Object.values(counts)
   const colors = labels.map(status => getStatusColor(status, selectedStatusMetric.value))
-  
+
   statusChartInstance = new Chart(statusChartRef.value, {
     type: 'bar',
     data: {
@@ -1254,7 +1254,7 @@ const fetchAQIData = async () => {
     console.log("[v0] Fetching AQI data from API...");
     const { data } = await axios.get("http://127.0.0.1:8000/api/aqi");
     console.log("[v0] API Response:", data);
-    
+
     if (data.status === "ok" && Array.isArray(data.data)) {
       aqiData.value = data.data;
       console.log("[v0] Successfully loaded", data.data.length, "locations");
