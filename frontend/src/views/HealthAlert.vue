@@ -4,8 +4,8 @@
       <!-- Header Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div class="px-8 py-6 border-b border-gray-200">
-          <h1 class="text-2xl font-bold text-gray-900">Health Alert Message Configuration</h1>
-          <p class="text-gray-600 mt-2">Customize health advisory messages for different air quality levels</p>
+          <h1 class="text-2xl font-bold text-gray-900">{{ $t('healthAlert.healthAlertMessageConfiguration') }}</h1>
+          <p class="text-gray-600 mt-2">{{$t('healthAlert.healthAlertMessageConfiguration') }}</p>
         </div>
       </div>
 
@@ -17,12 +17,12 @@
             <div class="border-l-4 border-green-500 bg-green-50 p-6 rounded-r-lg">
               <div class="flex items-center mb-4">
                 <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
-                <h3 class="text-lg font-semibold text-green-800">Good (0-50 AQI)</h3>
-                <span class="ml-auto text-sm text-green-600 bg-green-100 px-3 py-1 rounded-full">Minimal Risk</span>
+                <h3 class="text-lg font-semibold text-green-800">{{$t('healthAlert.good') }}(0-50 AQI)</h3>
+                <span class="ml-auto text-sm text-green-600 bg-green-100 px-3 py-1 rounded-full">{{$t('healthAlert.minimalRisk') }}</span>
               </div>
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Public Message</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('healthAlert.publicMessage') }}</label>
                   <textarea
                     v-model="messages.good.public"
                     class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -31,7 +31,7 @@
                   ></textarea>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Sensitive Groups</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{$t('healthAlert.sensitiveGroups') }}</label>
                   <textarea
                     v-model="messages.good.sensitive"
                     class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -331,7 +331,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const defaultMessages = {
   good: {
     public: "Air quality is good. Enjoy your outdoor activities!",
