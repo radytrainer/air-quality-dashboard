@@ -166,12 +166,83 @@
         </div>
       </div>
     </div>
+    <section class="mt-12 px-2 md:px-6 space-y-8">
+      <h2 class="text-2xl font-bold text-gray-800">🌐 Global AQI Rankings</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Most Polluted -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-red-200">
+          <h3 class="text-xl font-semibold text-red-600 mb-4">Top 10 Most Polluted Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10MostPolluted" :key="'polluted-' + index" class="hover:bg-red-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cleanest -->
+        <div class="bg-white rounded-2xl shadow p-6 border border-green-200">
+          <h3 class="text-xl font-semibold text-green-600 mb-4">Top 10 Cleanest Cities</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 border-b">
+                <th class="py-2">Rank</th>
+                <th class="py-2">City</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-center">AQI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(city, index) in top10LeastPolluted" :key="'cleanest-' + index" class="hover:bg-green-50 transition">
+                <td class="py-2">{{ index + 1 }}</td>
+                <td class="py-2">{{ city.name }}</td>
+                <td class="py-2">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ getStatusLabelAQI(city.aqi) }}
+                  </span>
+                </td>
+                <td class="py-2 text-center">
+                  <span class="inline-block px-3 py-1 rounded-full text-white text-xs font-medium"
+                        :style="{ backgroundColor: getColorAQI(city.aqi) }">
+                    {{ city.aqi }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section> 
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
@@ -186,58 +257,129 @@ const markerMap = ref({});
 const searchMarkers = ref([]);
 const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
+const top10MostPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => b.aqi - a.aqi)
+    .slice(0, 10)
+);
+
+const top10LeastPolluted = computed(() =>
+  [...aqiData.value]
+    .filter(city => city.aqi != null)
+    .sort((a, b) => a.aqi - b.aqi)
+    .slice(0, 10)
+);
+
+// --- COLOR & STATUS FUNCTIONS ---
+const getColorAQI = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "#999";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "#00e400";
+    if (val <= 100) return "#FFEB3B";
+    if (val <= 150) return "#ff7e00";
+    if (val <= 200) return "#ff0000";
+    if (val <= 300) return "#99004c";
+    return "#7e0023";
+  }
+
+  return "#999";
+};
+
+const getStatusAqi = (value, pollutant = "aqi") => {
+  const val = parseFloat(value);
+  if (isNaN(val)) return "N/A";
+
+  if (pollutant === "aqi") {
+    if (val <= 50) return "Good";
+    if (val <= 100) return "Moderate";
+    if (val <= 150) return "Unhealthy for SG";
+    if (val <= 200) return "Unhealthy";
+    if (val <= 300) return "Very Unhealthy";
+    return "Hazardous";
+  }
+
+  return "N/A";
+};
+
+// For template usage
+const getStatusLabelAQI = (value) => getStatusAqi(value, "aqi");
+const favouriteCities = ref([]);
+const route = useRoute();
+
 
 // Inline SVG icons
 const pollutantOptions = [
+  // AQI - green/yellow/red gauge
   {
     value: "aqi",
     label: "AQI",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 17h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2v-2H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 9v2h14V9H7zm0-4v2h14V5H7z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>`,
   },
+
+  // PM2.5 - small gray particles
   {
     value: "pm25",
     label: "PM2.5",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M4 16a4 4 0 1 1 0-8 6 6 0 1 1 12 0h1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="#888"/><circle cx="12" cy="8" r="1.5" fill="#888"/><circle cx="17" cy="14" r="2" fill="#888"/><circle cx="10" cy="16" r="1.5" fill="#888"/></svg>`,
   },
+
+  // PM10 - bigger brownish particles
   {
     value: "pm10",
     label: "PM10",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M6 19a6 6 0 1 1 0-12 8 8 0 1 1 16 0h-1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="5" cy="10" r="2" fill="#A0522D"/><circle cx="12" cy="7" r="3" fill="#A0522D"/><circle cx="18" cy="15" r="2.5" fill="#A0522D"/><circle cx="9" cy="17" r="1.5" fill="#A0522D"/></svg>`,
   },
+
+  // NO2 - dark gray factory
   {
     value: "no2",
     label: "NO₂",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M20 6h-4v12h4V6zM14 6h-4v12h4V6zM4 6v12h4V6H4z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="8" fill="#555"/><polygon points="4,10 8,4 12,10" fill="#777"/></svg>`,
   },
+
+  // CO - molecule circles in red
   {
     value: "co",
     label: "CO",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="3"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="#FF4D4D"/><circle cx="17" cy="12" r="3" fill="#FF6666"/></svg>`,
   },
+
+  // O3 - ozone in blue
   {
     value: "o3",
     label: "O₃",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M21 12a9 9 0 1 1-18 0"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3" fill="#3399FF"/><circle cx="15" cy="9" r="3" fill="#33CCFF"/><circle cx="15" cy="15" r="3" fill="#3399FF"/></svg>`,
   },
+
+  // Temperature - red thermometer
   {
     value: "temperature",
     label: "Temperature",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 3.5L3.5 12 12 20.5 20.5 12 12 3.5zm0 13.66l-5.66-5.66 5.66-5.66 5.66 5.66-5.66 5.66z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="12" fill="#FF3300"/><circle cx="12" cy="18" r="3" fill="#FF3300"/></svg>`,
   },
+
+  // Humidity - blue water droplet
   {
     value: "humidity",
     label: "Humidity",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 3.5L3.5 12 12 20.5 20.5 12 12 3.5zm0 13.66l-5.66-5.66 5.66-5.66 5.66 5.66-5.66 5.66z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l5 7a8 8 0 1 1-10 0z" fill="#3399FF"/></svg>`,
   },
+
+  // Pressure - gauge in green
   {
     value: "pressure",
     label: "Pressure",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8zm1-13h-2v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>`,
   },
+
+  // Wind - light blue flowing lines
   {
     value: "wind",
     label: "Wind",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6 2 2 0 0 1 0-4M3 18h9a3 3 0 1 1 0 6"/></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>`,
   },
 ];
 
@@ -470,14 +612,18 @@ const fetchPhnomPenhAQI = async () => {
   }
 };
 
-
 const assignIDs = (data) => {
   return data.map((station, index) => ({
     ...station,
     id: station.id || index + 1, // Use existing id or fallback to index
   }));
 };
-
+const favouriteIcon = L.icon({
+  iconUrl: 'https://www.svgrepo.com/show/171188/favorite-place.svg', // your special icon image
+  iconSize: [32, 32], // size of the icon
+  iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
+  popupAnchor: [0, -32], // point from which the popup should open
+});
 
 // Render markers
 const renderMarkers = () => {
@@ -511,14 +657,23 @@ const renderMarkers = () => {
     };
 
     const popupContent = `
-      <div>
-           <strong>${station.name}</strong><br/>
-           AQI: ${station.aqi}<br/>
-      </div>
+      <div style="
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #000000; /* vibrant blue */
+  border-bottom: 1px solid #000000;
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+  text-align: center;
+">
+  ${station.name}
+</div>
+
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
           ${renderRow(selectedPollutant.value.toUpperCase(), value)}
           ${renderRow("Status", status)}
-          ${renderRow("AQI", station.aqi)}
           ${renderRow("PM2.5", station.pm25)}
           ${renderRow("PM10", station.pm10)}
           ${renderRow("NO₂", station.no2)}
@@ -529,39 +684,76 @@ const renderMarkers = () => {
           ${renderRow("Pressure", station.pressure, " hPa")}
           ${renderRow("Wind", windValue, " m/s")}
         </div>
-        <div style="margin-top: 6px; text-align: center;">
-      <button id="view-detail-${station.id}" 
-        style="color: #3b82f6; font-size: 12px; font-weight: 500; background: none; border: none; text-decoration: underline; cursor: pointer;">
-        View City Details
-      </button>
-    </div>
+        <div style="margin-top: 8px; text-align: center;">
+  <button id="view-detail-${station.id}" 
+  style="
+    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+  "
+  onmouseover="this.style.backgroundColor='#3b82f6'; this.style.color='#ffffff'; this.style.transform='scale(1.05)';"
+  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3b82f6'; this.style.transform='scale(1)';"
+>
+  View City Details
+</button>
+</div>
+
       </div>
     `;
 
-    const marker = L.circleMarker([station.lat, station.lon], {
-      radius: 8,
-      fillColor: color,
-      color: "#fff",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.8,
-    }).addTo(map);
-
+    const isFavourite = favouriteCities.value.some(fav => fav.id === station.id);
+    let marker;
+if (isFavourite) {
+  // Use special icon for favourite city
+  marker = L.marker([station.lat, station.lon], { icon: favouriteIcon }).addTo(map);
+} else {
+  // Normal circle marker for others
+  const markerColor = getColor(station[selectedPollutant.value], selectedPollutant.value);
+  marker = L.circleMarker([station.lat, station.lon], {
+    radius: 8,
+    fillColor: markerColor,
+    color: "#fff",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.9,
+    stationId: station.id,
+  }).addTo(map);
+}
     marker.bindPopup(popupContent);
 
     // Add SPA-friendly navigation
-    marker.on('popupopen', () => {
-  const btn = document.getElementById(`view-detail-${station.id}`);
-  if (btn) {
-    btn.addEventListener('click', () => {
-      router.push({ name: 'city-detail', params: { id: station.id } });
-    });
-  }
+    marker.on("popupopen", () => {
+      const btn = document.getElementById(`view-detail-${station.id}`);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          router.push({ name: "city-detail", params: { id: station.id } });
+        });
+      }
     });
 
     markers.push(marker);
     markerMap.value[station.name] = marker;
   });
+};
+const zoomToFavouriteCity = (cityId) => {
+  const marker = markers.find(m => {
+    // circleMarker has stationId, favourite marker may not
+    return (m.options.stationId === cityId) || 
+           (m.getPopup()?.getContent().includes(`id="view-detail-${cityId}"`));
+  });
+  if (!marker) return;
+
+  // Smooth zoom to the city
+  map.flyTo(marker.getLatLng(), 12, { duration: 1.2 });
+
+  // Open popup
+  marker.openPopup();
 };
 
 // Search location with results panel
@@ -673,6 +865,15 @@ onMounted(() => {
   fetchAQIData();
   fetchPhnomPenhAQI();
   detectUserLocation();
+  renderMarkers();
+
+  // Zoom to favourite city if query exists
+  const favCityId = route.query.favouriteCityId;
+  if (favCityId) {
+    // ensure number comparison
+    zoomToFavouriteCity(Number(favCityId));
+  }
+
   setInterval(() => {
     fetchAQIData();
     fetchPhnomPenhAQI();
