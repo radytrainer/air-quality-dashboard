@@ -26,11 +26,6 @@
           <option value="user">User</option>
           <option value="viewer">Viewer</option>
         </select>
-        <select v-model="statusFilter" class="border rounded px-3 py-2">
-          <option value="">All statuses</option>
-          <option value="active">Active (verified)</option>
-          <option value="inactive">Inactive</option>
-        </select>
         <button @click="clearFilters" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">Clear</button>
       </div>
 
@@ -41,8 +36,6 @@
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Users</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Active</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
@@ -63,16 +56,6 @@
                 <span :class="roleBadgeClass(user.role)" class="px-2 py-1 rounded text-xs font-semibold">
                   {{ user.role || 'user' }}
                 </span>
-              </td>
-              <td class="px-6 py-4 text-sm" :class="user.email_verified_at ? 'text-green-600' : 'text-red-600'">
-                {{ user.email_verified_at ? 'active' : 'inactive' }}
-              </td>
-              <td class="px-6 py-4 text-center">
-                <span
-                  :class="user.is_online ? 'text-green-600' : 'text-gray-400'"
-                  title="User Active Status"
-                  class="text-xl leading-none"
-                >●</span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(user.created_at) }}</td>
               <td class="px-6 py-4 text-right ">
@@ -236,14 +219,6 @@
         <p><strong>Phone:</strong> {{ viewUserData.phone || '-' }}</p>
         <p class="mt-2"><strong>Bio:</strong> {{ viewUserData.bio || '-' }}</p>
         <p class="mt-2"><strong>Created at:</strong> {{ formatDate(viewUserData.created_at) }}</p>
-        <p class="mt-2"><strong>Status:</strong>
-          <span :class="viewUserData.email_verified_at ? 'text-green-600' : 'text-red-600'">
-            {{ viewUserData.email_verified_at ? 'active' : 'inactive' }}
-          </span>
-        </p>
-        <p class="mt-2"><strong>Active:</strong>
-          <span :class="viewUserData.is_online ? 'text-green-600' : 'text-gray-400'">●</span>
-        </p>
       </div>
     </div>
 
