@@ -45,7 +45,13 @@
               {{ getAQIDescription(cityData?.aqi) }}
             </span>
           </div>
-        </div>
+          <button 
+           @click="toggleFavourite" 
+           class="mt-4 px-4 py-2 rounded-lg text-white"
+           :class="isFavourite ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'">
+           {{ isFavourite ? 'Remove from Favourites' : 'Add to Favourites' }}
+          </button>
+        </div>    
       </div>
     </div>
 
@@ -224,6 +230,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuthStore } from "@/stores/airQuality";
 
 // --------------------------
 // ROUTE & STATE
@@ -233,6 +240,9 @@ const cityIdParam = route.params.id;
 const cityData = ref(null);
 const loading = ref(false);
 const lastUpdated = ref("");
+const favourites = ref([]);
+const auth = useAuthStore();
+
 
 // --------------------------
 // HELPER FUNCTIONS
@@ -395,6 +405,89 @@ const topPollutants = computed(() => {
     .sort((a, b) => b.value - a.value)    // Sort descending
     .slice(0, 3);                         // Take top 3
 });
+
+// --------------------------
+// FAVOURITE FUNCTIONS
+// --------------------------
+const isFavourite = computed(() => {
+  return favourites.value.some(city => city.name === cityData.value?.name);
+});
+
+// LOAD FAVOURITES FROM BACKEND
+// --------------------------
+const loadFavourites = async () => {
+  try {
+    const { data } = await axios.get("http://127.0.0.1:8000/api/favourites", {
+      headers: { Authorization: `Bearer ${auth.token}` },
+    });
+
+    // Store favourites using city_name as identifier
+    favourites.value = data.map(f => ({
+      name: f.city_name,
+      flag: `https://flagcdn.com/w160/${f.country_code.toLowerCase()}.png`,
+    }));
+  } catch (err) {
+    console.error("Failed to load favourites:", err);
+  }
+};
+
+const toggleFavourite = async () => {
+  if (!cityData.value) return;
+
+  try {
+    if (isFavourite.value) {
+      // Remove from backend
+      await axios.delete(
+        `http://127.0.0.1:8000/api/favourites/${cityData.value.name}`,
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+
+      // Remove from local state
+      favourites.value = favourites.value.filter(
+        c => c.name !== cityData.value.name
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Removed from favourites",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } else {
+      // Add to backend
+      await axios.post(
+        "http://127.0.0.1:8000/api/favourites",
+        {
+          city_name: cityData.value.name,
+          country_code: cityData.value.flag
+            ? cityData.value.flag.split("/").pop().split(".")[0]
+            : "kh",
+        },
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+
+      // Add to local state
+      favourites.value.push({
+        name: cityData.value.name,
+        flag: cityData.value.flag,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Added to favourites",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    }
+  } catch (err) {
+    console.error("Error updating favourite:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to update favourite",
+      text: err.response?.data?.message || err.message,
+    });
+  }
+};
 // --------------------------
 // FETCH CITY DATA
 // --------------------------
@@ -533,6 +626,7 @@ onMounted(() => {
     if (cityData.value) {
       showHealthAlert(cityData.value.aqi, cityData.value.name);
     }
+    loadFavourites();
   });
 });
 </script>
