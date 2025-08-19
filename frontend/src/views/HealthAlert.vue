@@ -296,23 +296,36 @@
 
     <!-- Preview Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
-        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" @click="showModal = false">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-        <h2 class="text-xl font-bold mb-4">Preview Health Messages</h2>
-        <div v-for="(msg, key) in messages" :key="key" class="mb-4 border-b pb-3 last:border-b-0 last:pb-0">
-          <div class="font-semibold capitalize mb-1">{{ getAQILabel(key) }}</div>
-          <div class="text-sm mb-1" v-if="msg.public"><strong>Public:</strong> {{ msg.public }}</div>
-          <div class="text-sm mb-1" v-if="msg.sensitive"><strong>Sensitive Groups:</strong> {{ msg.sensitive }}</div>
-          <div class="text-sm mb-1" v-if="msg.actions"><strong>Recommended Actions:</strong> {{ msg.actions }}</div>
-          <div class="text-sm mb-1" v-if="msg.emergency"><strong>Emergency Actions:</strong> {{ msg.emergency }}</div>
-          <div class="text-sm" v-if="msg.restrictions"><strong>Activity Restrictions:</strong> {{ msg.restrictions }}</div>
-        </div>
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-lg relative max-h-[80vh] flex flex-col">
+    <!-- Close Button -->
+    <button
+      class="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+      @click="showModal = false"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Header -->
+    <div class="p-6 border-b">
+      <h2 class="text-xl font-bold">Preview Health Messages</h2>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="p-6 overflow-y-auto">
+      <div v-for="(msg, key) in messages" :key="key" class="mb-4 border-b pb-3 last:border-b-0 last:pb-0">
+        <div class="font-semibold capitalize mb-1">{{ getAQILabel(key) }}</div>
+        <div class="text-sm mb-1" v-if="msg.public"><strong>Public:</strong> {{ msg.public }}</div>
+        <div class="text-sm mb-1" v-if="msg.sensitive"><strong>Sensitive Groups:</strong> {{ msg.sensitive }}</div>
+        <div class="text-sm mb-1" v-if="msg.actions"><strong>Recommended Actions:</strong> {{ msg.actions }}</div>
+        <div class="text-sm mb-1" v-if="msg.emergency"><strong>Emergency Actions:</strong> {{ msg.emergency }}</div>
+        <div class="text-sm" v-if="msg.restrictions"><strong>Activity Restrictions:</strong> {{ msg.restrictions }}</div>
       </div>
     </div>
+  </div>
+</div>
+
   </div>
 </template>
 
