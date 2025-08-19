@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminHealthAlertController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FavouriteController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Api\AirQualityController;
@@ -73,6 +74,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
+
+
+
+    //favourite routes
+      Route::get('/favourites', [FavouriteController::class, 'index']); // list favourites
+    Route::post('/favourites', [FavouriteController::class, 'store']); // add favourite
+    Route::delete('/favourites/{city_name}', [FavouriteController::class, 'destroy']); // remove favourite
 
     // User management routes
     Route::prefix('users')->group(function () {
