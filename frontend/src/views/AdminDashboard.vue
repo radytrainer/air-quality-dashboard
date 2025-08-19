@@ -11,9 +11,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -27,9 +29,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllHighPollutionData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllHighPollutionData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -43,9 +47,11 @@
           </div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportAllLowPollutionData" class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportAllLowPollutionData"
+          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -54,13 +60,16 @@
       <div class="bg-red-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topHighPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...' }}</div>
+          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...'
+          }}</div>
           <div class="text-xs text-gray-600">Top High Pollution</div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportTopHighPollutionData" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportTopHighPollutionData"
+          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -69,13 +78,16 @@
       <div class="bg-blue-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topLowPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...' }}</div>
+          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...'
+          }}</div>
           <div class="text-xs text-gray-600">Top Low Pollution</div>
         </div>
         <!-- Export Icon - Top Right -->
-        <button @click="exportTopLowPollutionData" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
+        <button @click="exportTopLowPollutionData"
+          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
           </svg>
         </button>
       </div>
@@ -127,12 +139,14 @@
         </div>
       </div>
 
-      <!-- Target vs Reality -->
+      <!-- Status Distribution -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-800">Status Distribution</h3>
-          <select v-model="selectedStatusMetric" class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          <select v-model="selectedStatusMetric"
+            class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}
+            </option>
           </select>
         </div>
         <div class="relative h-48">
@@ -152,16 +166,14 @@
 
     <!-- Bottom Row -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Enhanced Top Polluted Areas - Made more compact and card-contained -->
+      <!-- Enhanced Top Polluted Areas -->
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <!-- Card Header -->
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-800">Top Polluted Areas</h3>
-            <button
-              @click="exportData"
-              class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors"
-            >
+            <button @click="exportData"
+              class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
               Export
             </button>
           </div>
@@ -169,32 +181,26 @@
 
         <!-- Card Content -->
         <div class="p-4">
-          <!-- Filter Controls - More compact -->
+          <!-- Filter Controls -->
           <div class="mb-4 space-y-2">
             <!-- Pollution Level Filter -->
             <div class="flex items-center space-x-2">
               <span class="text-sm font-medium text-gray-700 min-w-[45px]">Level:</span>
               <div class="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  @click="pollutionFilter = 'high'"
-                  :class="[
-                    'px-3 py-1 text-xs font-medium rounded-md transition-colors',
-                    pollutionFilter === 'high' 
-                      ? 'bg-red-500 text-white' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  ]"
-                >
+                <button @click="pollutionFilter = 'high'" :class="[
+                  'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                  pollutionFilter === 'high'
+                    ? 'bg-red-500 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                ]">
                   High
                 </button>
-                <button
-                  @click="pollutionFilter = 'low'"
-                  :class="[
-                    'px-3 py-1 text-xs font-medium rounded-md transition-colors',
-                    pollutionFilter === 'low' 
-                      ? 'bg-green-500 text-white' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  ]"
-                >
+                <button @click="pollutionFilter = 'low'" :class="[
+                  'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                  pollutionFilter === 'low'
+                    ? 'bg-green-500 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                ]">
                   Low
                 </button>
               </div>
@@ -203,10 +209,8 @@
             <!-- Metric Selector -->
             <div class="flex items-center space-x-2">
               <span class="text-sm font-medium text-gray-700 min-w-[45px]">Metric:</span>
-              <select 
-                v-model="selectedMetric"
-                class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
-              >
+              <select v-model="selectedMetric"
+                class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1">
                 <option value="aqi">AQI</option>
                 <option value="pm25">PM2.5</option>
                 <option value="pm10">PM10</option>
@@ -217,37 +221,31 @@
             </div>
           </div>
 
-          <!-- Top 5 List - More compact -->
+          <!-- Top 5 List -->
           <div class="space-y-2 mb-4">
-            <div v-for="(location, index) in filteredTop5Locations" :key="index" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div v-for="(location, index) in filteredTop5Locations" :key="index"
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div class="flex items-center space-x-2 min-w-0 flex-1">
                 <div class="text-xs font-bold text-gray-500 w-5">{{ String(index + 1).padStart(2, '0') }}</div>
-                
-                <!-- Country Flag - Smaller -->
+
+                <!-- Country Flag -->
                 <div class="w-6 h-4 rounded overflow-hidden border border-gray-200 flex-shrink-0">
-                  <img 
-                    :src="getCountryFlag(location.name)" 
-                    :alt="`${extractCountryName(location.name)} flag`"
-                    class="w-full h-full object-cover"
-                    @error="handleFlagError"
-                  />
+                  <img :src="getCountryFlag(location.name)" :alt="`${extractCountryName(location.name)} flag`"
+                    class="w-full h-full object-cover" @error="handleFlagError" />
                 </div>
-                
+
                 <div class="min-w-0 flex-1">
                   <div class="text-xs font-medium text-gray-900 truncate">{{ extractCityName(location.name) }}</div>
                   <div class="text-xs text-gray-500 truncate">{{ extractCountryName(location.name) }}</div>
                 </div>
               </div>
-              
+
               <div class="flex items-center space-x-2 flex-shrink-0">
                 <div class="w-16 bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    class="h-1.5 rounded-full transition-all duration-300" 
-                    :style="{ 
-                      width: `${getProgressWidth(location[selectedMetric], selectedMetric)}%`, 
-                      backgroundColor: getColor(location[selectedMetric], selectedMetric) 
-                    }"
-                  ></div>
+                  <div class="h-1.5 rounded-full transition-all duration-300" :style="{
+                    width: `${getProgressWidth(location[selectedMetric], selectedMetric)}%`,
+                    backgroundColor: getColor(location[selectedMetric], selectedMetric)
+                  }"></div>
                 </div>
                 <div class="text-xs font-bold text-gray-900 min-w-[2.5rem] text-right">
                   {{ formatValue(location[selectedMetric], selectedMetric) }}
@@ -256,18 +254,20 @@
             </div>
           </div>
 
-          <!-- Summary Stats - More compact -->
+          <!-- Summary Stats -->
           <div class="pt-3 border-t border-gray-200">
             <div class="grid grid-cols-2 gap-4 text-xs">
               <div class="text-center">
                 <div class="font-bold text-lg" :style="{ color: pollutionFilter === 'high' ? '#ef4444' : '#10b981' }">
                   {{ filteredTop5Locations.length }}
                 </div>
-                <div class="text-gray-600">{{ pollutionFilter === 'high' ? 'High' : 'Low' }} {{ selectedMetric.toUpperCase() }}</div>
+                <div class="text-gray-600">{{ pollutionFilter === 'high' ? 'High' : 'Low' }} {{
+                  selectedMetric.toUpperCase() }}</div>
               </div>
               <div class="text-center">
                 <div class="font-bold text-lg text-blue-600">
-                  {{ Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0), 0) / filteredTop5Locations.length) || 0 }}
+                  {{Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0),
+                    0) / filteredTop5Locations.length) || 0}}
                 </div>
                 <div class="text-gray-600">Average</div>
               </div>
@@ -277,32 +277,18 @@
       </div>
 
       <!-- Pollution Map with Selection -->
-      <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Pollution Mapping by Country</h3>
-          <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">Export</button>
+      <div class="lg:col-span-2 bg-white rounded-md p-1 shadow-sm">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-semibold text-gray-800">Air Quality Map</h3>
+          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">Export</button>
         </div>
         <div class="relative">
-          <div id="map" class="h-[400px] w-full overflow-hidden relative rounded-lg bg-gray-100">
-            <!-- Pollutant Selector in Map -->
-            <div class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg">
-              <button
-                v-for="option in pollutantOptions"
-                :key="option.value"
-                @click="selectedPollutant = option.value"
-                :class="[
-                  'p-1.5 hover:bg-gray-700 transition-colors flex items-center justify-center rounded-md text-xs',
-                  selectedPollutant === option.value ? 'bg-yellow-500 text-black' : ''
-                ]"
-                :title="option.label"
-              >
-                <span v-html="option.icon" class="w-4 h-4"></span>
-              </button>
-            </div>
-
-            <!-- Dynamic Legend -->
+          <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg bg-gray-100">
+            <!-- Dynamic Legend on left -->
             <div class="absolute bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg z-[1000] max-w-[200px]">
-              <div class="text-sm font-semibold mb-3 text-gray-800">{{ legendTitle }}</div>
+              <div class="text-sm font-semibold mb-3 text-gray-800">
+                {{ legendTitle }}
+              </div>
               <div class="space-y-2 text-xs">
                 <div v-for="item in legendItems" :key="item.color" class="flex items-center">
                   <div class="w-4 h-4 mr-3 rounded-sm" :style="{ backgroundColor: item.color }"></div>
@@ -311,81 +297,100 @@
               </div>
             </div>
 
-            <!-- Search control -->
+            <!-- Search control on top right - Made bigger -->
             <div class="absolute top-4 right-4 z-[1000]">
               <div class="bg-white shadow-lg rounded-lg overflow-hidden relative">
-                <input
-                  type="text"
-                  placeholder="Search location..."
+                <input type="text" placeholder="Search location..."
                   class="px-4 py-3 w-64 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-                  v-model="searchQuery"
-                  @keyup="searchLocation"
-                >
-                <button v-if="searchQuery" @click="clearSearch" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center">×</button>
+                  v-model="searchQuery" @keyup="searchLocation" />
+                <button v-if="searchQuery" @click="clearSearch"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl leading-none hover:text-gray-700 rounded-full w-6 h-6 flex items-center justify-center">
+                  ×
+                </button>
               </div>
-              
-              <!-- Search Results -->
-              <div v-if="searchResults.length > 0" class="mt-2 bg-gray-900 shadow-xl rounded-lg w-72 border border-gray-700">
-                <div class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg">
-                  <h3 class="text-white font-medium text-sm">Locations</h3>
+
+              <!-- Zoom controls moved under search and to the right -->
+              <div class="flex justify-end mt-3 space-x-2">
+                <button @click="zoomIn"
+                  class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <button @click="zoomOut"
+                  class="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-10 h-10">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6v3a1 1 0 11-2 0v-3H3a1 1 0 110-2h3V6a1 1 0 011-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Pollutant Selector in Map -->
+            <div
+              class="absolute top-4 left-4 flex items-center gap-1 bg-black text-white p-2 z-[1000] rounded-lg shadow-lg">
+              <button v-for="option in pollutantOptions" :key="option.value" @click="selectedPollutant = option.value"
+                :class="[
+                  'p-1.5 hover:bg-gray-700 transition-colors flex items-center justify-center rounded-md text-xs',
+                  selectedPollutant === option.value
+                    ? 'bg-yellow-500 text-black'
+                    : '',
+                ]" :title="option.label">
+                <span v-html="option.icon" class="w-4 h-4"></span>
+              </button>
+            </div>
+
+            <!-- Search Results - Collapsible with "States" header like the provided image -->
+            <div v-if="searchResults.length > 0"
+              class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-72 border border-gray-700">
+              <!-- Added States header and show more/less functionality -->
+              <div class="px-4 py-2 border-b border-gray-700 bg-gray-800 rounded-t-lg">
+                <h3 class="text-white font-medium text-sm">States</h3>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div v-for="(result, index) in showAllResults
+                  ? searchResults
+                  : searchResults.slice(0, maxVisibleResults)" :key="result.name"
+                  class="flex items-center justify-between p-2.5 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 cursor-pointer transition-colors"
+                  @click="goToLocation(result)">
+                  <div class="flex items-center space-x-2.5 flex-1 min-w-0">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-white truncate">
+                        {{ result.name }}, {{ result.country || "Unknown" }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0 ml-2">
+                    <!-- Updated AQI badge styling to match the provided image -->
+                    <span
+                      class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold text-white min-w-[2.5rem] justify-center"
+                      :style="{ backgroundColor: getColor(result.aqi, 'aqi') }">
+                      {{ result.aqi || "N/A" }}
+                    </span>
+                  </div>
                 </div>
-                
-                <div class="max-h-80 overflow-y-auto">
-                  <div 
-                    v-for="(result, index) in (showAllResults ? searchResults : searchResults.slice(0, maxVisibleResults))" 
-                    :key="result.name" 
-                    class="flex items-center justify-between p-2.5 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 cursor-pointer transition-colors" 
-                    @click="goToLocation(result)"
-                  >
-                    <div class="flex items-center space-x-2.5 flex-1 min-w-0">
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate">{{ result.name }}</p>
-                      </div>
-                    </div>
-                    <div class="flex-shrink-0 ml-2">
-                      <span 
-                        class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold text-white min-w-[2.5rem] justify-center"
-                        :style="{ backgroundColor: getColor(result.aqi, 'aqi') }"
-                      >
-                        {{ result.aqi || 'N/A' }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div v-if="searchResults.length > maxVisibleResults" class="p-2 border-t border-gray-700 bg-gray-800">
-                    <button 
-                      @click="showAllResults = !showAllResults"
-                      class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors"
-                    >
-                      {{ showAllResults ? 'Show Less' : `Show All (${searchResults.length})` }}
-                    </button>
-                  </div>
+
+                <!-- Added show more/less button -->
+                <div v-if="searchResults.length > maxVisibleResults" class="p-2 border-t border-gray-700 bg-gray-800">
+                  <button @click="showAllResults = !showAllResults"
+                    class="w-full text-center text-xs text-gray-300 hover:text-white transition-colors">
+                    {{
+                      showAllResults
+                        ? "Show Less"
+                        : `Show All (${searchResults.length})`
+                    }}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Volume vs Service Level -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-800">Volume vs Service Level</h3>
-      </div>
-      <div class="relative h-64">
-        <canvas ref="volumeChartRef" class="w-full h-full"></canvas>
-      </div>
-      <div class="mt-4 flex items-center justify-center space-x-6 text-sm">
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-          <span class="text-gray-600">Volume</span>
-          <span class="font-semibold">{{ totalLocationsComputed }}</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-          <span class="text-gray-600">Services</span>
-          <span class="font-semibold">{{ Math.round(totalLocationsComputed * 0.8) }}</span>
         </div>
       </div>
     </div>
@@ -394,18 +399,20 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
+import { useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Chart from 'chart.js/auto';
 
+const router = useRouter();
 const selectedPollutant = ref("aqi");
 const searchQuery = ref("");
 const aqiData = ref([]);
 let map = null;
 let markers = [];
-let markerMap = ref({});
-let searchMarkers = ref([]);
+const markerMap = ref({});
+const searchMarkers = ref([]);
 const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
 
@@ -420,14 +427,13 @@ const selectedStatusMetric = ref('aqi');
 let trendsChartInstance = null;
 let distributionChartInstance = null;
 let statusChartInstance = null;
-let volumeChartInstance = null;
 
 // Chart refs
 const trendsChartRef = ref(null);
 const distributionChartRef = ref(null);
 const statusChartRef = ref(null);
-const volumeChartRef = ref(null);
 
+// Computed properties for metrics
 const totalLocationsComputed = computed(() => {
   return aqiData.value.length;
 });
@@ -442,14 +448,14 @@ const lowPollutionCountComputed = computed(() => {
 
 const topHighPollutionLocation = computed(() => {
   if (aqiData.value.length === 0) return null;
-  return aqiData.value.reduce((highest, current) => 
+  return aqiData.value.reduce((highest, current) =>
     (current.aqi > highest.aqi) ? current : highest
   );
 });
 
 const topLowPollutionLocation = computed(() => {
   if (aqiData.value.length === 0) return null;
-  return aqiData.value.reduce((lowest, current) => 
+  return aqiData.value.reduce((lowest, current) =>
     (current.aqi < lowest.aqi) ? current : lowest
   );
 });
@@ -471,16 +477,35 @@ const countryCodeMap = {
 
 // Inline SVG icons
 const pollutantOptions = [
-  { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 17h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2v12h4V9H7zm0-4v2h14V5H7z"/></svg>` },
-  { value: "pm25", label: "PM2.5", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M6 19a6 6 0 1 1 0-12 8 8 0 1 1 16 0h-1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>` },
-  { value: "pm10", label: "PM10", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M6 19a6 6 0 1 1 0-12 8 8 0 1 1 16 0h-1a7 7 0 0 0-14 0h-1a5 5 0 1 0 0 10h10v2H6z"/></svg>` },
-  { value: "no2", label: "NO₂", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0"/></svg>` },
-  { value: "co", label: "CO", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="3"/></svg>` },
-  { value: "o3", label: "O₃", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M21 12a9 9 0 1 1-18 0"/></svg>` },
-  { value: "temperature", label: "Temperature", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 3.5L3.5 12 12 20.5 20.5 12 12 3.5zm0 13.66l-5.66-5.66 5.66-5.66 4.5-2.67V7z"/></svg>` },
-  { value: "humidity", label: "Humidity", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8zm1-13h-2v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>` },
-  { value: "pressure", label: "Pressure", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6 2 2 0 0 1 0-4M3 18h9a3 3 0 1 1 0 6"/></svg>` },
-  { value: "wind", label: "Wind", icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>` }
+  // AQI - green/yellow/red gauge
+  { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+
+  // PM2.5 - small gray particles
+  { value: "pm25", label: "PM2.5", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="#888"/><circle cx="12" cy="8" r="1.5" fill="#888"/><circle cx="17" cy="14" r="2" fill="#888"/><circle cx="10" cy="16" r="1.5" fill="#888"/></svg>` },
+
+  // PM10 - bigger brownish particles
+  { value: "pm10", label: "PM10", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="5" cy="10" r="2" fill="#A0522D"/><circle cx="12" cy="7" r="3" fill="#A0522D"/><circle cx="18" cy="15" r="2.5" fill="#A0522D"/><circle cx="9" cy="17" r="1.5" fill="#A0522D"/></svg>` },
+
+  // NO2 - dark gray factory
+  { value: "no2", label: "NO₂", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="8" fill="#555"/><polygon points="4,10 8,4 12,10" fill="#777"/></svg>` },
+
+  // CO - molecule circles in red
+  { value: "co", label: "CO", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="#FF4D4D"/><circle cx="17" cy="12" r="3" fill="#FF6666"/></svg>` },
+
+  // O3 - ozone in blue
+  { value: "o3", label: "O₃", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3" fill="#3399FF"/><circle cx="15" cy="9" r="3" fill="#33CCFF"/><circle cx="15" cy="15" r="3" fill="#3399FF"/></svg>` },
+
+  // Temperature - red thermometer
+  { value: "temperature", label: "Temperature", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="12" fill="#FF3300"/><circle cx="12" cy="18" r="3" fill="#FF3300"/></svg>` },
+
+  // Humidity - blue water droplet
+  { value: "humidity", label: "Humidity", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5l5 7a8 8 0 1 1-10 0z" fill="#3399FF"/></svg>` },
+
+  // Pressure - gauge in green
+  { value: "pressure", label: "Pressure", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
+
+  // Wind - light blue flowing lines
+  { value: "wind", label: "Wind", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>` }
 ];
 
 // Helper functions
@@ -503,12 +528,12 @@ const extractCountryName = (name) => {
 const getCountryFlag = (locationName) => {
   const country = extractCountryName(locationName);
   const countryCode = countryCodeMap[country] || 'XX';
-  
+
   if (countryCode === 'XX') {
     // Return a generic flag or placeholder for unknown countries
     return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" fill="#e5e7eb"><rect width="32" height="24" fill="#f3f4f6"/><text x="16" y="14" text-anchor="middle" font-family="Arial" font-size="8" fill="#6b7280">?</text></svg>`)}`;
   }
-  
+
   return `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
 };
 
@@ -520,9 +545,9 @@ const handleFlagError = (event) => {
 // Format value based on metric
 const formatValue = (value, metric) => {
   if (value === null || value === undefined || isNaN(parseFloat(value))) return 'N/A';
-  
+
   const val = parseFloat(value);
-  
+
   switch (metric) {
     case 'co':
       return val.toFixed(1);
@@ -542,9 +567,9 @@ const formatValue = (value, metric) => {
 // Get progress bar width
 const getProgressWidth = (value, metric) => {
   if (value === null || value === undefined || isNaN(parseFloat(value))) return 0;
-  
+
   const val = parseFloat(value);
-  
+
   switch (metric) {
     case 'aqi':
     case 'pm25':
@@ -748,7 +773,7 @@ const filteredTop5Locations = computed(() => {
   });
 
   let filteredStations;
-  
+
   if (pollutionFilter.value === 'high') {
     // Sort by highest values
     filteredStations = validStations.sort((a, b) => {
@@ -849,7 +874,7 @@ const getAQIStatus = (aqi) => {
 const exportTopHighPollutionData = () => {
   const location = topHighPollutionLocation.value;
   if (!location) return;
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     [
@@ -880,7 +905,7 @@ const exportTopHighPollutionData = () => {
 const exportTopLowPollutionData = () => {
   const location = topLowPollutionLocation.value;
   if (!location) return;
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     [
@@ -910,7 +935,7 @@ const exportTopLowPollutionData = () => {
 
 const exportAllHighPollutionData = () => {
   const highPollutionLocations = aqiData.value.filter(location => parseInt(location.aqi) > 100);
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     ...highPollutionLocations.map(location => [
@@ -940,7 +965,7 @@ const exportAllHighPollutionData = () => {
 
 const exportAllLowPollutionData = () => {
   const lowPollutionLocations = aqiData.value.filter(location => parseInt(location.aqi) <= 50);
-  
+
   const csvContent = [
     ['Location', 'AQI', 'Status', 'PM2.5', 'PM10', 'NO₂', 'CO', 'O₃', 'Temp', 'Humidity', 'Pressure', 'Wind'].join(','),
     ...lowPollutionLocations.map(location => [
@@ -1025,6 +1050,20 @@ const top5LowPM10 = computed(() => {
     .slice(0, 5);
 });
 
+const top5HighPM25 = computed(() => {
+  return [...aqiData.value]
+    .filter(loc => loc.pm25 !== undefined && loc.pm25 !== null)
+    .sort((a, b) => parseFloat(b.pm25) - parseFloat(a.pm25))
+    .slice(0, 5);
+});
+
+const top5LowPM25 = computed(() => {
+  return [...aqiData.value]
+    .filter(loc => loc.pm25 !== undefined && loc.pm25 !== null)
+    .sort((a, b) => parseFloat(a.pm25) - parseFloat(b.pm25))
+    .slice(0, 5);
+});
+
 // Chart creation functions
 const createTrendsChart = () => {
   if (!trendsChartRef.value) return
@@ -1034,7 +1073,7 @@ const createTrendsChart = () => {
 
   const highData = top5HighPM10.value.map(loc => parseFloat(loc.pm10));
   const lowData = top5LowPM10.value.map(loc => parseFloat(loc.pm10));
-  
+
   trendsChartInstance = new Chart(trendsChartRef.value, {
     type: 'line',
     data: {
@@ -1067,7 +1106,7 @@ const createTrendsChart = () => {
         },
         tooltip: {
           callbacks: {
-            title: function(context) {
+            title: function (context) {
               const datasetIndex = context[0].datasetIndex;
               const dataIndex = context[0].dataIndex;
               let loc;
@@ -1078,7 +1117,7 @@ const createTrendsChart = () => {
               }
               return loc ? loc.name : '';
             },
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset.label}: ${context.parsed.y} μg/m³`;
             }
           }
@@ -1100,19 +1139,9 @@ const createDistributionChart = () => {
   if (!distributionChartRef.value) return;
   if (distributionChartInstance) distributionChartInstance.destroy();
 
-  // Sort and get top 5 high and low PM2.5 locations
-  const top5HighPM25 = [...aqiData.value]
-    .filter(loc => loc.pm25 !== undefined && loc.pm25 !== null)
-    .sort((a, b) => parseFloat(b.pm25) - parseFloat(a.pm25))
-    .slice(0, 5);
-  const top5LowPM25 = [...aqiData.value]
-    .filter(loc => loc.pm25 !== undefined && loc.pm25 !== null)
-    .sort((a, b) => parseFloat(a.pm25) - parseFloat(b.pm25))
-    .slice(0, 5);
-
-  const labels = top5HighPM25.map(loc => extractCityName(loc.name));
-  const highData = top5HighPM25.map(loc => parseFloat(loc.pm25));
-  const lowData = top5LowPM25.map(loc => parseFloat(loc.pm25));
+  const labels = top5HighPM25.value.map(loc => extractCityName(loc.name));
+  const highData = top5HighPM25.value.map(loc => parseFloat(loc.pm25));
+  const lowData = top5LowPM25.value.map(loc => parseFloat(loc.pm25));
 
   distributionChartInstance = new Chart(distributionChartRef.value, {
     type: 'line',
@@ -1146,12 +1175,12 @@ const createDistributionChart = () => {
         },
         tooltip: {
           callbacks: {
-            title: function(context) {
+            title: function (context) {
               const datasetIndex = context[0].datasetIndex;
               const dataIndex = context[0].dataIndex;
-              return datasetIndex === 0 ? top5HighPM25[dataIndex].name : top5LowPM25[dataIndex].name;
+              return datasetIndex === 0 ? top5HighPM25.value[dataIndex].name : top5LowPM25.value[dataIndex].name;
             },
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset.label}: ${context.parsed.y} μg/m³`;
             }
           }
@@ -1177,7 +1206,7 @@ const createStatusChart = () => {
   const labels = Object.keys(counts)
   const data = Object.values(counts)
   const colors = labels.map(status => getStatusColor(status, selectedStatusMetric.value))
-  
+
   statusChartInstance = new Chart(statusChartRef.value, {
     type: 'bar',
     data: {
@@ -1220,61 +1249,12 @@ const createStatusChart = () => {
   })
 }
 
-const createVolumeChart = () => {
-  if (!volumeChartRef.value) return
-  if (volumeChartInstance) volumeChartInstance.destroy()
-
-  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-  
-  volumeChartInstance = new Chart(volumeChartRef.value, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Volume',
-          data: [3.5, 3.0, 2.8, 3.2, 3.5, 3.0],
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4,
-          fill: true
-        },
-        {
-          label: 'Services',
-          data: [2.8, 2.5, 2.3, 2.7, 3.0, 2.5],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        }
-      },
-      scales: {
-        y: {
-          display: false
-        },
-        x: {
-          display: false
-        }
-      }
-    }
-  })
-}
-
 const fetchAQIData = async () => {
   try {
     console.log("[v0] Fetching AQI data from API...");
     const { data } = await axios.get("http://127.0.0.1:8000/api/aqi");
     console.log("[v0] API Response:", data);
-    
+
     if (data.status === "ok" && Array.isArray(data.data)) {
       aqiData.value = data.data;
       console.log("[v0] Successfully loaded", data.data.length, "locations");
@@ -1282,7 +1262,6 @@ const fetchAQIData = async () => {
       createTrendsChart();
       createDistributionChart();
       createStatusChart();
-      createVolumeChart();
     } else {
       console.warn("[v0] API returned unexpected format:", data);
     }
@@ -1290,6 +1269,40 @@ const fetchAQIData = async () => {
     console.error("[v0] Error fetching AQI data:", error);
     console.log("[v0] Using empty data - check API connection");
     aqiData.value = [];
+  }
+};
+
+const fetchPhnomPenhAQI = async () => {
+  try {
+    const { data } = await axios.get(
+      "http://127.0.0.1:8000/api/air-quality/phnom-penh"
+    );
+    const phnomPenhStation = {
+      name: "Phnom Penh",
+      lat: 11.562108,
+      lon: 104.888535,
+      aqi: data.AQI,
+      pm25: data.PM2_5,
+      pm10: data.PM10,
+      no2: data.NO2,
+      co: data.CO,
+      o3: data.O3,
+      temperature: data.Temp_C,
+      humidity: data.Humidity_percent,
+      pressure: data.Pressure_hPa,
+      wind: data.Wind_m_s,
+      wind_speed: data.Wind_m_s,
+      id: data.id || 9999, // Assign a unique id
+    };
+    const idx = aqiData.value.findIndex((st) => st.name === "Phnom Penh");
+    if (idx !== -1) {
+      aqiData.value.splice(idx, 1, phnomPenhStation);
+    } else {
+      aqiData.value.push(phnomPenhStation);
+    }
+    renderMarkers();
+  } catch (error) {
+    console.error("Error fetching Phnom Penh AQI data:", error);
   }
 };
 
@@ -1309,33 +1322,69 @@ const renderMarkers = () => {
       value = station[selectedPollutant.value];
     }
 
-    if (selectedPollutant.value !== "aqi" && (value === null || value === undefined)) {
+    if (
+      selectedPollutant.value !== "aqi" &&
+      (value === null || value === undefined)
+    ) {
       return;
     }
 
     const color = getColor(value, selectedPollutant.value);
     const status = getStatus(value, selectedPollutant.value);
-    const windValue = station.wind_speed || station.wind || "0";
+    const windValue = station.wind_speed || station.wind || "N/A";
+    const renderRow = (label, val, unit = "") => {
+      if (val === null || val === undefined || val === "N/A") return "";
+      return `<div><strong>${label}:</strong> ${val}${unit}</div>`;
+    };
 
     const popupContent = `
-      <div style="min-width: 220px; font-family: system-ui, -apple-system, sans-serif;">
-        <div style="background: linear-gradient(135deg, #000000 0%, #333333 100%); color: white; padding: 10px; margin: -10px -10px 10px -10px; border-radius: 8px 8px 0 0;">
-          <h3 style="margin: 0; font-size: 14px; font-weight: 600;">${station.name}</h3>
-        </div>
+      <div style="
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #000000; /* vibrant blue */
+  border-bottom: 1px solid #000000;
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+  text-align: center;
+">
+  ${station.name}
+</div>
+
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; color: #000;">
-          <div><strong>${selectedPollutant.value.toUpperCase()}:</strong> ${value ?? "0"}</div>
-          <div><strong>Status:</strong> <span style="color:${color}; font-weight: 600;">${status}</span></div>
-          <div><strong>AQI:</strong> ${station.aqi ?? "0"}</div>
-          <div><strong>PM2.5:</strong> ${station.pm25 ?? "0"}</div>
-          <div><strong>PM10:</strong> ${station.pm10 ?? "0"}</div>
-          <div><strong>NO₂:</strong> ${station.no2 ?? "0"}</div>
-          <div><strong>CO:</strong> ${station.co ?? "0"}</div>
-          <div><strong>O₃:</strong> ${station.o3 ?? "0"}</div>
-          <div><strong>Temp:</strong> ${station.temperature ?? "0"} °C</div>
-          <div><strong>Humidity:</strong> ${station.humidity ?? "0"} %</div>
-          <div><strong>Pressure:</strong> ${station.pressure ?? "0"} hPa</div>
-          <div><strong>Wind:</strong> ${windValue} m/s</div>
+          ${renderRow(selectedPollutant.value.toUpperCase(), value)}
+          ${renderRow("Status", status)}
+          ${renderRow("PM2.5", station.pm25)}
+          ${renderRow("PM10", station.pm10)}
+          ${renderRow("NO₂", station.no2)}
+          ${renderRow("CO", station.co)}
+          ${renderRow("O₃", station.o3)}
+          ${renderRow("Temp", station.temperature, " °C")}
+          ${renderRow("Humidity", station.humidity, " %")}
+          ${renderRow("Pressure", station.pressure, " hPa")}
+          ${renderRow("Wind", windValue, " m/s")}
         </div>
+        <div style="margin-top: 8px; text-align: center;">
+  <button id="view-detail-${station.id}" 
+  style="
+    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+  "
+  onmouseover="this.style.backgroundColor='#3b82f6'; this.style.color='#ffffff'; this.style.transform='scale(1.05)';"
+  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3b82f6'; this.style.transform='scale(1)';"
+>
+  View City Details
+</button>
+</div>
+
       </div>
     `;
 
@@ -1349,6 +1398,17 @@ const renderMarkers = () => {
     }).addTo(map);
 
     marker.bindPopup(popupContent);
+
+    // Add SPA-friendly navigation
+    marker.on('popupopen', () => {
+      const btn = document.getElementById(`view-detail-${station.id}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          router.push({ name: 'city-detail', params: { id: station.id } });
+        });
+      }
+    });
+
     markers.push(marker);
     markerMap.value[station.name] = marker;
   });
@@ -1359,29 +1419,32 @@ const searchLocation = () => {
   searchMarkers.value = [];
 
   if (searchResults.value.length > 0) {
-    searchResults.value.forEach(result => {
+    searchResults.value.forEach((result) => {
       const marker = L.marker([result.lat, result.lon], {
         icon: L.divIcon({
-          html: `
-            <div style="position: relative; z-index: 1001;">
-              <div style="background: white; border: 2px solid #3b82f6; border-radius: 50%; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
-                <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
-              </div>
-              <div style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 1px 3px; border-radius: 2px; font-size: 9px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                ${result.aqi || '0'}
-              </div>
-            </div>
-          `,
+          html: `<div style="position: relative; z-index: 1001;">
+                   <div style="background: white; border: 2px solid #3b82f6; border-radius: 50%; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                     <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
+                   </div>
+                   <div style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 1px 3px; border-radius: 2px; font-size: 9px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                     ${result.aqi || "N/A"}
+                   </div>
+                 </div>`,
           className: "custom-search-marker",
           iconSize: [20, 20],
-          iconAnchor: [10, 10]
-        })
+          iconAnchor: [10, 10],
+        }),
       }).addTo(map);
 
       marker.bindPopup(`
         <div style="text-align: center; font-family: system-ui, -apple-system, sans-serif;">
-          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name}</h4>
-          <div style="color: ${getColor(result.aqi, 'aqi')}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || '0'}</div>
+          <h4 style="margin: 0 0 3px 0; font-size: 13px; font-weight: 600;">${result.name
+        }</h4>
+          <div style="color: ${getColor(
+          result.aqi,
+          "aqi"
+        )}; font-weight: 600; font-size: 12px;">AQI: ${result.aqi || "N/A"
+        }</div>
         </div>
       `);
       searchMarkers.value.push(marker);
@@ -1391,7 +1454,7 @@ const searchLocation = () => {
 
 // Clear search
 const clearSearch = () => {
-  searchQuery.value = '';
+  searchQuery.value = "";
   searchMarkers.value.forEach((marker) => marker.remove());
   searchMarkers.value = [];
 };
@@ -1406,6 +1469,15 @@ const goToLocation = (result) => {
   }
 };
 
+// Zoom controls
+const zoomIn = () => {
+  map.zoomIn();
+};
+
+const zoomOut = () => {
+  map.zoomOut();
+};
+
 // Init map
 const initMap = () => {
   map = L.map("map", {
@@ -1415,20 +1487,42 @@ const initMap = () => {
     scrollWheelZoom: true,
   });
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: "&copy; OpenStreetMap & CARTO",
-    subdomains: "abcd",
-    maxZoom: 19,
-  }).addTo(map);
+  L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    {
+      attribution: "&copy; OpenStreetMap & CARTO",
+      subdomains: "abcd",
+      maxZoom: 19,
+    }
+  ).addTo(map);
+};
+
+const detectUserLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        map.setView([lat, lon], 5);
+        L.marker([lat, lon]).addTo(map).bindPopup("You are here!").openPopup();
+      },
+      (error) => {
+        console.warn("Geolocation error:", error.message);
+      }
+    );
+  } else {
+    console.warn("Geolocation is not supported by this browser.");
+  }
 };
 
 onMounted(() => {
   initMap();
   fetchAQIData();
-  
+  fetchPhnomPenhAQI();
+  detectUserLocation();
   setInterval(() => {
-    console.log("[v0] Auto-refreshing data...");
     fetchAQIData();
+    fetchPhnomPenhAQI();
   }, 30000);
 });
 
@@ -1456,6 +1550,25 @@ button {
 
 button:hover {
   transform: translateY(-1px);
+}
+
+/* Custom scrollbar for search results */
+.max-h-96::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-96::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Custom scrollbar for search results - dark theme */

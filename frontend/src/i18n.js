@@ -83,7 +83,7 @@ const messages = {
     "noEmail": "No email",
     "profile": "Profile",
     "messages": "Messages",
-  }
+  },
   },
   kh: {
     nav: {
