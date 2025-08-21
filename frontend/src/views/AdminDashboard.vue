@@ -1366,23 +1366,6 @@ const renderMarkers = () => {
           ${renderRow("Wind", windValue, " m/s")}
         </div>
         <div style="margin-top: 8px; text-align: center;">
-  <button id="view-detail-${station.id}" 
-  style="
-    color: #3b82f6;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 4px 10px;
-    border: 1px solid #3b82f6;
-    border-radius: 6px;
-    cursor: pointer;
-    background: transparent;
-    transition: all 0.2s ease-in-out;
-  "
-  onmouseover="this.style.backgroundColor='#3b82f6'; this.style.color='#ffffff'; this.style.transform='scale(1.05)';"
-  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3b82f6'; this.style.transform='scale(1)';"
->
-  View City Details
-</button>
 </div>
 
       </div>
