@@ -151,7 +151,7 @@
                   </button>
                   <button
                     @click="
-                      editUser(user);
+                      openEditUser(user);
                       closeDropdown();
                     "
                     class="block w-full text-left px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100"
@@ -261,12 +261,6 @@
             placeholder="Phone (optional)"
             class="w-full border rounded px-3 py-2"
           />
-          <textarea
-            v-model="addUserForm.bio"
-            placeholder="Bio (optional)"
-            rows="3"
-            class="w-full border rounded px-3 py-2"
-          ></textarea>
           <div>
             <label class="block mb-1 font-medium"
               >Profile Image (optional)</label
@@ -346,7 +340,6 @@
             <option value="">Select Role</option>
             <option value="admin">Admin</option>
             <option value="user">User</option>
-            <option value="viewer">Viewer</option>
           </select>
           <input
             v-model="editUserForm.phone"
@@ -354,13 +347,6 @@
             placeholder="Phone (optional)"
             class="w-full border rounded px-3 py-2"
           />
-          <textarea
-            v-model="editUserForm.bio"
-            placeholder="Bio (optional)"
-            rows="3"
-            class="w-full border rounded px-3 py-2"
-          ></textarea>
-
           <div>
             <label class="block mb-1 font-medium"
               >Profile Image (optional)</label
@@ -454,6 +440,90 @@
         <p class="mt-2">
           <strong>Created at:</strong> {{ formatDate(viewUserData.created_at) }}
         </p>
+      </div>
+    </div>
+    <!-- Edit User Modal -->
+    <div
+      v-if="showEditUserModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded p-6 w-full max-w-md relative">
+        <!-- Close button -->
+        <button
+          @click="closeEditUser"
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold"
+        >
+          &times;
+        </button>
+
+        <h3 class="text-2xl font-semibold mb-4">Edit User</h3>
+
+        <form @submit.prevent="submitEditUser">
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="block font-semibold">Name</label>
+            <input
+              v-model="editUserForm.name"
+              type="text"
+              class="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="block font-semibold">Email</label>
+            <input
+              v-model="editUserForm.email"
+              type="email"
+              class="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+
+          <!-- Role -->
+          <div class="mb-3">
+            <label class="block font-semibold">Role</label>
+            <select
+              v-model="editUserForm.role"
+              class="w-full border rounded px-3 py-2"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <!-- Phone -->
+          <div class="mb-3">
+            <label class="block font-semibold">Phone</label>
+            <input
+              v-model="editUserForm.phone"
+              type="text"
+              class="w-full border rounded px-3 py-2"
+            />
+          </div>
+
+          <!-- Profile Image -->
+          <div class="mb-3">
+            <label class="block font-semibold">Profile Image</label>
+            <input type="file" @change="onEditImageChange" />
+            <div v-if="editUserImagePreview" class="mt-2">
+              <img
+                :src="editUserImagePreview"
+                alt="Preview"
+                class="w-20 h-20 rounded-full object-cover"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="editUserLoading"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            {{ editUserLoading ? "Saving..." : "Save Changes" }}
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -641,7 +711,7 @@ const openEditUser = (user) => {
     bio: user.bio || "",
     profile_image: null,
   };
-  editUserImagePreview.value = null;
+  editUserImagePreview.value = user.profile_image || null;
 };
 
 const closeEditUser = () => {
@@ -669,7 +739,7 @@ const submitEditUser = async () => {
         formData.append(key, editUserForm.value[key]);
       }
     }
-    await api.post(`/users/${editUserForm.value.id}`, formData, {
+    await api.put(`/users/${editUserForm.value.id}`, formData, {
       headers: { "X-HTTP-Method-Override": "PATCH" },
     });
     await fetchUsers();

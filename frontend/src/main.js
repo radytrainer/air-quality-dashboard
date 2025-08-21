@@ -1,5 +1,4 @@
 import './assets/tailwind.css'
-
 // import './assets/main.css'
 
 import VueApexCharts from "vue3-apexcharts"
@@ -22,7 +21,21 @@ app.use(pinia)
 app.use(router)
 
 app.use(VueApexCharts)
-
 app.use(i18n)
+
+// ✅ register global click-outside directive
+app.directive('click-outside', {
+  beforeMount(el, binding) {
+    el.clickOutsideEvent = function (event) {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event)
+      }
+    }
+    document.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.removeEventListener('click', el.clickOutsideEvent)
+  }
+})
 
 app.mount('#app')
