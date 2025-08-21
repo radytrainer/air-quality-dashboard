@@ -10,13 +10,15 @@
             :alt="t('profile.profileImageAlt')"
           />
           <button
-            type="button"
-            @click="openFileInput"
-            class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
-            :title="t('profile.changeProfileImage')"
-          >
-            <i class="fas fa-camera text-sm"></i>
-          </button>
+  v-if="form.role !== 'admin'"
+  type="button"
+  @click="openFileInput"
+  class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
+  :title="t('profile.changeProfileImage')"
+>
+  <i class="fas fa-camera text-sm"></i>
+</button>
+
           <input
             type="file"
             ref="fileInput"
@@ -54,16 +56,14 @@
           <i class="fas fa-lock mr-2 text-orange-500"></i> Reset Password
         </button>
         <button
-          @click="activeTab = 'favourites'"
-          :class="
-            activeTab === 'favourites'
-              ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm'
-              : ''
-          "
-          class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
-        >
-          <i class="fas fa-star mr-2 text-orange-500"></i> Favourite Cities
-        </button>
+  v-if="form.role !== 'admin'"
+  @click="activeTab = 'favourites'"
+  :class="activeTab === 'favourites' ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm' : ''"
+  class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
+>
+  <i class="fas fa-star mr-2 text-orange-500"></i> Favourite Cities
+</button>
+
       </nav>
     </div>
 
@@ -72,11 +72,7 @@
       <div class="max-w-2xl mx-auto">
         <h1 class="text-2xl font-semibold mb-6 text-gray-800">
           {{
-            activeTab === "profile" 
-              ? "Profile Information" 
-              : activeTab === "password" 
-                ? "Reset Password" 
-                : "Favorite Cities"
+            activeTab === "profile" ? "Profile Information" : "Reset Password"
           }}
         </h1>
 
@@ -135,28 +131,16 @@
             </div>
 
             <!-- Phone -->
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">{{
-                t("profile.phone")
-              }}</label>
-              <input
-                type="text"
-                v-model="form.phone"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
-
-            <!-- Bio -->
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">{{
-                t("profile.bio")
-              }}</label>
-              <textarea
-                v-model="form.bio"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
-              ></textarea>
-            </div>
+            <div v-if="form.role !== 'admin'">
+  <label class="block mb-2 font-medium text-gray-700">
+    {{ t("profile.phone") }}
+  </label>
+  <input
+    type="text"
+    v-model="form.phone"
+    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+  />
+</div>
 
             <!-- Buttons -->
             <div class="flex justify-end gap-3 pt-4">
@@ -244,35 +228,38 @@
               </button>
             </div>
           </form>
+          <form>
+            <!-- Favourite Cities Tab -->
+            <div
+              v-if="activeTab === 'favourites'"
+              class="space-y-4 bg-white p-6 rounded-lg shadow"
+            >
+              <div v-if="favourites.length === 0" class="text-gray-500 text-sm">
+                No favourite cities yet.
+              </div>
 
-          <!-- Favourite Cities Tab -->
-          <div
-            v-if="activeTab === 'favourites'"
-            class="space-y-4 bg-white p-6 rounded-lg shadow"
-          >
-            <div v-if="favourites.length === 0" class="text-gray-500 text-sm">
-              No favourite cities yet.
+              <ul>
+                <li
+                  v-for="city in favourites"
+                  :key="city.id"
+                  class="flex items-center justify-between p-2 border-b hover:bg-gray-50 cursor-pointer"
+                  @click="goToCityOnMap(city)"
+                >
+                  <div class="flex items-center gap-2">
+                    <img
+                      :src="city.flag_url"
+                      alt="flag"
+                      class="w-6 h-4 object-cover rounded-sm"
+                    />
+                    <span class="font-medium text-gray-800">{{
+                      city.name
+                    }}</span>
+                  </div>
+                  <i class="fas fa-arrow-right text-gray-400"></i>
+                </li>
+              </ul>
             </div>
-
-            <ul>
-              <li
-                v-for="city in favourites"
-                :key="city.id"
-                class="flex items-center justify-between p-2 border-b hover:bg-gray-50 cursor-pointer"
-                @click="goToCityOnMap(city)"
-              >
-                <div class="flex items-center gap-2">
-                  <img
-                    :src="city.flag_url"
-                    alt="flag"
-                    class="w-6 h-4 object-cover rounded-sm"
-                  />
-                  <span class="font-medium text-gray-800">{{ city.name }}</span>
-                </div>
-                <i class="fas fa-arrow-right text-gray-400"></i>
-              </li>
-            </ul>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -301,7 +288,7 @@ const form = ref({
   name: "",
   email: "",
   phone: "",
-  bio: "",
+  role: '', 
   profile_image: null,
   profile_image_url: "",
 });
@@ -321,7 +308,7 @@ const fetchProfile = async () => {
     form.value.name = res.data.name;
     form.value.email = res.data.email;
     form.value.phone = res.data.phone || "";
-    form.value.bio = res.data.bio || "";
+    form.value.role = res.data.role || '';
     form.value.profile_image_url = res.data.profile_image;
   } catch (err) {
     error.value = err.response?.data || { message: t("profile.fetchFailed") };
@@ -348,7 +335,6 @@ const updateProfile = async () => {
   formData.append("name", form.value.name);
   formData.append("email", form.value.email);
   formData.append("phone", form.value.phone);
-  formData.append("bio", form.value.bio);
 
   if (form.value.profile_image) {
     formData.append("profile_image", form.value.profile_image);
@@ -412,10 +398,10 @@ const fetchFavourites = async () => {
     console.error("Failed to fetch favourites", err);
   }
 };
-
 const goToCityOnMap = (city) => {
-  router.push({ name: "home", params: { cityId: city.id } });
+  router.push({ name: "home", query: { cityId: city.city_id } });
 };
+
 
 onMounted(() => {
   fetchProfile();
