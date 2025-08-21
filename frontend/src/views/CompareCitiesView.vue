@@ -35,13 +35,17 @@
       </div>
 
       <!-- Active Timezones -->
-      <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-green-500 w-full">
-        <div class="ml-3">
-          <div class="text-gray-800 font-semibold text-lg">Active Timezones</div>
-          <div class="text-sm text-gray-500">Monitoring is currently active in these global timezones.</div>
-          <div class="mt-2 text-green-600 text-3xl font-bold">{{ activeTimezonesDisplay }}</div>
-        </div>
+     <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-green-500 w-full">
+    <div class="ml-3">
+      <div class="text-gray-800 font-semibold text-lg">Active Timezones</div>
+      <div class="text-sm text-gray-500">
+        Monitoring is currently active in these global timezones.
       </div>
+      <div class="mt-2 text-green-600 text-xl font-bold">
+        {{ activeTimezonesDisplay }}
+      </div>
+    </div>
+  </div>
     </div>
 
     <!-- Compare Section -->
@@ -53,7 +57,7 @@
       </h2>
 
       <!-- Two selectors side by side -->
-      <div class="grid md:grid-cols-2 gap-6 mb-10">
+      <div class="grid md:grid-cols-2 gap-10 mb-10">
         <CitySelectorForCompare
           label="Primary City"
           description="Choose your first comparison point"
@@ -71,18 +75,31 @@
         />
       </div>
 
-      <!-- Display the two city cards -->
-      <div v-if="city1Data && city2Data && !errorMessage" class="grid md:grid-cols-2 gap-6">
-        <CityCard :city="city1Data" :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'" />
-        <CityCard :city="city2Data" :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'" />
-      </div>
+      <!-- Display the two city cards with VS in the middle -->
+<div v-if="city1Data && city2Data && !errorMessage" 
+     class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
 
-      <!-- VS Badge -->
-      <div class="flex justify-center items-center mb-8" v-if="city1Data && city2Data">
-        <div class="bg-purple-100 px-6 py-2 rounded-full font-bold text-purple-800 shadow-sm tracking-wide text-sm">
-          VS
-        </div>
-      </div>
+  <!-- Left City -->
+  <CityCard 
+    :city="city1Data" 
+    :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'" 
+  />
+
+  <!-- VS Badge -->
+  <div class="flex justify-center items-center">
+    <div class="bg-purple-100 px-6 py-2 rounded-full font-bold text-purple-800 shadow-sm tracking-wide text-sm">
+      VS
+    </div>
+  </div>
+
+  <!-- Right City -->
+  <CityCard 
+    :city="city2Data" 
+    :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'" 
+  />
+</div>
+
+
 
       <!-- Error Message -->
       <p v-if="errorMessage" class="text-red-600 font-semibold mb-6 text-center text-sm">
@@ -153,8 +170,42 @@ const city1Data = ref(null)
 const city2Data = ref(null)
 const errorMessage = ref('')
 
+const userTimezone = ref('') // User's timezone
+const userTime = ref('')     // Current time in user's timezone
+
+// ------------------
+// Detect user's timezone & update current time
+// ------------------
+onMounted(() => {
+  try {
+    userTimezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+  } catch (err) {
+    console.error('Cannot detect timezone:', err)
+    userTimezone.value = 'Unknown'
+  }
+
+  setInterval(() => {
+    if (userTimezone.value && userTimezone.value !== 'Unknown') {
+      const now = new Date()
+      userTime.value = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: userTimezone.value
+      })
+    }
+  }, 1000)
+})
+
+// ------------------
+// Computed: total cities count
+// ------------------
 const totalCities = computed(() => cities.value.length)
 
+// ------------------
+// Computed: total countries count
+// ------------------
 const totalCountries = computed(() => {
   const countries = cities.value
     .map(city => {
@@ -168,42 +219,82 @@ const totalCountries = computed(() => {
   return new Set(countries).size
 })
 
+// ------------------
+// Computed: active timezones including user's timezone
+// ------------------
 const activeTimezones = computed(() => {
-  // No timezone info from your API, so return N/A or 0
-  return 0
+  const tzs = cities.value
+    .map(city => city.timezone)
+    .filter(Boolean)
+  
+  if (userTimezone.value && !tzs.includes(userTimezone.value)) {
+    tzs.push(userTimezone.value)
+  }
+
+  return new Set(tzs).size
 })
 
 const activeTimezonesDisplay = computed(() => {
-  return activeTimezones.value > 0 ? activeTimezones.value : 'N/A'
+  return userTimezone.value && userTime.value
+    ? `${activeTimezones.value} (You: ${userTimezone.value} - ${userTime.value})`
+    : activeTimezones.value > 0
+      ? activeTimezones.value
+      : 'N/A'
 })
 
+// ------------------
+// Fetch cities including Phnom Penh
+// ------------------
 async function fetchCities() {
   try {
-    const res = await axios.get('http://127.0.0.1:8000/api/aqi')
-    cities.value = res.data.data || []
+    const [globalRes, phnomRes] = await Promise.all([
+      axios.get('http://127.0.0.1:8000/api/aqi'),
+      axios.get('http://127.0.0.1:8000/api/air-quality/phnom-penh')
+    ])
+
+    let allCities = []
+    if (globalRes.data?.status === 'ok') allCities = [...globalRes.data.data]
+
+    if (phnomRes.data?.status === 'ok') {
+      const phnom = phnomRes.data.data
+
+      // Normalize Phnom Penh structure to match global cities
+      const phnomNormalized = {
+        name: phnom.name || 'Phnom Penh, Cambodia',
+        aqi: phnom.aqi || null,
+        timezone: phnom.timezone || 'Asia/Phnom_Penh',
+        flag: phnom.flag || 'https://flagcdn.com/kh.svg',
+        countryCode: 'KH'
+      }
+
+      // Avoid duplicate if already exists
+      const exists = allCities.some(city => city.name === phnomNormalized.name)
+      if (!exists) allCities.push(phnomNormalized)
+    }
+
+    cities.value = allCities
+
+    console.log('Total cities:', cities.value.length) // should be 600
   } catch (error) {
     console.error('Failed to fetch cities:', error)
+    errorMessage.value = 'Unable to load cities data.'
   }
 }
 
-// When city is selected update the data for the city card by fetching full data if needed
-async function updateCity1Info(city) {
-  if (!city) {
-    city1Data.value = null
-    return
-  }
-  // For demonstration, assume city data is from your initial fetch (adjust as needed)
-  city1Data.value = city
+// ------------------
+// Update city card data
+// ------------------
+function updateCity1Info(city) {
+  city1Data.value = city || null
 }
 
-async function updateCity2Info(city) {
-  if (!city) {
-    city2Data.value = null
-    return
-  }
-  city2Data.value = city
+function updateCity2Info(city) {
+  city2Data.value = city || null
 }
 
+// ------------------
+// Reset selections
+// ------------------
 function resetSelection() {
   selectedCity1.value = null
   selectedCity2.value = null
@@ -214,10 +305,11 @@ function resetSelection() {
 
 onMounted(fetchCities)
 
-// Optional: watch selectedCity1 and selectedCity2 to update city1Data and city2Data if you want automatically
-watch(selectedCity1, (newCity) => updateCity1Info(newCity))
-watch(selectedCity2, (newCity) => updateCity2Info(newCity))
+// Auto-update card data when selection changes
+watch(selectedCity1, updateCity1Info)
+watch(selectedCity2, updateCity2Info)
 </script>
+
 
 <style scoped>
 select {
