@@ -72,11 +72,7 @@
       <div class="max-w-2xl mx-auto">
         <h1 class="text-2xl font-semibold mb-6 text-gray-800">
           {{
-            activeTab === "profile" 
-              ? "Profile Information" 
-              : activeTab === "password" 
-                ? "Reset Password" 
-                : "Favorite Cities"
+            activeTab === "profile" ? "Profile Information" : "Reset Password"
           }}
         </h1>
 
@@ -145,19 +141,6 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
-
-            <!-- Bio -->
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">{{
-                t("profile.bio")
-              }}</label>
-              <textarea
-                v-model="form.bio"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
-              ></textarea>
-            </div>
-
             <!-- Buttons -->
             <div class="flex justify-end gap-3 pt-4">
               <button
@@ -244,35 +227,38 @@
               </button>
             </div>
           </form>
+          <form>
+            <!-- Favourite Cities Tab -->
+            <div
+              v-if="activeTab === 'favourites'"
+              class="space-y-4 bg-white p-6 rounded-lg shadow"
+            >
+              <div v-if="favourites.length === 0" class="text-gray-500 text-sm">
+                No favourite cities yet.
+              </div>
 
-          <!-- Favourite Cities Tab -->
-          <div
-            v-if="activeTab === 'favourites'"
-            class="space-y-4 bg-white p-6 rounded-lg shadow"
-          >
-            <div v-if="favourites.length === 0" class="text-gray-500 text-sm">
-              No favourite cities yet.
+              <ul>
+                <li
+                  v-for="city in favourites"
+                  :key="city.id"
+                  class="flex items-center justify-between p-2 border-b hover:bg-gray-50 cursor-pointer"
+                  @click="goToCityOnMap(city)"
+                >
+                  <div class="flex items-center gap-2">
+                    <img
+                      :src="city.flag_url"
+                      alt="flag"
+                      class="w-6 h-4 object-cover rounded-sm"
+                    />
+                    <span class="font-medium text-gray-800">{{
+                      city.name
+                    }}</span>
+                  </div>
+                  <i class="fas fa-arrow-right text-gray-400"></i>
+                </li>
+              </ul>
             </div>
-
-            <ul>
-              <li
-                v-for="city in favourites"
-                :key="city.id"
-                class="flex items-center justify-between p-2 border-b hover:bg-gray-50 cursor-pointer"
-                @click="goToCityOnMap(city)"
-              >
-                <div class="flex items-center gap-2">
-                  <img
-                    :src="city.flag_url"
-                    alt="flag"
-                    class="w-6 h-4 object-cover rounded-sm"
-                  />
-                  <span class="font-medium text-gray-800">{{ city.name }}</span>
-                </div>
-                <i class="fas fa-arrow-right text-gray-400"></i>
-              </li>
-            </ul>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -301,7 +287,6 @@ const form = ref({
   name: "",
   email: "",
   phone: "",
-  bio: "",
   profile_image: null,
   profile_image_url: "",
 });
@@ -412,10 +397,10 @@ const fetchFavourites = async () => {
     console.error("Failed to fetch favourites", err);
   }
 };
-
 const goToCityOnMap = (city) => {
-  router.push({ name: "home", params: { cityId: city.id } });
+  router.push({ name: "home", query: { cityId: city.city_id } });
 };
+
 
 onMounted(() => {
   fetchProfile();
