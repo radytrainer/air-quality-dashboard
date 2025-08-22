@@ -13,7 +13,9 @@ class FavouriteController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return response()->json(Favourite::where('user_id', $user->id)->get());
+        return response()->json(
+            Favourite::where('user_id', $user->id)->get()
+        );
     }
 
     // Add a favourite city
@@ -40,14 +42,18 @@ class FavouriteController extends Controller
     }
 
     // Remove a favourite city
-    public function destroy($city_name)
+    public function destroy($id)
     {
         $user = Auth::user();
 
         $deleted = Favourite::where('user_id', $user->id)
-            ->where('city_name', $city_name)
+            ->where('id', $id)
             ->delete();
 
-        return response()->json(['deleted' => $deleted]);
+        if ($deleted) {
+            return response()->json(['message' => 'Favourite city deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Favourite city not found'], 404);
+        }
     }
 }
