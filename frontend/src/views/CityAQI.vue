@@ -4,14 +4,14 @@
       <h1
         class="text-3xl sm:text-4xl font-extrabold mb-8 text-gray-900 tracking-tight"
       >
-        City AQI
+        {{ $t("city.title") }}
       </h1>
 
       <div class="flex flex-wrap gap-4 items-center mb-6">
         <input
           v-model="search"
           type="text"
-          placeholder="Search city..."
+          :placeholder="$t('city.searchPlaceholder')"
           class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md w-full sm:w-1/4 transition"
         />
 
@@ -19,52 +19,52 @@
           v-model="pollutant"
           class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition"
         >
-          <option value="aqi">AQI</option>
-          <option value="pm25">PM2.5</option>
-          <option value="pm10">PM10</option>
-          <option value="o3">Ozone (O₃)</option>
-          <option value="no2">NO₂</option>
-          <option value="so2">SO₂</option>
-          <option value="co">CO</option>
-          <option value="temperature">Temperature (°C)</option>
-          <option value="humidity">Humidity (%)</option>
-          <option value="pressure">Pressure (hPa)</option>
-          <option value="wind_speed">Wind Speed (m/s)</option>
+          <option value="aqi">{{ $t("city.pollutants.aqi") }}</option>
+          <option value="pm25">{{ $t("city.pollutants.pm25") }}</option>
+          <option value="pm10">{{ $t("city.pollutants.pm10") }}</option>
+          <option value="o3">{{ $t("city.pollutants.o3") }}</option>
+          <option value="no2">{{ $t("city.pollutants.no2") }}</option>
+          <option value="so2">{{ $t("city.pollutants.so2") }}</option>
+          <option value="co">{{ $t("city.pollutants.co") }}</option>
+          <option value="temperature">{{ $t("city.pollutants.temperature") }}</option>
+          <option value="humidity">{{ $t("city.pollutants.humidity") }}</option>
+          <option value="pressure">{{ $t("city.pollutants.pressure") }}</option>
+          <option value="wind_speed">{{ $t("city.pollutants.windSpeed") }}</option>
         </select>
 
         <select
           v-model="levelFilter"
           class="p-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md transition"
         >
-          <option value="">All Levels</option>
-          <option value="Good">Good</option>
-          <option value="Moderate">Moderate</option>
+          <option value="">{{ $t("city.allLevels") }}</option>
+          <option value="Good">{{ $t("city.levels.good") }}</option>
+          <option value="Moderate">{{ $t("city.levels.moderate") }}</option>
           <option value="Unhealthy for Sensitive Groups">
-            Unhealthy for Sensitive Groups
+            {{ $t("city.levels.unhealthySensitive") }}
           </option>
-          <option value="Unhealthy">Unhealthy</option>
-          <option value="Very Unhealthy">Very Unhealthy</option>
-          <option value="Hazardous">Hazardous</option>
+          <option value="Unhealthy">{{ $t("city.levels.unhealthy") }}</option>
+          <option value="Very Unhealthy">{{ $t("city.levels.veryUnhealthy") }}</option>
+          <option value="Hazardous">{{ $t("city.levels.hazardous") }}</option>
         </select>
 
         <button
           @click="fetchAQIData"
           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
         >
-          🔄 Refresh
+          🔄 {{ $t("city.refresh") }}
         </button>
 
         <button
           @click="exportToCSV"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
         >
-          📄 Export CSV
+          📄 {{ $t("city.exportCSV") }}
         </button>
       </div>
 
       <div class="text-sm text-gray-500 mb-4 space-y-1">
         <p>
-          Data source:
+          {{ $t("city.dataSource") }}
           <a
             href="https://waqi.info"
             target="_blank"
@@ -73,10 +73,10 @@
             World Air Quality Index (WAQI)
           </a>
         </p>
-        <p>Last updated: {{ lastUpdated }}</p>
+        <p>{{ $t("city.lastUpdated") }}: {{ lastUpdated }}</p>
       </div>
 
-      <div v-if="loading" class="text-gray-600">Loading data...</div>
+      <div v-if="loading" class="text-gray-600">{{ $t("city.loading") }}</div>
       <div v-else-if="error" class="text-red-600">{{ error }}</div>
 
       <div v-else class="overflow-auto rounded-md shadow">
@@ -91,23 +91,19 @@
                 class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition"
                 @click="sortBy('name')"
               >
-                City
+                {{ $t("city.table.city") }}
               </th>
-              <th class="p-3 text-left border-b-2 border-gray-300">Flag</th>
-              <th class="p-3 text-left border-b-2 border-gray-300">Latitude</th>
-              <th class="p-3 text-left border-b-2 border-gray-300">
-                Longitude
-              </th>
-              <th class="p-3 text-left border-b-2 border-gray-300">
-                Pollutant
-              </th>
+              <th class="p-3 text-left border-b-2 border-gray-300">{{ $t("city.table.flag") }}</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">{{ $t("city.table.latitude") }}</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">{{ $t("city.table.longitude") }}</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">{{ $t("city.table.pollutant") }}</th>
               <th
                 class="p-3 text-left cursor-pointer border-b-2 border-gray-300 hover:text-blue-600 transition"
                 @click="sortBy('value')"
               >
-                Value
+                {{ $t("city.table.value") }}
               </th>
-              <th class="p-3 text-left border-b-2 border-gray-300">Level</th>
+              <th class="p-3 text-left border-b-2 border-gray-300">{{ $t("city.table.level") }}</th>
             </tr>
           </thead>
           <tbody>
@@ -122,7 +118,7 @@
                 <img
                   v-if="city.flag"
                   :src="city.flag"
-                  alt="Flag"
+                  :alt="$t('city.flagAlt')"
                   class="w-6 h-4 object-cover rounded border"
                 />
               </td>
@@ -149,8 +145,8 @@
         class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4"
       >
         <span class="text-sm text-gray-500">
-          Showing {{ paginatedCities.length }} of
-          {{ filteredCities.length }} entries
+          {{ $t("city.showing") }} {{ paginatedCities.length }}
+          {{ $t("city.of") }} {{ filteredCities.length }} {{ $t("city.entries") }}
         </span>
         <div class="flex items-center gap-2">
           <button
@@ -158,25 +154,23 @@
             :disabled="currentPage === 1"
             class="px-3 py-1 border rounded bg-gray-50 hover:bg-gray-200 disabled:opacity-40 transition"
           >
-            Prev
+            {{ $t("city.prev") }}
           </button>
-          <span class="text-sm"
-            >Page {{ currentPage }} of {{ totalPages }}</span
-          >
+          <span class="text-sm">
+            {{ $t("city.page") }} {{ currentPage }} {{ $t("city.of") }} {{ totalPages }}
+          </span>
           <button
             @click="goToPage(currentPage + 1)"
             :disabled="currentPage === totalPages"
             class="px-3 py-1 border rounded bg-gray-50 hover:bg-gray-200 disabled:opacity-40 transition"
           >
-            Next
+            {{ $t("city.next") }}
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-
 
 <script setup>
 import { ref, watch, computed } from "vue";
