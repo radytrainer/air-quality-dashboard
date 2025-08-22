@@ -26,8 +26,8 @@
       class="absolute z-10 bg-white border rounded mt-1 w-full max-h-60 overflow-y-auto shadow"
     >
       <div
-        v-for="city in cities"
-        :key="city.name"
+        v-for="city in sortedCitiesWithPhnomPenh"
+        :key="city.name + city.countryCode"
         class="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
         @click="selectCity(city)"
       >
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   label: String,
@@ -78,4 +78,30 @@ function getCityAndCountry(fullName) {
   }
   return fullName
 }
+
+// ------------------
+// Computed: add Phnom Penh if missing & sort cities A → Z
+// ------------------
+const sortedCitiesWithPhnomPenh = computed(() => {
+  if (!props.cities) return []
+
+  const citiesCopy = [...props.cities]
+
+  // Add Phnom Penh if not already present
+  const phnomExists = citiesCopy.some(c => c.name?.includes('Phnom Penh'))
+  if (!phnomExists) {
+    citiesCopy.push({
+      name: 'Phnom Penh, Cambodia',
+      flag: 'https://flagcdn.com/kh.svg',
+      countryCode: 'KH'
+    })
+  }
+
+  // Sort alphabetically
+  return citiesCopy.sort((a, b) => {
+    const nameA = a.name.toLowerCase()
+    const nameB = b.name.toLowerCase()
+    return nameA.localeCompare(nameB)
+  })
+})
 </script>
