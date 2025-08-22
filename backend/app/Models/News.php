@@ -18,6 +18,10 @@ class News extends Model
     public function getMediaUrlsAttribute(): array
     {
         $paths = $this->media ?? [];
-        return array_map(fn($p) => asset('storage/'.$p), $paths);
+        return array_map(fn($p) => asset('storage/' . $p), $paths);
+    }
+    public function category()
+    {
+        return $this->belongsTo(\App\Models\Category::class);
     }
 }

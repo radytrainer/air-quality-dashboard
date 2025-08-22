@@ -21,8 +21,7 @@ use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
 use App\Http\Controllers\Api\ApiAnalyController;
 use App\Http\Controllers\Api\AqiCompareController;
-
-
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +31,8 @@ use App\Http\Controllers\Api\AqiCompareController;
 | Public routes and routes protected by auth:sanctum middleware.
 |
 */
-Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
+
+// Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -41,7 +41,6 @@ Route::post('/login', [AuthController::class, 'login']);
 // Air quality public data
 Route::prefix('air-quality')->group(function () {
     Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQualityOpenWeather']);
-
 });
 
 Route::prefix('admin')->group(function () {
@@ -54,11 +53,11 @@ Route::prefix('admin')->group(function () {
 });
 
 
-// Additional AQI endpoints
-Route::get('/aqi', [AqiController::class, 'getCityAqi']);
-Route::get('/aqi-global', [AqiController::class, 'global']);
-Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
-Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
+// // Additional AQI endpoints
+// Route::get('/aqi', [AqiController::class, 'getCityAqi']);
+// Route::get('/aqi-global', [AqiController::class, 'global']);
+// Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
+// Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
 
 
 Route::get('/waqi-city', [AqiCompareController::class, 'getCityPollution']);
@@ -115,5 +114,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //news routes
     Route::post('/news', [NewsController::class, 'store']);
     Route::put('/news/{id}', [NewsController::class, 'update']);
-
 });
+
+Route::get('/categories', [CategoryController::class, 'index']);           // list
+Route::post('/categories/create', [CategoryController::class, 'store']);   // create
+Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
+Route::post('/categories/{id}/update', [CategoryController::class, 'update']); // update
+Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete

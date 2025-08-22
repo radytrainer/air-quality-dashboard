@@ -2,7 +2,7 @@
   <div class="container mx-auto p-4 space-y-4">
     <!-- Map -->
     <div class="bg-white shadow-lg rounded-xl p-4 relative">
-      <h2 class="text-lg font-semibold mb-4 text-gray-800">Air Quality Map</h2>
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">{{ $t('home.airQualityMap') }}</h2>
       <div id="map" class="h-[400px] w-full overflow-hidden relative rounded-lg">
         <!-- Dynamic Legend on left -->
         <div class="absolute bottom-4 left-4 bg-white p-2 shadow-lg rounded-lg z-[1000] max-w-[160px]">
@@ -19,7 +19,8 @@
         <!-- Search control on top right -->
         <div class="absolute top-4 right-4 z-[1000]">
           <div class="bg-white shadow-lg rounded-lg overflow-hidden relative">
-            <input type="text" placeholder="Search location..."
+            <input type="text"
+              :placeholder="$t('home.searchLocation')"
               class="px-3 py-2 w-56 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-lg"
               v-model="searchQuery" @keyup="searchLocation" />
             <button v-if="searchQuery" @click="clearSearch"
@@ -53,11 +54,8 @@
         <div
           class="absolute top-4 left-4 flex items-center gap-0.5 bg-gray-900 p-1 z-[1000] rounded-lg shadow-sm opacity-90">
           <button v-for="option in pollutantOptions" :key="option.value" @click="selectedPollutant = option.value"
-            :class="[
-              'p-1 hover:bg-gray-700 transition-all duration-200 flex items-center justify-center rounded-full',
-              selectedPollutant === option.value
-                ? 'bg-yellow-500 text-black'
-                : '',
+            :class="[ 'p-1 hover:bg-gray-700 transition-all duration-200 flex items-center justify-center rounded-full',
+              selectedPollutant === option.value ? 'bg-yellow-500 text-black' : ''
             ]">
             <span v-html="option.icon" class="w-3 h-3"></span>
           </button>
@@ -66,12 +64,11 @@
         <div v-if="searchResults.length > 0"
           class="absolute top-20 right-4 bg-gray-900 shadow-xl rounded-lg z-[1000] w-64 border border-gray-700">
           <div class="px-3 py-1 border-b border-gray-700 bg-gray-800 rounded-t-lg">
-            <h3 class="text-white font-medium text-xs">States</h3>
+            <h3 class="text-white font-medium text-xs">{{ $t('home.states') }}</h3>
           </div>
           <div class="max-h-80 overflow-y-auto">
-            <div v-for="(result, index) in showAllResults
-              ? searchResults
-              : searchResults.slice(0, maxVisibleResults)" :key="result.name"
+            <div v-for="(result, index) in showAllResults ? searchResults : searchResults.slice(0, maxVisibleResults)"
+              :key="result.name"
               class="flex items-center justify-between p-1.5 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 cursor-pointer transition-all duration-200"
               @click="goToLocation(result)">
               <div class="flex items-center space-x-1.5 flex-1 min-w-0">
@@ -82,11 +79,9 @@
                 </div>
               </div>
               <div class="flex items-center gap-1 flex-shrink-0 ml-1">
-                <button
-                  @click.stop="toggleFavorite(result)"
+                <button @click.stop="toggleFavorite(result)"
                   class="px-1 py-0.5 rounded-lg text-white transition-all duration-200"
-                  :class="isFavorite(result) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
-                >
+                  :class="isFavorite(result) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'">
                   <svg v-if="isFavorite(result)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                   </svg>
@@ -104,27 +99,29 @@
             <div v-if="searchResults.length > maxVisibleResults" class="p-1 border-t border-gray-700 bg-gray-800">
               <button @click="showAllResults = !showAllResults"
                 class="w-full text-center text-xs text-gray-300 hover:text-white transition-all duration-200">
-                {{ showAllResults ? "Show Less" : `Show All (${searchResults.length})` }}
+                {{ showAllResults ? $t('home.showLess') : $t('home.showAll', { count: searchResults.length }) }}
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Global Rankings -->
     <section class="mt-8 px-2 md:px-4 space-y-6">
-      <h2 class="text-base font-semibold text-gray-800">🌐 Global AQI Rankings</h2>
+      <h2 class="text-base font-semibold text-gray-800">{{ $t('home.globalRanking') }}</h2>
       <div class="grid md:grid-cols-2 gap-6">
         <!-- Most Polluted -->
         <div class="bg-white rounded-2xl shadow-lg p-4 border border-red-200 transition-all duration-300 hover:shadow-xl">
-          <h3 class="text-lg font-semibold text-red-600 mb-3">Top 10 Most Polluted Cities</h3>
+          <h3 class="text-lg font-semibold text-red-600 mb-3">{{ $t('home.mostPolluted') }}</h3>
           <table class="w-full text-xs">
             <thead>
               <tr class="text-left text-gray-600 border-b">
-                <th class="py-1">Rank</th>
-                <th class="py-1">City</th>
-                <th class="py-1">Status</th>
-                <th class="py-1 text-center">AQI</th>
-                <th class="py-1 text-center">Favorite</th>
+                <th class="py-1">{{ $t('home.rank') }}</th>
+                <th class="py-1">{{ $t('home.city') }}</th>
+                <th class="py-1">{{ $t('home.status') }}</th>
+                <th class="py-1 text-center">{{ $t('home.aqi') }}</th>
+                <th class="py-1 text-center">{{ $t('home.favorite') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -147,8 +144,7 @@
                   <button
                     @click="toggleFavorite(city)"
                     class="px-2 py-1 rounded-lg text-white transition-all duration-200"
-                    :class="isFavorite(city) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
-                  >
+                    :class="isFavorite(city) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'">
                     <svg v-if="isFavorite(city)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                     </svg>
@@ -161,17 +157,18 @@
             </tbody>
           </table>
         </div>
+
         <!-- Cleanest -->
         <div class="bg-white rounded-2xl shadow-lg p-4 border border-green-200 transition-all duration-300 hover:shadow-xl">
-          <h3 class="text-lg font-semibold text-green-600 mb-3">Top 10 Cleanest Cities</h3>
+          <h3 class="text-lg font-semibold text-green-600 mb-3">{{ $t('home.cleanest') }}</h3>
           <table class="w-full text-xs">
             <thead>
               <tr class="text-left text-gray-600 border-b">
-                <th class="py-1">Rank</th>
-                <th class="py-1">City</th>
-                <th class="py-1">Status</th>
-                <th class="py-1 text-center">AQI</th>
-                <th class="py-1 text-center">Favorite</th>
+                <th class="py-1">{{ $t('home.rank') }}</th>
+                <th class="py-1">{{ $t('home.city') }}</th>
+                <th class="py-1">{{ $t('home.status') }}</th>
+                <th class="py-1 text-center">{{ $t('home.aqi') }}</th>
+                <th class="py-1 text-center">{{ $t('home.favorite') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -194,8 +191,7 @@
                   <button
                     @click="toggleFavorite(city)"
                     class="px-2 py-1 rounded-lg text-white transition-all duration-200"
-                    :class="isFavorite(city) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
-                  >
+                    :class="isFavorite(city) ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'">
                     <svg v-if="isFavorite(city)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                     </svg>
@@ -212,6 +208,7 @@
     </section>
   </div>
 </template>
+
 
 <script setup>
 import { onMounted, ref, watch, computed, nextTick } from "vue";
