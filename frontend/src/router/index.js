@@ -18,6 +18,8 @@ import { useAuthStore } from '@/stores/airQuality'
 import ContactUser from '@/views/ContactUser.vue'
 import Profile from '@/views/Profile.vue'
 import Message from '@/views/Message.vue'
+import AdminNews from '@/views/AdminNews.vue'
+import UserNews from '@/views/UserNews.vue'
 
 
 
@@ -33,7 +35,7 @@ const routes = [
     component: HomePage,
   },
   {
-    path: '/city-detail',
+    path: '/city/:id',
     name: 'city-detail',
     component: CityDetailView,
     meta: { requiresAuth: true },
@@ -48,6 +50,12 @@ const routes = [
     path: '/analytics',
     name: 'analytics',
     component: AnalyticsView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/user-news',
+    name: 'user-news',
+    component: UserNews,
     meta: { requiresAuth: true },
   },
   {
@@ -66,6 +74,12 @@ const routes = [
     path: '/health-alert',
     name: 'health-alert',
     component: HealthAlert,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin-news',
+    name: 'admin-news', 
+    component: AdminNews,
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {

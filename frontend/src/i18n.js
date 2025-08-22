@@ -7,10 +7,12 @@ const messages = {
       cityDetail: 'City Detail',
       compareCities: 'Compare Cities',
       analytics: 'Analytics',
+      userNews: 'News',
       dashboard: 'Dashboard',
       healthAlert: 'Health Alert',
       cityAQI: 'City AQI',
       userManagement: 'User Management',
+      adminNews: 'News',
     },
     auth: {
       login: 'Login',
@@ -83,7 +85,7 @@ const messages = {
     "noEmail": "No email",
     "profile": "Profile",
     "messages": "Messages",
-  }
+  },
   },
   kh: {
     nav: {
@@ -91,10 +93,12 @@ const messages = {
       cityDetail: 'ព័ត៌មានអំពីទីក្រុង',
       compareCities: 'ប្រៀបធៀបទីក្រុង',
       analytics: 'វិភាគទិន្នន័យ',
+      userNews: 'ព័ត៌មាន',
       dashboard: 'ផ្ទាំងគ្រប់គ្រង',
       healthAlert: 'ការព្រមានសុខភាព',
       cityAQI: 'ព័ត៌មានអាកាសនៃទីក្រុង',
       userManagement: 'ការគ្រប់គ្រងអ្នកប្រើប្រាស់',
+      adminNews: 'ព័ត៌មាន',
     },
     auth: {
       login: 'ចូលគណនី',

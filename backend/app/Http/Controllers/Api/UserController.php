@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -116,7 +115,7 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($id),
             ],
             'role' => 'sometimes|string|nullable|in:admin,user',
-            'password' => 'sometimes|nullable|string|min:6|confirmed',
+            'password' => 'sometimes|nullable|string|min:6',
             'phone' => 'nullable|string|max:20',
             'bio' => 'nullable|string|max:1000',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
@@ -136,7 +135,7 @@ class UserController extends Controller
             if ($request->hasFile('profile_image')) {
                 // Delete old image if exists
                 if ($user->profile_image) {
-                    Storage::delete($user->profile_image);
+                    Storage::disk('public')->delete($user->profile_image);
                 }
                 
                 $imagePath = $request->file('profile_image')->store('profile_images', 'public');
@@ -181,7 +180,7 @@ class UserController extends Controller
         try {
             // Delete profile image if exists
             if ($user->profile_image) {
-                Storage::delete($user->profile_image);
+                Storage::disk('public')->delete($user->profile_image);
             }
 
             $user->delete();
@@ -271,7 +270,7 @@ class UserController extends Controller
             if ($request->hasFile('profile_image')) {
                 // Delete old image if exists
                 if ($user->profile_image) {
-                    Storage::delete($user->profile_image);
+                    Storage::disk('public')->delete($user->profile_image);
                 }
                 
                 $imagePath = $request->file('profile_image')->store('profile_images', 'public');
@@ -328,7 +327,7 @@ class UserController extends Controller
         try {
             // Delete image file if exists
             if ($user->profile_image) {
-                Storage::delete($user->profile_image);
+                Storage::disk('public')->delete($user->profile_image);
                 $user->profile_image = null;
                 $user->save();
             }

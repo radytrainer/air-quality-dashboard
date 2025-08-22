@@ -47,4 +47,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    // Relation: User has many favourites
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class);
+    }
 }

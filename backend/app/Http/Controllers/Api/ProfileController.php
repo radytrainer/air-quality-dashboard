@@ -13,6 +13,12 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
+
         return response()->json([
             'name' => $user->name,
             'email' => $user->email,
@@ -25,6 +31,12 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -51,6 +63,12 @@ class ProfileController extends Controller
     public function uploadImage(Request $request)
     {
         $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
 
         $request->validate([
             'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
