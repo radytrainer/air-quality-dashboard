@@ -36,7 +36,6 @@
           <option value="">All roles</option>
           <option value="admin">Admin</option>
           <option value="user">User</option>
-          <option value="viewer">Viewer</option>
         </select>
         <button
           @click="clearFilters"
@@ -253,7 +252,6 @@
             <option value="">Select Role</option>
             <option value="admin">Admin</option>
             <option value="user">User</option>
-            <option value="viewer">Viewer</option>
           </select>
           <input
             v-model="addUserForm.phone"
@@ -291,99 +289,6 @@
           </div>
           <div v-if="addUserErrors" class="text-red-600 mt-2 text-xs">
             <div v-for="(msgs, field) in addUserErrors" :key="field">
-              <div v-for="msg in msgs" :key="msg">{{ msg }}</div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Edit User Modal -->
-    <div
-      v-if="showEditUserModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded p-6 w-full max-w-md relative">
-        <h2 class="text-xl font-semibold mb-4">Edit User</h2>
-        <form @submit.prevent="submitEditUser" class="space-y-4 text-sm">
-          <input
-            v-model="editUserForm.name"
-            type="text"
-            placeholder="Name"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-          <input
-            v-model="editUserForm.email"
-            type="email"
-            placeholder="Email"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-          <input
-            v-model="editUserForm.password"
-            type="password"
-            placeholder="New Password (leave blank to keep)"
-            class="w-full border rounded px-3 py-2"
-          />
-          <input
-            v-model="editUserForm.password_confirmation"
-            type="password"
-            placeholder="Confirm Password"
-            :required="editUserForm.password.length > 0"
-            class="w-full border rounded px-3 py-2"
-          />
-          <select
-            v-model="editUserForm.role"
-            class="w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="">Select Role</option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
-          </select>
-          <input
-            v-model="editUserForm.phone"
-            type="tel"
-            placeholder="Phone (optional)"
-            class="w-full border rounded px-3 py-2"
-          />
-          <div>
-            <label class="block mb-1 font-medium"
-              >Profile Image (optional)</label
-            >
-            <input @change="onEditImageChange" type="file" accept="image/*" />
-            <img
-              v-if="editUserImagePreview"
-              :src="editUserImagePreview"
-              alt="preview"
-              class="mt-2 w-24 h-24 rounded object-cover"
-            />
-            <img
-              v-else-if="editUserForm.profile_image"
-              :src="editUserForm.profile_image"
-              alt="preview"
-              class="mt-2 w-24 h-24 rounded object-cover"
-            />
-          </div>
-
-          <div class="flex justify-end gap-2 mt-4">
-            <button
-              type="button"
-              @click="closeEditUser"
-              class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              :disabled="editUserLoading.value"
-              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              {{ editUserLoading.value ? "Saving..." : "Save" }}
-            </button>
-          </div>
-          <div v-if="editUserErrors" class="text-red-600 mt-2 text-xs">
-            <div v-for="(msgs, field) in editUserErrors" :key="field">
               <div v-for="msg in msgs" :key="msg">{{ msg }}</div>
             </div>
           </div>
@@ -550,7 +455,6 @@ const addUserForm = ref({
   password_confirmation: "",
   role: "",
   phone: "",
-  bio: "",
   profile_image: null,
 });
 const addUserImagePreview = ref(null);
@@ -565,7 +469,6 @@ const editUserForm = ref({
   password_confirmation: "",
   role: "",
   phone: "",
-  bio: "",
   profile_image: null,
 });
 const editUserImagePreview = ref(null);
@@ -708,7 +611,6 @@ const openEditUser = (user) => {
     password_confirmation: "",
     role: user.role,
     phone: user.phone || "",
-    bio: user.bio || "",
     profile_image: null,
   };
   editUserImagePreview.value = user.profile_image || null;
@@ -732,21 +634,39 @@ const onEditImageChange = (e) => {
 const submitEditUser = async () => {
   editUserLoading.value = true;
   editUserErrors.value = {};
+
   try {
     const formData = new FormData();
-    for (const key in editUserForm.value) {
-      if (editUserForm.value[key] !== null) {
-        formData.append(key, editUserForm.value[key]);
-      }
+
+    if (editUserForm.value.name) formData.append("name", editUserForm.value.name);
+    if (editUserForm.value.email) formData.append("email", editUserForm.value.email);
+    if (editUserForm.value.role) formData.append("role", editUserForm.value.role);
+    if (editUserForm.value.phone) formData.append("phone", editUserForm.value.phone);
+    if (editUserForm.value.bio) formData.append("bio", editUserForm.value.bio);
+
+    if (editUserForm.value.password) {
+       formData.append("password", editUserForm.value.password);
+       formData.append("password_confirmation", editUserForm.value.password_confirmation);
     }
-    await api.put(`/users/${editUserForm.value.id}`, formData, {
-      headers: { "X-HTTP-Method-Override": "PATCH" },
+
+    if (editUserForm.value.profile_image) {
+      formData.append("profile_image", editUserForm.value.profile_image);
+    }
+
+    // Tell Laravel this is a PUT
+    formData.append("_method", "PUT");
+
+    // Send as POST
+    await api.post(`/users/${editUserForm.value.id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
+
     await fetchUsers();
     closeEditUser();
   } catch (e) {
     if (e.response && e.response.data.errors) {
       editUserErrors.value = e.response.data.errors;
+      console.log("Validation errors:", e.response.data.errors); // <--- log errors
     } else {
       alert("Failed to update user");
     }
@@ -754,6 +674,8 @@ const submitEditUser = async () => {
     editUserLoading.value = false;
   }
 };
+
+
 
 const viewUser = (user) => {
   viewUserData.value = user;

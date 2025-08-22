@@ -9,8 +9,7 @@
             class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
             :alt="t('profile.profileImageAlt')"
           />
-          <button
-  v-if="form.role !== 'admin'"
+<button
   type="button"
   @click="openFileInput"
   class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
@@ -18,6 +17,7 @@
 >
   <i class="fas fa-camera text-sm"></i>
 </button>
+
 
           <input
             type="file"
