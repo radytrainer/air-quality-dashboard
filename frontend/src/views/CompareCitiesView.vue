@@ -5,12 +5,14 @@
       <div class="flex items-center gap-3 mb-2">
         <div class="w-3 h-3 bg-black-500 rounded-full animate-pulse"></div>
         <h1 class="text-4xl font-extrabold text-black-800">
-          Air Quality Comparison 
+          {{ $t('comparePage.header') }}
         </h1>
-        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm ml-2">Live</span>
+        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm ml-2">
+          {{ $t('comparePage.liveBadge') }}
+        </span>
       </div>
       <p class="text-gray-600 text-sm">
-        📈 Real-time air quality analysis across global cities with timezone intelligence
+        {{ $t('comparePage.realTimeInfo') }}
       </p>
     </header>
 
@@ -19,8 +21,8 @@
       <!-- Cities Tracked -->
       <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-purple-500 w-full">
         <div class="ml-3">
-          <div class="text-gray-800 font-semibold text-lg">Cities Tracked</div>
-          <div class="text-sm text-gray-500">These cities are actively monitored for pollutant levels.</div>
+          <div class="text-gray-800 font-semibold text-lg">{{ $t('comparePage.citiesTracked') }}</div>
+          <div class="text-sm text-gray-500">{{ $t('comparePage.citiesTrackedDesc') }}</div>
           <div class="mt-2 text-purple-600 text-3xl font-bold">{{ totalCities }}</div>
         </div>
       </div>
@@ -28,24 +30,20 @@
       <!-- Countries -->
       <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-blue-500 w-full">
         <div class="ml-3">
-          <div class="text-gray-800 font-semibold text-lg">Countries</div>
-          <div class="text-sm text-gray-500">Data has been gathered across multiple nations worldwide.</div>
+          <div class="text-gray-800 font-semibold text-lg">{{ $t('comparePage.countries') }}</div>
+          <div class="text-sm text-gray-500">{{ $t('comparePage.countriesDesc') }}</div>
           <div class="mt-2 text-blue-600 text-3xl font-bold">{{ totalCountries }}</div>
         </div>
       </div>
 
       <!-- Active Timezones -->
-     <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-green-500 w-full">
-    <div class="ml-3">
-      <div class="text-gray-800 font-semibold text-lg">Active Timezones</div>
-      <div class="text-sm text-gray-500">
-        Monitoring is currently active in these global timezones.
+      <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-green-500 w-full">
+        <div class="ml-3">
+          <div class="text-gray-800 font-semibold text-lg">{{ $t('comparePage.activeTimezones') }}</div>
+          <div class="text-sm text-gray-500">{{ $t('comparePage.activeTimezonesDesc') }}</div>
+          <div class="mt-2 text-green-600 text-xl font-bold">{{ activeTimezonesDisplay }}</div>
+        </div>
       </div>
-      <div class="mt-2 text-green-600 text-xl font-bold">
-        {{ activeTimezonesDisplay }}
-      </div>
-    </div>
-  </div>
     </div>
 
     <!-- Compare Section -->
@@ -53,22 +51,22 @@
       <!-- Header -->
       <h2 class="text-2xl font-bold mb-8 text-gray-800 flex items-center gap-2">
         <span class="text-purple-600 text-3xl">🔍</span>
-        Select Cities to Compare
+        {{ $t('comparePage.selectCities') }}
       </h2>
 
       <!-- Two selectors side by side -->
       <div class="grid md:grid-cols-2 gap-10 mb-10">
         <CitySelectorForCompare
-          label="Primary City"
-          description="Choose your first comparison point"
+          :label="$t('comparePage.primaryCity')"
+          :description="$t('comparePage.primaryCityDesc')"
           :cities="cities"
           v-model="selectedCity1"
           @city-changed="updateCity1Info"
         />
 
         <CitySelectorForCompare
-          label="Secondary City"
-          description="Choose your second comparison point"
+          :label="$t('comparePage.secondaryCity')"
+          :description="$t('comparePage.secondaryCityDesc')"
           :cities="cities"
           v-model="selectedCity2"
           @city-changed="updateCity2Info"
@@ -76,30 +74,26 @@
       </div>
 
       <!-- Display the two city cards with VS in the middle -->
-<div v-if="city1Data && city2Data && !errorMessage" 
-     class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+      <div v-if="city1Data && city2Data && !errorMessage" class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+        <!-- Left City -->
+        <CityCard 
+          :city="city1Data" 
+          :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'" 
+        />
 
-  <!-- Left City -->
-  <CityCard 
-    :city="city1Data" 
-    :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'" 
-  />
+        <!-- VS Badge -->
+        <div class="flex justify-center items-center">
+          <div class="bg-purple-100 px-6 py-2 rounded-full font-bold text-purple-800 shadow-sm tracking-wide text-sm">
+            {{ $t('comparePage.vs') }}
+          </div>
+        </div>
 
-  <!-- VS Badge -->
-  <div class="flex justify-center items-center">
-    <div class="bg-purple-100 px-6 py-2 rounded-full font-bold text-purple-800 shadow-sm tracking-wide text-sm">
-      VS
-    </div>
-  </div>
-
-  <!-- Right City -->
-  <CityCard 
-    :city="city2Data" 
-    :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'" 
-  />
-</div>
-
-
+        <!-- Right City -->
+        <CityCard 
+          :city="city2Data" 
+          :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'" 
+        />
+      </div>
 
       <!-- Error Message -->
       <p v-if="errorMessage" class="text-red-600 font-semibold mb-6 text-center text-sm">
@@ -109,53 +103,58 @@
       <!-- Alerts -->
       <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl shadow">
         <p class="text-red-700 font-medium text-sm">
-          🚨 <strong>{{ city1Data.name }}</strong> has poor air quality (AQI: <strong>{{ city1Data.aqi }}</strong>) — {{ city1Data.level }}
+          🚨 <strong>{{ city1Data.name }}</strong> 
+          {{ $t('comparePage.poorAirQuality', { aqi: city1Data.aqi, level: city1Data.level }) }}
         </p>
       </div>
 
       <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl shadow">
         <p class="text-red-700 font-medium text-sm">
-          🚨 <strong>{{ city2Data.name }}</strong> has poor air quality (AQI: <strong>{{ city2Data.aqi }}</strong>) — {{ city2Data.level }}
+          🚨 <strong>{{ city2Data.name }}</strong> 
+          {{ $t('comparePage.poorAirQuality', { aqi: city2Data.aqi, level: city2Data.level }) }}
         </p>
       </div>
 
       <!-- Chart Comparison -->
       <div v-if="city1Data && city2Data && !errorMessage" class="mt-10 bg-gray-50 p-6 rounded-xl shadow-inner">
-        <h3 class="text-xl font-bold mb-4 text-center text-gray-700">📊 Pollutant Level Comparison</h3>
+        <h3 class="text-xl font-bold mb-4 text-center text-gray-700">
+          {{ $t('comparePage.pollutantComparison') }}
+        </h3>
         <CompareBarChart :city1="city1Data" :city2="city2Data" />
       </div>
 
       <!-- Reset Button -->
       <button @click="resetSelection"
         class="mt-10 mx-auto block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded shadow transition">
-        🔄 Reset Comparison
+        {{ $t('comparePage.resetButton') }}
       </button>
 
       <!-- AQI Color Guide -->
-      <div class="bg-gray-50 rounded-lg p-4 mt-5 text-sm text-gray-700  w-full flex flex-col">
-        <h3 class="font-semibold text-center mb-3">🌫 AQI Color Guide</h3>
+      <div class="bg-gray-50 rounded-lg p-4 mt-5 text-sm text-gray-700 w-full flex flex-col">
+        <h3 class="font-semibold text-center mb-3">{{ $t('comparePage.aqiGuide') }}</h3>
         <div class="flex justify-center gap-[10px]">
           <div class="flex items-center gap-2 whitespace-nowrap">
             <span class="w-4 h-4 bg-green-500 rounded"></span>
-            Good (0–50)
+            {{ $t('comparePage.good') }}
           </div>
           <div class="flex items-center gap-2 whitespace-nowrap">
             <span class="w-4 h-4 bg-yellow-400 rounded"></span>
-            Moderate (51–100)
+            {{ $t('comparePage.moderate') }}
           </div>
           <div class="flex items-center gap-2 whitespace-nowrap">
             <span class="w-4 h-4 bg-orange-500 rounded"></span>
-            Unhealthy for Sensitive Groups (101–150)
+            {{ $t('comparePage.unhealthySensitive') }}
           </div>
           <div class="flex items-center gap-2 whitespace-nowrap">
             <span class="w-4 h-4 bg-red-500 rounded"></span>
-            Unhealthy (151+)
+            {{ $t('comparePage.unhealthy') }}
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
