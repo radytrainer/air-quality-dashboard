@@ -86,6 +86,22 @@ const messages = {
     "profile": "Profile",
     "messages": "Messages",
   },
+  home: {
+      airQualityMap: "Air Quality Map",
+      searchLocation: "Search location...",
+      states: "States",
+      showLess: "Show Less",
+      showAll: "Show All ({count})",
+      globalRanking: "🌐 Global AQI Rankings",
+      mostPolluted: "Top 10 Most Polluted Cities",
+      cleanest: "Top 10 Cleanest Cities",
+      rank: "Rank",
+      city: "City",
+      status: "Status",
+      aqi: "AQI",
+      favorite: "Favorite",
+      
+    },
   },
   kh: {
     nav: {
@@ -171,8 +187,22 @@ const messages = {
     "noEmail": "មិនមានអ៊ីមែល",
     "profile": "ប្រវត្តិរូប",
     "messages": "សាររបស់ខ្ញុំ",
-  }
-
+  },
+  home: {
+      airQualityMap: "ផែនទីគុណភាពខ្យល់",
+      searchLocation: "ស្វែងរកទីតាំង...",
+      states: "រដ្ឋ",
+      showLess: "បង្ហាញតិច",
+      showAll: "បង្ហាញទាំងអស់ ({count})",
+      globalRanking: "🌐 ចំណាត់ថ្នាក់គុណភាពខ្យល់ពិភពលោក",
+      mostPolluted: "១០ ទីក្រុងមានអាកាសកខ្វក់បំផុត",
+      cleanest: "១០ ទីក្រុងស្អាតបំផុត",
+      rank: "ចំណាត់ថ្នាក់",
+      city: "ទីក្រុង",
+      status: "ស្ថានភាព",
+      aqi: "AQI",
+      favorite: "ចូលចិត្ត",
+    },
 
   },
 }
