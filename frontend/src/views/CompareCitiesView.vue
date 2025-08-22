@@ -1,74 +1,69 @@
 <template>
-  <div class="min-h-screen bg-gray-light p-6">
+  <div class="min-h-screen bg-gray-50 p-6">
     <!-- Header -->
     <header class="flex flex-col items-center text-center mb-10">
-      <div class="flex items-center gap-3 mb-2">
-        <div class="w-3 h-3 bg-black-500 rounded-full animate-pulse"></div>
-        <h1 class="text-4xl font-extrabold text-black-800">
-          Air Quality Comparison 
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <h1 class="text-4xl font-bold text-gray-900">
+          Air Quality Comparison
         </h1>
-        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm ml-2">Live</span>
+        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Live
+        </span>
       </div>
-      <p class="text-gray-600 text-sm">
-        📈 Real-time air quality analysis across global cities with timezone intelligence
+      <p class="text-gray-600 flex items-center gap-2">
+        <LineChart class="w-4 h-4 text-blue-600" />
+        Real-time air quality analysis across global cities
       </p>
     </header>
 
-    <!-- Info Boxes Styled Like Frame -->
-    <div class="grid md:grid-cols-3 gap-6 mb-12">
+    <!-- Info Boxes with clean white cards -->
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
       <!-- Cities Tracked -->
-      <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-purple-500 w-full">
-        <div class="ml-3">
-          <div class="text-gray-800 font-semibold text-lg">Cities Tracked</div>
-          <div class="text-sm text-gray-500">These cities are actively monitored for pollutant levels.</div>
-          <div class="mt-2 text-purple-600 text-3xl font-bold">{{ totalCities }}</div>
-        </div>
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div class="text-gray-900 font-semibold text-lg mb-1">Cities Tracked</div>
+        <div class="text-sm text-gray-500 mb-3">Actively monitored cities worldwide</div>
+        <div class="text-blue-600 text-3xl font-bold">{{ totalCities }}</div>
       </div>
 
       <!-- Countries -->
-      <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-blue-500 w-full">
-        <div class="ml-3">
-          <div class="text-gray-800 font-semibold text-lg">Countries</div>
-          <div class="text-sm text-gray-500">Data has been gathered across multiple nations worldwide.</div>
-          <div class="mt-2 text-blue-600 text-3xl font-bold">{{ totalCountries }}</div>
-        </div>
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div class="text-gray-900 font-semibold text-lg mb-1">Countries</div>
+        <div class="text-sm text-gray-500 mb-3">Nations with data coverage</div>
+        <div class="text-blue-600 text-3xl font-bold">{{ totalCountries }}</div>
       </div>
 
       <!-- Active Timezones -->
-     <div class="flex items-center bg-white shadow-md rounded-xl p-5 border-l-4 border-green-500 w-full">
-    <div class="ml-3">
-      <div class="text-gray-800 font-semibold text-lg">Active Timezones</div>
-      <div class="text-sm text-gray-500">
-        Monitoring is currently active in these global timezones.
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div class="text-gray-900 font-semibold text-lg mb-1">Active Timezones</div>
+        <div class="text-sm text-gray-500 mb-3">Global monitoring coverage</div>
+        <div class="text-blue-600 text-xl font-bold">
+          {{ activeTimezonesDisplay }}
+        </div>
       </div>
-      <div class="mt-2 text-green-600 text-xl font-bold">
-        {{ activeTimezonesDisplay }}
-      </div>
-    </div>
-  </div>
     </div>
 
     <!-- Compare Section -->
-    <div class="bg-white p-8 rounded-2xl shadow-xl">
+    <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
       <!-- Header -->
-      <h2 class="text-2xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-        <span class="text-purple-600 text-3xl">🔍</span>
+      <h2 class="text-2xl font-bold mb-8 text-gray-900 flex items-center gap-2">
+        <Search class="w-6 h-6 text-blue-600" />
         Select Cities to Compare
       </h2>
 
       <!-- Two selectors side by side -->
-      <div class="grid md:grid-cols-2 gap-10 mb-10">
+      <div class="grid md:grid-cols-2 gap-8 mb-8">
         <CitySelectorForCompare
-          label="Primary City"
-          description="Choose your first comparison point"
+          :label="$t('comparePage.primaryCity')"
+          :description="$t('comparePage.primaryCityDesc')"
           :cities="cities"
           v-model="selectedCity1"
           @city-changed="updateCity1Info"
         />
 
         <CitySelectorForCompare
-          label="Secondary City"
-          description="Choose your second comparison point"
+          :label="$t('comparePage.secondaryCity')"
+          :description="$t('comparePage.secondaryCityDesc')"
           :cities="cities"
           v-model="selectedCity2"
           @city-changed="updateCity2Info"
@@ -76,92 +71,101 @@
       </div>
 
       <!-- Display the two city cards with VS in the middle -->
-<div v-if="city1Data && city2Data && !errorMessage" 
-     class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+      <div v-if="city1Data && city2Data && !errorMessage"
+           class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
 
-  <!-- Left City -->
-  <CityCard 
-    :city="city1Data" 
-    :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'" 
-  />
+        <!-- Left City -->
+        <CityCard 
+          :city="city1Data"
+          :comparison="city1Data.aqi < city2Data.aqi ? 'better' : 'worse'"
+        />
 
-  <!-- VS Badge -->
-  <div class="flex justify-center items-center">
-    <div class="bg-purple-100 px-6 py-2 rounded-full font-bold text-purple-800 shadow-sm tracking-wide text-sm">
-      VS
-    </div>
-  </div>
+        <!-- Simplified VS badge -->
+        <div class="flex justify-center items-center">
+          <div class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold text-sm">
+            VS
+          </div>
+        </div>
 
-  <!-- Right City -->
-  <CityCard 
-    :city="city2Data" 
-    :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'" 
-  />
-</div>
-
-
+        <!-- Right City -->
+        <CityCard 
+          :city="city2Data"
+          :comparison="city2Data.aqi < city1Data.aqi ? 'better' : 'worse'"
+        />
+      </div>
 
       <!-- Error Message -->
-      <p v-if="errorMessage" class="text-red-600 font-semibold mb-6 text-center text-sm">
+      <p v-if="errorMessage" class="text-red-600 font-medium mb-6 text-center bg-red-50 p-4 rounded-lg border border-red-200">
         {{ errorMessage }}
       </p>
 
-      <!-- Alerts -->
-      <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl shadow">
-        <p class="text-red-700 font-medium text-sm">
-          🚨 <strong>{{ city1Data.name }}</strong> has poor air quality (AQI: <strong>{{ city1Data.aqi }}</strong>) — {{ city1Data.level }}
+      <!-- Simplified alerts with cleaner styling -->
+      <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-lg border border-red-200 flex items-center gap-2">
+        <AlertTriangle class="w-5 h-5 text-red-600" />
+        <p class="text-red-700 font-medium">
+          <strong>{{ city1Data.name }}</strong> has poor air quality (AQI: <strong>{{ city1Data.aqi }}</strong>)
         </p>
       </div>
 
-      <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl shadow">
-        <p class="text-red-700 font-medium text-sm">
-          🚨 <strong>{{ city2Data.name }}</strong> has poor air quality (AQI: <strong>{{ city2Data.aqi }}</strong>) — {{ city2Data.level }}
+      <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-lg border border-red-200 flex items-center gap-2">
+        <AlertTriangle class="w-5 h-5 text-red-600" />
+        <p class="text-red-700 font-medium">
+          <strong>{{ city2Data.name }}</strong> has poor air quality (AQI: <strong>{{ city2Data.aqi }}</strong>)
         </p>
       </div>
 
       <!-- Chart Comparison -->
-      <div v-if="city1Data && city2Data && !errorMessage" class="mt-10 bg-gray-50 p-6 rounded-xl shadow-inner">
-        <h3 class="text-xl font-bold mb-4 text-center text-gray-700">📊 Pollutant Level Comparison</h3>
+      <div v-if="city1Data && city2Data && !errorMessage" class="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
+        <h3 class="text-xl font-semibold mb-4 text-center text-gray-900 flex items-center gap-2 justify-center">
+          <BarChart2 class="w-5 h-5 text-blue-600" />
+          Pollutant Level Comparison
+        </h3>
         <CompareBarChart :city1="city1Data" :city2="city2Data" />
       </div>
 
-      <!-- Reset Button -->
+      <!-- Simplified reset button -->
       <button @click="resetSelection"
-        class="mt-10 mx-auto block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded shadow transition">
-        🔄 Reset Comparison
+        class="mt-8 mx-auto flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 rounded-lg transition-colors">
+        <RotateCcw class="w-4 h-4" />
+        Reset Comparison
       </button>
 
-      <!-- AQI Color Guide -->
-      <div class="bg-gray-50 rounded-lg p-4 mt-5 text-sm text-gray-700  w-full flex flex-col">
-        <h3 class="font-semibold text-center mb-3">🌫 AQI Color Guide</h3>
-        <div class="flex justify-center gap-[10px]">
-          <div class="flex items-center gap-2 whitespace-nowrap">
+      <!-- Simplified AQI color guide -->
+      <div class="bg-gray-50 rounded-lg p-6 mt-6 border border-gray-200">
+        <h3 class="font-semibold text-center mb-4 text-gray-900 flex items-center gap-2 justify-center">
+          <Wind class="w-5 h-5 text-gray-600" />
+          AQI Color Guide
+        </h3>
+        <div class="flex justify-center gap-4 flex-wrap">
+          <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-green-500 rounded"></span>
-            Good (0–50)
+            <span class="text-sm font-medium text-gray-700">Good (0–50)</span>
           </div>
-          <div class="flex items-center gap-2 whitespace-nowrap">
-            <span class="w-4 h-4 bg-yellow-400 rounded"></span>
-            Moderate (51–100)
+          <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
+            <span class="w-4 h-4 bg-yellow-500 rounded"></span>
+            <span class="text-sm font-medium text-gray-700">Moderate (51–100)</span>
           </div>
-          <div class="flex items-center gap-2 whitespace-nowrap">
+          <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-orange-500 rounded"></span>
-            Unhealthy for Sensitive Groups (101–150)
+            <span class="text-sm font-medium text-gray-700">Unhealthy (101–150)</span>
           </div>
-          <div class="flex items-center gap-2 whitespace-nowrap">
+          <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-red-500 rounded"></span>
-            Unhealthy (151+)
+            <span class="text-sm font-medium text-gray-700">Unhealthy (151+)</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import CitySelectorForCompare from '@/components/CitySelectorForCompare.vue'
 import CityCard from '@/components/CityCard.vue'
 import CompareBarChart from '@/components/CompareBarChart.vue'
+import { LineChart, Search, AlertTriangle, BarChart2, RotateCcw, Wind } from "lucide-vue-next";
 
 const cities = ref([])
 const selectedCity1 = ref(null)
@@ -226,7 +230,6 @@ const activeTimezones = computed(() => {
   const tzs = cities.value
     .map(city => city.timezone)
     .filter(Boolean)
-  
   if (userTimezone.value && !tzs.includes(userTimezone.value)) {
     tzs.push(userTimezone.value)
   }
@@ -257,7 +260,6 @@ async function fetchCities() {
 
     if (phnomRes.data?.status === 'ok') {
       const phnom = phnomRes.data.data
-
       // Normalize Phnom Penh structure to match global cities
       const phnomNormalized = {
         name: phnom.name || 'Phnom Penh, Cambodia',
@@ -273,7 +275,6 @@ async function fetchCities() {
     }
 
     cities.value = allCities
-
     console.log('Total cities:', cities.value.length) // should be 600
   } catch (error) {
     console.error('Failed to fetch cities:', error)
@@ -309,7 +310,6 @@ onMounted(fetchCities)
 watch(selectedCity1, updateCity1Info)
 watch(selectedCity2, updateCity2Info)
 </script>
-
 
 <style scoped>
 select {
