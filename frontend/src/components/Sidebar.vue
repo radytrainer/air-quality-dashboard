@@ -41,6 +41,15 @@
         {{ $t('nav.healthAlert') }}
       </RouterLink>
 
+      <!-- News -->
+      <RouterLink to="/admin-news"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-100 hover:text-blue-600"
+        :class="$route.path === '/admin-news' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700'"
+        @click="mobileMenuOpen = false">
+        <Users2 class="w-5 h-5" />
+        {{ $t('nav.adminNews') }}
+      </RouterLink>
+
       <!-- User Management -->
       <RouterLink to="/user-management"
         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-100 hover:text-blue-600"
