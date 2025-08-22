@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminHealthAlertController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavouriteController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Api\AirQualityController;
@@ -68,6 +69,7 @@ Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
 // Analy Page
 Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
 
+Route::get('/news', [NewsController::class, 'index']); // public for user site
 
 // Routes protected by authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -78,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     //favourite routes
-      Route::get('/favourites', [FavouriteController::class, 'index']); // list favourites
+    Route::get('/favourites', [FavouriteController::class, 'index']); // list favourites
     Route::post('/favourites', [FavouriteController::class, 'store']); // add favourite
     Route::delete('/favourites/{city_name}', [FavouriteController::class, 'destroy']); // remove favourite
 
@@ -109,5 +111,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
         // Add other admin routes here if any
     });
+
+    //news routes
+    Route::post('/news', [NewsController::class, 'store']);
+    Route::put('/news/{id}', [NewsController::class, 'update']);
 
 });

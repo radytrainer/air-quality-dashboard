@@ -10,13 +10,15 @@
             :alt="t('profile.profileImageAlt')"
           />
           <button
-            type="button"
-            @click="openFileInput"
-            class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
-            :title="t('profile.changeProfileImage')"
-          >
-            <i class="fas fa-camera text-sm"></i>
-          </button>
+  v-if="form.role !== 'admin'"
+  type="button"
+  @click="openFileInput"
+  class="absolute bottom-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600"
+  :title="t('profile.changeProfileImage')"
+>
+  <i class="fas fa-camera text-sm"></i>
+</button>
+
           <input
             type="file"
             ref="fileInput"
@@ -53,16 +55,14 @@
           <i class="fas fa-lock mr-2 text-orange-500"></i> Reset Password
         </button>
         <button
-          @click="activeTab = 'favourites'"
-          :class="
-            activeTab === 'favourites'
-              ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm'
-              : ''
-          "
-          class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
-        >
-          <i class="fas fa-star mr-2 text-orange-500"></i> Favourite Cities
-        </button>
+  v-if="form.role !== 'admin'"
+  @click="activeTab = 'favourites'"
+  :class="activeTab === 'favourites' ? 'bg-orange-100 text-orange-600 font-semibold shadow-sm' : ''"
+  class="w-full text-left px-4 py-2 rounded-md mb-1 hover:bg-gray-100 transition-colors"
+>
+  <i class="fas fa-star mr-2 text-orange-500"></i> Favourite Cities
+</button>
+
       </nav>
     </div>
     <!-- Main Content -->
@@ -323,7 +323,7 @@ const form = ref({
   name: "",
   email: "",
   phone: "",
-  bio: "",
+  role: '', 
   profile_image: null,
   profile_image_url: "",
 });
@@ -342,7 +342,7 @@ const fetchProfile = async () => {
     form.value.name = res.data.name;
     form.value.email = res.data.email;
     form.value.phone = res.data.phone || "";
-    form.value.bio = res.data.bio || "";
+    form.value.role = res.data.role || '';
     form.value.profile_image_url = res.data.profile_image;
   } catch (err) {
     error.value = err.response?.data || { message: t("profile.fetchFailed") };
