@@ -91,9 +91,8 @@
                 </linearGradient>
               </defs>
               <path fill="url(#gradHum)"
-                d="M12 2.69l.59.81C16.14 8.28 18 12 18 15a6 6 0 11-12 0c0-3 1.86-6.72 5.41-11.5l.59-.81z" />
+                d="M12 2.69l.59.81C16.14 8.28 18 12 18 15a6 6 0 11-12 0c0-3 1.86-6.72 5.41-11.50l.59-.81z" />
             </svg>
-
             <span class="text-cyan-500 text-2xl">{{ cityData?.humidity ?? "N/A" }}%</span>
             <span class="text-gray-500 text-xs">Humidity</span>
           </div>
@@ -114,7 +113,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 12h13a4 4 0 100-8 4 4 0 00-4 4m-6 8h9a2 2 0 110 4 2 2 0 01-2-2" />
             </svg>
-
             <span class="text-green-600 text-2xl">{{
               cityData?.wind_speed ?? cityData?.wind ?? "N/A"
             }}</span>
@@ -243,7 +241,6 @@ const lastUpdated = ref("");
 const favourites = ref([]);
 const auth = useAuthStore();
 
-
 // --------------------------
 // HELPER FUNCTIONS
 // --------------------------
@@ -351,6 +348,7 @@ const pollutants = computed(() => [
   { label: "SO2", value: cityData.value?.so2 ?? "N/A", unit: "µg/m³" },
   { label: "CO", value: cityData.value?.co ?? "N/A", unit: "mg/m³" },
 ]);
+
 // Example dynamic data for pollutants
 // Computed array with descriptions and health impact
 const pollutantsGuide = computed(() => [
@@ -421,8 +419,9 @@ const loadFavourites = async () => {
       headers: { Authorization: `Bearer ${auth.token}` },
     });
 
-    // Store favourites using city_name as identifier
+    // Store favourites using city_name, id, and flag
     favourites.value = data.map(f => ({
+      id: f.id, // Include the favourite ID from backend
       name: f.city_name,
       flag: `https://flagcdn.com/w160/${f.country_code.toLowerCase()}.png`,
     }));
@@ -436,16 +435,20 @@ const toggleFavourite = async () => {
 
   try {
     if (isFavourite.value) {
-      // Remove from backend
+      // Find the favourite entry to get its ID
+      const favourite = favourites.value.find(c => c.name === cityData.value.name);
+      if (!favourite || !favourite.id) {
+        throw new Error("Favourite ID not found");
+      }
+
+      // Remove from backend using the favourite ID
       await axios.delete(
-        `http://127.0.0.1:8000/api/favourites/${cityData.value.name}`,
+        `http://127.0.0.1:8000/api/favourites/${favourite.id}`,
         { headers: { Authorization: `Bearer ${auth.token}` } }
       );
 
       // Remove from local state
-      favourites.value = favourites.value.filter(
-        c => c.name !== cityData.value.name
-      );
+      favourites.value = favourites.value.filter(c => c.name !== cityData.value.name);
 
       Swal.fire({
         icon: "success",
@@ -466,11 +469,8 @@ const toggleFavourite = async () => {
         { headers: { Authorization: `Bearer ${auth.token}` } }
       );
 
-      // Add to local state
-      favourites.value.push({
-        name: cityData.value.name,
-        flag: cityData.value.flag,
-      });
+      // Reload favourites to get the new favourite's ID
+      await loadFavourites();
 
       Swal.fire({
         icon: "success",
@@ -488,6 +488,7 @@ const toggleFavourite = async () => {
     });
   }
 };
+
 // --------------------------
 // FETCH CITY DATA
 // --------------------------
@@ -537,6 +538,7 @@ const fetchCityData = async () => {
     loading.value = false;
   }
 };
+
 function getAQILevelKey(aqi) {
   const val = Number(aqi);
   if (isNaN(val)) return "good";
@@ -547,6 +549,7 @@ function getAQILevelKey(aqi) {
   if (val <= 300) return "very_unhealthy";
   return "hazardous";
 }
+
 function getHealthMessage(aqi) {
   const stored = localStorage.getItem("aqiHealthMessages");
   const defaultMessages = {
@@ -630,6 +633,7 @@ onMounted(() => {
   });
 });
 </script>
+
 <style scoped>
 .bg-[#f6fafd] {
   background-color: #f6fafd;
