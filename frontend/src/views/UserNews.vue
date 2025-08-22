@@ -1,5 +1,6 @@
 
 <template>
+  <div><h1>New</h1></div>
   <div class="p-6 space-y-6">
     <div v-for="n in news" :key="n.id" class="border rounded p-4">
       <h3 class="font-semibold mb-2">{{ n.caption }}</h3>
