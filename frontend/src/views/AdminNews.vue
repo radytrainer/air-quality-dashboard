@@ -1,10 +1,29 @@
 <template>
   <div class="p-6 space-y-6">
-    <!-- Create -->
+    <!-- Create Category -->
+    <div class="border rounded p-4">
+      <h2 class="font-semibold mb-3">Create Category</h2>
+      <input v-model="catName" placeholder="Category name" class="border rounded p-2 w-full mb-3" />
+      <input v-model="catDesc" placeholder="Description" class="border rounded p-2 w-full mb-3" />
+      <button @click="createCategory" class="bg-green-600 text-white px-4 py-2 rounded">Add Category</button>
+    </div>
+
+    <!-- Create News -->
     <div class="border rounded p-4">
       <h2 class="font-semibold mb-3">Create News</h2>
+
+      <!-- Caption -->
       <input v-model="caption" placeholder="Caption" class="border rounded p-2 w-full mb-3" />
+
+      <!-- Category select -->
+      <select v-model="selectedCategory" class="border rounded p-2 w-full mb-3">
+        <option disabled value="">-- Choose Category --</option>
+        <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
+
+      <!-- Files -->
       <input type="file" multiple @change="onSelectFiles" class="mb-3" accept="image/*,video/*" />
+
       <button @click="createNews" class="bg-blue-600 text-white px-4 py-2 rounded">Post</button>
     </div>
 
@@ -16,6 +35,11 @@
           <input v-model="n.caption" class="border rounded p-1 w-full" />
         </div>
 
+        <!-- Show category -->
+        <div class="mb-2 text-sm text-gray-600">
+          Category: {{ n.category?.name ?? '—' }}
+        </div>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           <div v-for="(url, i) in n.media_urls" :key="i" class="border rounded p-2">
             <template v-if="url.match(/\.(mp4|webm)$/)">
@@ -24,8 +48,7 @@
             <template v-else>
               <img :src="url" class="w-full h-32 object-cover" />
             </template>
-            <!-- Show checkbox to keep/remove (needs raw path).
-                 Ensure your API also returns n.media (raw paths). -->
+
             <div v-if="editing && editing.id === n.id" class="mt-2">
               <label class="text-sm">
                 <input type="checkbox"
@@ -58,44 +81,79 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/services/api'
 
+// News form
 const caption = ref('')
 const files = ref([])
+const selectedCategory = ref('')
 const newsList = ref([])
-const editing = ref(null) // the news being edited
-const keep = ref([])      // paths to keep during edit
+const editing = ref(null)
+const keep = ref([])
 const newFiles = ref([])
 
+// Categories
+const categories = ref([])
+const catName = ref('')
+const catDesc = ref('')
+
+// Fetch all news
 async function fetchNews() {
   const { data } = await api.get('/news')
   newsList.value = data
 }
 
+// Fetch all categories
+async function fetchCategories() {
+  const { data } = await api.get('/categories')
+  categories.value = data
+}
+
+// Create category
+async function createCategory() {
+  if (!catName.value.trim()) return alert('Category name required')
+
+  await api.post('/categories/create', {
+    name: catName.value,
+    description: catDesc.value
+  })
+
+  catName.value = ''
+  catDesc.value = ''
+  await fetchCategories()
+}
+
+// File input
 function onSelectFiles(e) {
   files.value = Array.from(e.target.files)
 }
 
+// Create news
 async function createNews() {
+  if (!selectedCategory.value) return alert('Please choose a category')
+
   const fd = new FormData()
   fd.append('caption', caption.value)
+  fd.append('category_id', selectedCategory.value)
   files.value.forEach(f => fd.append('media[]', f))
+
   await api.post('/news', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+
   caption.value = ''
   files.value = []
+  selectedCategory.value = ''
   await fetchNews()
 }
 
 function startEdit(item) {
   editing.value = item
-  keep.value = [...(item.media ?? [])] // use raw paths if you expose them, else map back
+  keep.value = [...(item.media ?? [])]
   newFiles.value = []
 }
 
-// For simplicity, send the stored `media` paths (not full URLs) as KEEP.
-// If your API returns only `media_urls`, also return `media` to know original paths.
 function toggleKeep(path) {
   if (keep.value.includes(path)) {
     keep.value = keep.value.filter(p => p !== path)
@@ -111,12 +169,18 @@ function onSelectNewFiles(e) {
 async function saveEdit() {
   const fd = new FormData()
   if (editing.value.caption) fd.append('caption', editing.value.caption)
+  if (editing.value.category_id) fd.append('category_id', editing.value.category_id)
   keep.value.forEach(p => fd.append('keep[]', p))
   newFiles.value.forEach(f => fd.append('media[]', f))
+
   await api.patch(`/news/${editing.value.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+
   editing.value = null
   await fetchNews()
 }
 
-onMounted(fetchNews)
+onMounted(() => {
+  fetchNews()
+  fetchCategories()
+})
 </script>
