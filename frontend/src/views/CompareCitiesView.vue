@@ -54,16 +54,16 @@
       <!-- Two selectors side by side -->
       <div class="grid md:grid-cols-2 gap-8 mb-8">
         <CitySelectorForCompare
-          label="Primary City"
-          description="Choose your first comparison point"
+          :label="$t('comparePage.primaryCity')"
+          :description="$t('comparePage.primaryCityDesc')"
           :cities="cities"
           v-model="selectedCity1"
           @city-changed="updateCity1Info"
         />
 
         <CitySelectorForCompare
-          label="Secondary City"
-          description="Choose your second comparison point"
+          :label="$t('comparePage.secondaryCity')"
+          :description="$t('comparePage.secondaryCityDesc')"
           :cities="cities"
           v-model="selectedCity2"
           @city-changed="updateCity2Info"

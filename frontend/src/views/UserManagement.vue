@@ -21,7 +21,6 @@
           <option value="">All roles</option>
           <option value="admin">Admin</option>
           <option value="user">User</option>
-          <option value="viewer">Viewer</option>
         </select>
         <button @click="clearFilters" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">
           Clear
@@ -139,7 +138,6 @@
             <option value="">Select Role</option>
             <option value="admin">Admin</option>
             <option value="user">User</option>
-            <option value="viewer">Viewer</option>
           </select>
           <input v-model="addUserForm.phone" type="tel" placeholder="Phone (optional)"
             class="w-full border rounded px-3 py-2" />
@@ -285,7 +283,6 @@ const addUserForm = ref({
   password_confirmation: "",
   role: "",
   phone: "",
-  bio: "",
   profile_image: null,
 });
 const addUserImagePreview = ref(null);
@@ -300,7 +297,6 @@ const editUserForm = ref({
   password_confirmation: "",
   role: "",
   phone: "",
-  bio: "",
   profile_image: null,
 });
 const editUserImagePreview = ref(null);
@@ -445,7 +441,6 @@ const openEditUser = (user) => {
     password_confirmation: "",
     role: user.role,
     phone: user.phone || "",
-    bio: user.bio || "",
     profile_image: null,
   };
   editUserImagePreview.value = null;
@@ -469,21 +464,39 @@ const onEditImageChange = (e) => {
 const submitEditUser = async () => {
   editUserLoading.value = true;
   editUserErrors.value = {};
+
   try {
     const formData = new FormData();
-    for (const key in editUserForm.value) {
-      if (editUserForm.value[key] !== null) {
-        formData.append(key, editUserForm.value[key]);
-      }
+
+    if (editUserForm.value.name) formData.append("name", editUserForm.value.name);
+    if (editUserForm.value.email) formData.append("email", editUserForm.value.email);
+    if (editUserForm.value.role) formData.append("role", editUserForm.value.role);
+    if (editUserForm.value.phone) formData.append("phone", editUserForm.value.phone);
+    if (editUserForm.value.bio) formData.append("bio", editUserForm.value.bio);
+
+    if (editUserForm.value.password) {
+       formData.append("password", editUserForm.value.password);
+       formData.append("password_confirmation", editUserForm.value.password_confirmation);
     }
-    await api.put(`/users/${editUserForm.value.id}`, formData, {
-      headers: { "X-HTTP-Method-Override": "PATCH" },
+
+    if (editUserForm.value.profile_image) {
+      formData.append("profile_image", editUserForm.value.profile_image);
+    }
+
+    // Tell Laravel this is a PUT
+    formData.append("_method", "PUT");
+
+    // Send as POST
+    await api.post(`/users/${editUserForm.value.id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
+
     await fetchUsers();
     closeEditUser();
   } catch (e) {
     if (e.response && e.response.data.errors) {
       editUserErrors.value = e.response.data.errors;
+      console.log("Validation errors:", e.response.data.errors); // <--- log errors
     } else {
       alert("Failed to update user");
     }
@@ -491,6 +504,8 @@ const submitEditUser = async () => {
     editUserLoading.value = false;
   }
 };
+
+
 
 const viewUser = (user) => {
   viewUserData.value = user;
