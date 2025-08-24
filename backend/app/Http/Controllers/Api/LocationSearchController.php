@@ -8,10 +8,15 @@ use Illuminate\Support\Facades\Cache;
 
 class LocationSearchController extends Controller
 {
+    /**
+     * Search locations by city name, country name, or location name
+     * Supports dynamic search for cities, states, and countries
+     */
     public function search(Request $request)
     {
         $query = $request->query('q', '');
         
+        // Minimum 2 characters for search
         if (strlen($query) < 2) {
             return response()->json([
                 'status' => 'ok',
@@ -19,7 +24,7 @@ class LocationSearchController extends Controller
             ]);
         }
 
-        // Get fresh data from PollutionDataController
+        // Get fresh AQI data from existing controller
         $controller = new PollutionDataController();
         $aqiResponse = $controller->getAqiData();
         $aqiData = $aqiResponse->getData(true);
@@ -27,18 +32,18 @@ class LocationSearchController extends Controller
         if ($aqiData['status'] !== 'ok' || !isset($aqiData['data'])) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unable to fetch location data',
-                'debug' => $aqiData
+                'message' => 'Unable to fetch location data'
             ], 500);
         }
 
+        // Process and structure all location data
         $allLocations = collect($aqiData['data'])
             ->map(function ($location) {
                 $parts = explode(',', $location['name']);
                 $city = trim($parts[0]);
                 $country = count($parts) > 1 ? trim(end($parts)) : 'Unknown';
                 
-                // Extract clean country name (remove extra info in parentheses)
+                // Clean country name (remove parentheses content)
                 $cleanCountry = preg_replace('/\s*\([^)]*\)/', '', $country);
                 
                 return [
@@ -48,21 +53,20 @@ class LocationSearchController extends Controller
                     'lat' => $location['lat'],
                     'lon' => $location['lon'],
                     'aqi' => $location['aqi'],
-                    'raw_name' => $location['name'],
                 ];
             });
 
-        // Filter locations that match the query
+        // Filter locations that match search query
         $locations = $allLocations
             ->filter(function ($location) use ($query) {
-                // Search in city name, country name, or full name
+                // Search in city name, country name, or full location name
                 return stripos($location['name'], $query) !== false || 
                        stripos($location['country'], $query) !== false || 
                        stripos($location['full_name'], $query) !== false;
             })
-            ->take(20)
+            ->take(20) // Limit to 20 results
             ->map(function ($location) use ($query) {
-                // Add search type information
+                // Determine search match type for better UI display
                 $type = 'general';
                 if (stripos($location['name'], $query) === 0) {
                     $type = 'city';
@@ -75,7 +79,6 @@ class LocationSearchController extends Controller
                 }
                 
                 $location['type'] = $type;
-                unset($location['raw_name']);
                 return $location;
             })
             ->values();
@@ -86,6 +89,4 @@ class LocationSearchController extends Controller
             'total_available' => count($aqiData['data'])
         ]);
     }
-
-
 }

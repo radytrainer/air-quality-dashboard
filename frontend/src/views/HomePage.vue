@@ -211,7 +211,7 @@
 
 
 <script setup>
-import { onMounted, ref, watch, computed, nextTick } from "vue";
+import { onMounted, onUnmounted, ref, watch, computed, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -963,14 +963,90 @@ const getApproximateLon = (countryCode) => {
   return countryCoords[countryCode.toLowerCase()] || 0;
 };
 
-// Lifecycle hooks
-onMounted(() => {
+// Enhanced search location handler for navbar integration
+const handleSearchLocationSelected = (event) => {
+  const location = event.detail
+  if (location && location.lat && location.lon) {
+    map.setView([location.lat, location.lon], 12)
+    
+    // Add special search marker with enhanced styling
+    const searchMarker = L.marker([location.lat, location.lon], {
+      icon: L.divIcon({
+        html: `
+          <div style="position: relative;">
+            <div style="background: #3b82f6; border: 2px solid #fff; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              <i class="fas fa-search" style="color: white; font-size: 8px;"></i>
+            </div>
+            <div style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+              <i class="fas fa-map-marker-alt mr-1"></i>${location.name}
+            </div>
+          </div>`,
+        className: "navbar-search-marker",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+      }),
+    }).addTo(map)
+    
+    // Enhanced popup content with location details
+    const popupContent = `
+      <div style="font-family: 'Arial', sans-serif; max-width: 200px; text-align: center;">
+        <div style="font-weight: 700; font-size: 14px; color: #000000; margin-bottom: 8px;">
+          <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>${location.name}
+        </div>
+        <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+          ${location.country}
+        </div>
+        ${location.aqi ? `
+          <div style="margin-bottom: 8px;">
+            <span style="font-size: 10px; color: #666;">Air Quality Index:</span><br>
+            <span style="font-size: 14px; font-weight: bold; color: ${getColor(location.aqi, 'aqi')};">
+              ${location.aqi} - ${getStatus(location.aqi, 'aqi')}
+            </span>
+          </div>
+        ` : `
+          <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+            ${location.type === 'geolocation' ? 'Your Current Location' : 'Search Result Location'}
+          </div>
+        `}
+        <div style="font-size: 10px; color: #999;">
+          ${location.lat?.toFixed(4)}, ${location.lon?.toFixed(4)}
+        </div>
+      </div>
+    `
+    
+    searchMarker.bindPopup(popupContent).openPopup()
+    
+    // Auto-remove marker after 10 seconds
+    setTimeout(() => {
+      searchMarker.remove()
+    }, 10000)
+  }
+}
 
+// Lifecycle hooks with enhanced search integration
+onMounted(() => {
   initMap();
   fetchAQIData();
   fetchPhnomPenhAQI();
   fetchFavorites();
   detectUserLocation();
+  
+  // Listen for navbar search selections
+  window.addEventListener('location-search-selected', handleSearchLocationSelected)
+  
+  // Check for stored search location on mount (for page navigation)
+  const storedLocation = localStorage.getItem('selectedSearchLocation')
+  if (storedLocation) {
+    try {
+      const location = JSON.parse(storedLocation)
+      handleSearchLocationSelected({ detail: location })
+      localStorage.removeItem('selectedSearchLocation')
+    } catch (e) {
+      console.error('Error parsing stored search location:', e)
+    }
+  }
+  
+  // Periodic data refresh
   setInterval(() => {
     fetchAQIData();
     fetchPhnomPenhAQI();
@@ -980,6 +1056,11 @@ onMounted(() => {
 
 watch(selectedPollutant, () => {
   renderMarkers();
+});
+
+// Cleanup event listeners
+onUnmounted(() => {
+  window.removeEventListener('location-search-selected', handleSearchLocationSelected)
 });
 </script>
 
