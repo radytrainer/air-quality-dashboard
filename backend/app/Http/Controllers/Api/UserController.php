@@ -21,7 +21,14 @@ class UserController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get()
                     ->map(function ($user) {
-                        $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
+                        // Generate full URL for profile image
+                        if ($user->profile_image) {
+                            $user->profile_image = Storage::url($user->profile_image);
+                            // Ensure we have a full URL (not relative path)
+                            if (!str_starts_with($user->profile_image, 'http')) {
+                                $user->profile_image = url($user->profile_image);
+                            }
+                        }
                         return $user;
                     });
         
@@ -115,7 +122,7 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($id),
             ],
             'role' => 'sometimes|string|nullable|in:admin,user',
-            'password' => 'sometimes|nullable|string|min:6|confirmed',
+            'password' => 'sometimes|nullable|string|min:6',
             'phone' => 'nullable|string|max:20',
             'bio' => 'nullable|string|max:1000',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',

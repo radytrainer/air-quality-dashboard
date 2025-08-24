@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminHealthAlertController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FavouriteController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Api\AirQualityController;
@@ -17,7 +19,10 @@ use App\Http\Controllers\Api\AqiOceaniaController;
 use App\Http\Controllers\Api\PollutionDataController;
 use App\Http\Controllers\Api\WeatherAqiController;
 use App\Http\Controllers\FireDataController;
-use App\Http\Controllers\Admin\CityAQIAdminController;
+use App\Http\Controllers\Api\ApiAnalyController;
+use App\Http\Controllers\Api\AqiCompareController;
+use App\Http\Controllers\Api\CategoryController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,7 +31,8 @@ use App\Http\Controllers\Admin\CityAQIAdminController;
 | Public routes and routes protected by auth:sanctum middleware.
 |
 */
-Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
+
+// Route::get('/admin/city-aqi', [CityAQIAdminController::class, 'index']);
 // Public routes
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -35,7 +41,6 @@ Route::post('/login', [AuthController::class, 'login']);
 // Air quality public data
 Route::prefix('air-quality')->group(function () {
     Route::get('/phnom-penh', [AirQualityController::class, 'getPhnomPenhAirQualityOpenWeather']);
-
 });
 
 Route::prefix('admin')->group(function () {
@@ -48,19 +53,35 @@ Route::prefix('admin')->group(function () {
 });
 
 
-// Additional AQI endpoints
-Route::get('/aqi', [AqiController::class, 'getCityAqi']);
-Route::get('/aqi-global', [AqiController::class, 'global']);
-Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
-Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
+// // Additional AQI endpoints
+// Route::get('/aqi', [AqiController::class, 'getCityAqi']);
+// Route::get('/aqi-global', [AqiController::class, 'global']);
+// Route::get('/airquality', [AqiController::class, 'getGlobalAQI']);
+// Route::get('/cambodia-aqi', [PollutionDataController::class, 'getCambodiaAqi']);
 
+
+Route::get('/waqi-city', [AqiCompareController::class, 'getCityPollution']);
+Route::get('/global-aqi', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/country-aqi-info', [AqiCompareController::class, 'getGlobalAQI']);
+Route::get('/aqi-global', [AqiCompareController::class, 'global']);
 Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
+// Analy Page
+Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
+
+Route::get('/news', [NewsController::class, 'index']); // public for user site
 
 // Routes protected by authentication
 Route::middleware('auth:sanctum')->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
+
+
+
+    //favourite routes
+    Route::get('/favourites', [FavouriteController::class, 'index']); // list favourites
+    Route::post('/favourites', [FavouriteController::class, 'store']); // add favourite
+    Route::delete('/favourites/{city_name}', [FavouriteController::class, 'destroy']); // remove favourite
 
     // User management routes
     Route::prefix('users')->group(function () {
@@ -90,4 +111,13 @@ Route::middleware('auth:sanctum')->group(function () {
         // Add other admin routes here if any
     });
 
+    //news routes
+    Route::post('/news', [NewsController::class, 'store']);
+    Route::put('/news/{id}', [NewsController::class, 'update']);
 });
+
+Route::get('/categories', [CategoryController::class, 'index']);           // list
+Route::post('/categories/create', [CategoryController::class, 'store']);   // create
+Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
+Route::post('/categories/{id}/update', [CategoryController::class, 'update']); // update
+Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete
