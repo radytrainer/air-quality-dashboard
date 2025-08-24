@@ -32,25 +32,51 @@ class LocationSearchController extends Controller
             ], 500);
         }
 
-        $locations = collect($aqiData['data'])
-            ->filter(function ($location) use ($query) {
-                $name = $location['name'] ?? '';
-                return stripos($name, $query) !== false;
-            })
-            ->take(15)
+        $allLocations = collect($aqiData['data'])
             ->map(function ($location) {
                 $parts = explode(',', $location['name']);
                 $city = trim($parts[0]);
                 $country = count($parts) > 1 ? trim(end($parts)) : 'Unknown';
                 
+                // Extract clean country name (remove extra info in parentheses)
+                $cleanCountry = preg_replace('/\s*\([^)]*\)/', '', $country);
+                
                 return [
                     'name' => $city,
                     'full_name' => $location['name'],
-                    'country' => $country,
+                    'country' => $cleanCountry,
                     'lat' => $location['lat'],
                     'lon' => $location['lon'],
                     'aqi' => $location['aqi'],
+                    'raw_name' => $location['name'],
                 ];
+            });
+
+        // Filter locations that match the query
+        $locations = $allLocations
+            ->filter(function ($location) use ($query) {
+                // Search in city name, country name, or full name
+                return stripos($location['name'], $query) !== false || 
+                       stripos($location['country'], $query) !== false || 
+                       stripos($location['full_name'], $query) !== false;
+            })
+            ->take(20)
+            ->map(function ($location) use ($query) {
+                // Add search type information
+                $type = 'general';
+                if (stripos($location['name'], $query) === 0) {
+                    $type = 'city';
+                } elseif (stripos($location['country'], $query) === 0) {
+                    $type = 'country';
+                } elseif (stripos($location['name'], $query) !== false) {
+                    $type = 'city_partial';
+                } elseif (stripos($location['country'], $query) !== false) {
+                    $type = 'country_partial';
+                }
+                
+                $location['type'] = $type;
+                unset($location['raw_name']);
+                return $location;
             })
             ->values();
 
@@ -60,4 +86,6 @@ class LocationSearchController extends Controller
             'total_available' => count($aqiData['data'])
         ]);
     }
+
+
 }
