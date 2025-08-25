@@ -10,30 +10,8 @@
       </div>
     </div>
 
-    <!-- Right Section: AQI, Language, Theme, Login/Profile -->
+  
     <div class="flex items-center gap-2 relative">
-      <!-- AQI Standard -->
-      <button
-        class="flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-200 w-[100px]"
-        title="Change AQI Standard"
-      >
-        <img
-          src="https://flagcdn.com/us.svg"
-          alt="US Flag"
-          class="h-4 w-5 rounded-sm shadow-sm flex-shrink-0"
-        />
-        <span class="text-xs font-medium select-none truncate">AQI-US</span>
-      </button>
-
-      <!-- Theme Toggle -->
-      <button
-        class="flex items-center justify-center p-2 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-200 w-10 h-9"
-        aria-label="Toggle theme"
-        title="Toggle Light/Dark Mode"
-      >
-        <i class="fas fa-sun text-yellow-500 text-sm"></i>
-      </button>
-
       <!-- Language Switcher -->
       <div class="relative">
         <button
