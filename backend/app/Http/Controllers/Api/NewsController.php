@@ -42,39 +42,60 @@ class NewsController extends Controller
     // PATCH /api/news/{id} (admin)
     // Send: caption? (string), keep[] (array of file paths to KEEP), media[] (new files to add)
     public function update(Request $request, $id)
-    {
-        $news = News::findOrFail($id);
+{
+    $news = News::findOrFail($id);
 
-        $validated = $request->validate([
-            'caption' => ['sometimes', 'string', 'max:255'],
-            'keep'    => ['sometimes', 'array'],
-            'keep.*'  => ['string'],
-            'media.*' => ['file', 'mimes:jpg,jpeg,png,gif,mp4,webm', 'max:20480'],
-        ]);
+    $validated = $request->validate([
+        'caption'     => ['sometimes', 'string', 'max:255'],
+        'category_id' => ['sometimes', 'exists:categories,id'],
+        'keep'        => ['sometimes', 'array'],
+        'keep.*'      => ['string'],
+        'media.*'     => ['file', 'mimes:jpg,jpeg,png,gif,mp4,webm', 'max:20480'],
+    ]);
 
-        $existing = $news->media ?? [];
-        $keep = $validated['keep'] ?? [];
+    $existing = $news->media ?? [];
+    $keep = $validated['keep'] ?? [];
 
-        // Compute removed files
-        $removed = array_values(array_diff($existing, $keep));
-        foreach ($removed as $path) {
+    // Remove files
+    $removed = array_values(array_diff($existing, $keep));
+    foreach ($removed as $path) {
+        Storage::disk('public')->delete($path);
+    }
+
+    // Add new files
+    $final = array_values($keep);
+    if ($request->hasFile('media')) {
+        foreach ($request->file('media') as $file) {
+            $final[] = $file->store('news', 'public');
+        }
+    }
+
+    if (isset($validated['caption'])) {
+        $news->caption = $validated['caption'];
+    }
+    if (isset($validated['category_id'])) {
+        $news->category_id = $validated['category_id'];
+    }
+
+    $news->media = $final;
+    $news->save();
+
+    return response()->json($news);
+}
+
+    public function destroy($id)
+{
+    $news = News::findOrFail($id);
+
+    // Delete all media files from storage
+    if ($news->media) {
+        foreach ($news->media as $path) {
             Storage::disk('public')->delete($path);
         }
-
-        // Add new files
-        $final = array_values($keep);
-        if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $file) {
-                $final[] = $file->store('news', 'public');
-            }
-        }
-
-        if (isset($validated['caption'])) {
-            $news->caption = $validated['caption'];
-        }
-        $news->media = $final;
-        $news->save();
-
-        return response()->json($news);
     }
+
+    $news->delete();
+
+    return response()->json(['message' => 'News deleted successfully']);
+}
 }
