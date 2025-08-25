@@ -1,43 +1,43 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4">
-    <div class="max-w-6xl mx-auto space-y-6">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+    <div class="max-w-7xl mx-auto space-y-8">
       <!-- Header -->
       <div class="text-center mb-6">
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">
-          Air Quality Monitor
+           {{ $t('analyticsPage.Air') }}
         </h1>
-        <p class="text-slate-600 text-sm">Real-time global air pollution tracking</p>
+        <p class="text-slate-600 text-sm"> {{ $t('analyticsPage.time') }}</p>
       </div>
 
       <!-- Top 4 Metric Boxes -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Total Locations -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4 hover:shadow-lg transition-all duration-300">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Total Locations</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.total') }}</p>
               </div>
-              <p class="text-2xl font-bold text-slate-900 mb-1">{{ aqiData.length }}</p>
-              <p class="text-xs text-emerald-600 font-medium">
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ aqiData.length }}</p>
+              <p class="text-sm text-emerald-600 font-medium">
                 <span class="inline-flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                   </svg>
-                  Active
+                 {{ $t('analyticsPage.Active') }}
                 </span>
               </p>
             </div>
-            <div class="flex flex-col items-end space-y-1">
-              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
               </div>
-              <button @click="exportData('total')" class="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="exportData('total')" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
               </button>
@@ -46,31 +46,31 @@
         </div>
 
         <!-- Highest Pollution -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4 hover:shadow-lg transition-all duration-300">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Highest Pollution</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Highes') }}</p>
               </div>
-              <p class="text-2xl font-bold text-slate-900 mb-1">{{ highestPollution?.aqi || 'N/A' }}</p>
-              <p class="text-xs text-red-600 font-medium">
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ highestPollution?.aqi || 'N/A' }}</p>
+              <p class="text-sm text-red-600 font-medium">
                 <span class="inline-flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                   </svg>
                   {{ highestPollution?.name || 'No data' }}
                 </span>
               </p>
             </div>
-            <div class="flex flex-col items-end space-y-1">
-              <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
                 </svg>
               </div>
-              <button @click="exportData('highest')" class="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="exportData('highest')" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
               </button>
@@ -79,31 +79,31 @@
         </div>
 
         <!-- Lowest Pollution -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4 hover:shadow-lg transition-all duration-300">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Lowest Pollution</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Lowest') }}</p>
               </div>
-              <p class="text-2xl font-bold text-slate-900 mb-1">{{ lowestPollution?.aqi || 'N/A' }}</p>
-              <p class="text-xs text-emerald-600 font-medium">
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ lowestPollution?.aqi || 'N/A' }}</p>
+              <p class="text-sm text-emerald-600 font-medium">
                 <span class="inline-flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                   </svg>
                   {{ lowestPollution?.name || 'No data' }}
                 </span>
               </p>
             </div>
-            <div class="flex flex-col items-end space-y-1">
-              <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                 </svg>
               </div>
-              <button @click="exportData('lowest')" class="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="exportData('lowest')" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
               </button>
@@ -112,31 +112,31 @@
         </div>
 
         <!-- Average AQI -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4 hover:shadow-lg transition-all duration-300">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Average AQI</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Average') }}</p>
               </div>
-              <p class="text-2xl font-bold text-slate-900 mb-1">{{ averageAQI }}</p>
-              <p class="text-xs text-indigo-600 font-medium">
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ averageAQI }}</p>
+              <p class="text-sm text-indigo-600 font-medium">
                 <span class="inline-flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                   </svg>
-                  Global average
+                  {{ $t('analyticsPage.Global') }}
                 </span>
               </p>
             </div>
-            <div class="flex flex-col items-end space-y-1">
-              <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
               </div>
-              <button @click="exportData('average')" class="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="exportData('average')" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
               </button>
@@ -146,92 +146,92 @@
       </div>
 
       <!-- Main Content Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- AQI Trend Chart -->
-        <div class="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-6">
-          <div class="flex items-center justify-between mb-4">
+        <div class="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8">
+          <div class="flex items-center justify-between mb-6">
             <div>
-              <h3 class="text-xl font-bold text-slate-900 mb-1">Pollution Trends</h3>
-              <p class="text-slate-600 text-sm">Top 10 vs Bottom 10 locations</p>
+              <h3 class="text-xl font-bold text-slate-900 mb-1"> {{ $t('analyticsPage.Pollution') }}</h3>
+              <p class="text-slate-600 text-sm"> {{ $t('analyticsPage.top') }}</p>
             </div>
-            <div class="flex items-center space-x-3">
-              <select v-model="chartMetric" @change="updateChart" class="bg-white/80 border border-slate-200 rounded-lg px-3 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="flex items-center space-x-4">
+              <select v-model="chartMetric" @change="updateChart" class="bg-white/80 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="aqi">AQI</option>
                 <option value="pm25">PM2.5</option>
                 <option value="pm10">PM10</option>
-                <option value="temperature">Temperature</option>
+                <option value="temperature"> {{ $t('analyticsPage.Temperature') }}</option>
                 <option value="no2">NO2</option>
                 <option value="co">CO</option>
                 <option value="o3">O3</option>
-                <option value="humidity">Humidity</option>
-                <option value="pressure">Pressure</option>
-                <option value="wind_speed">Wind Speed</option>
+                <option value="humidity"> {{ $t('analyticsPage.Humidity') }}</option>
+                <option value="pressure"> {{ $t('analyticsPage.Pressure') }}</option>
+                <option value="wind_speed"> {{ $t('analyticsPage.WindSpeed') }}</option>
               </select>
               <div class="flex items-center space-x-3 text-xs">
                 <div class="flex items-center space-x-1">
                   <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span class="text-slate-600 font-medium">High: {{ chartHighValue }}</span>
+                  <span class="text-slate-600 font-medium">{{ $t('analyticsPage.High') }}: {{ chartHighValue }}</span>
                 </div>
                 <div class="flex items-center space-x-1">
                   <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                  <span class="text-slate-600 font-medium">Low: {{ chartLowValue }}</span>
+                  <span class="text-slate-600 font-medium">{{ $t('analyticsPage.Low') }}: {{ chartLowValue }}</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="h-64 relative">
+          <div class="h-80 relative">
             <canvas ref="chartCanvas" class="w-full h-full"></canvas>
           </div>
         </div>
 
         <!-- Top 5 Locations by Pollution -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-3">
-          <div class="flex items-center justify-between mb-3">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-5">
+          <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-lg font-bold text-slate-900 mb-1">Top Pollution</h3>
-              <p class="text-slate-600 text-xs">Updates every 30s</p>
+              <h3 class="text-lg font-bold text-slate-900 mb-1"> {{ $t('analyticsPage.TopPollution') }}</h3>
+              <p class="text-slate-600 text-xs"> {{ $t('analyticsPage.UpdatesEvery30s') }}</p>
             </div>
-            <div class="flex space-x-2">
-              <select v-model="selectedMetric" class="bg-white/80 border border-slate-200 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="flex space-x-3">
+              <select v-model="selectedMetric" class="bg-white/80 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="aqi">AQI</option>
                 <option value="pm25">PM2.5</option>
                 <option value="pm10">PM10</option>
                 <option value="no2">NO2</option>
                 <option value="co">CO</option>
                 <option value="o3">O3</option>
-                <option value="temperature">Temperature</option>
-                <option value="humidity">Humidity</option>
-                <option value="pressure">Pressure</option>
-                <option value="wind_speed">Wind Speed</option>
+                <option value="temperature"> {{ $t('analyticsPage.Temperature') }}</option>
+                <option value="humidity"> {{ $t('analyticsPage.Humidity') }}</option>
+                <option value="pressure">{{ $t('analyticsPage.Pressure') }}</option>
+                <option value="wind_speed">{{ $t('analyticsPage.WindSpeed') }}</option>
               </select>
               <select v-model="pollutionType" @change="updatePollutionList" class="bg-white/80 border border-slate-200 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="high">High</option>
-                <option value="low">Low</option>
+                <option value="high">{{ $t('analyticsPage.High') }}</option>
+                <option value="low">{{ $t('analyticsPage.Low') }}</option>
               </select>
             </div>
           </div>
-          <div class="space-y-2">
-            <div v-for="(location, index) in pollutionLocations" :key="location.id" class="bg-gradient-to-r from-slate-50 to-white rounded-lg p-2 border border-slate-100 hover:shadow-md transition-all duration-200">
+          <div class="space-y-3">
+            <div v-for="(location, index) in pollutionLocations" :key="location.id" class="bg-gradient-to-r from-slate-50 to-white rounded-lg p-3 border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-start justify-between">
-                <div class="flex items-start space-x-2">
+                <div class="flex items-start space-x-3">
                   <div class="flex-shrink-0">
-                    <img v-if="location.flag" :src="location.flag" :alt="location.name" class="w-6 h-4 object-cover rounded shadow-sm">
-                    <div class="w-6 h-4 bg-gradient-to-br from-slate-200 to-slate-300 rounded" v-else></div>
+                    <img v-if="location.flag" :src="location.flag" :alt="location.name" class="w-8 h-5 object-cover rounded shadow-sm">
+                    <div class="w-8 h-5 bg-gradient-to-br from-slate-200 to-slate-300 rounded" v-else></div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-slate-900 truncate">{{ truncateName(location.name) }}</p>
+                    <p class="text-sm font-bold text-slate-900 truncate">{{ truncateName(location.name) }}</p>
                   </div>
                 </div>
-                <div class="text-right flex-shrink-0 ml-2">
-                  <div class="text-sm font-bold text-slate-900">{{ formatMetricValue(getMetricValue(location)) }}</div>
-                  <div class="w-12 bg-slate-200 rounded-full h-1.5 mt-1">
+                <div class="text-right flex-shrink-0 ml-3">
+                  <div class="text-base font-bold text-slate-900">{{ formatMetricValue(getMetricValue(location)) }}</div>
+                  <div class="w-16 bg-slate-200 rounded-full h-2 mt-2">
                     <div 
-                      class="h-1.5 rounded-full transition-all duration-500"
+                      class="h-2 rounded-full transition-all duration-500"
                       :class="getPollutionColor(getMetricValue(location))"
                       :style="{ width: `${Math.min(100, (getMetricValue(location) / getMaxMetricValue()) * 100)}%` }"
                     ></div>
                   </div>
-                  <div class="text-xs text-slate-500 mt-1 font-medium">
+                  <div class="text-sm text-slate-500 mt-2 font-medium">
                     {{ Math.round((getMetricValue(location) / getMaxMetricValue()) * 100) }}%
                   </div>
                 </div>
@@ -242,22 +242,22 @@
       </div>
 
       <!-- Additional Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- AQI Distribution -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">AQI Distribution</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.AQIDistribution') }}</h3>
             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
           </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div v-for="category in aqiCategories" :key="category.name" class="bg-gradient-to-br from-white/80 to-slate-50 rounded-lg p-3 border border-slate-100 hover:shadow-md transition-all duration-200">
-              <div class="flex items-center space-x-2">
-                <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: category.color }"></div>
-                <span class="text-xs font-medium text-slate-700">{{ category.name }}</span>
+          <div class="grid grid-cols-2 gap-6">
+            <div v-for="category in aqiCategories" :key="category.name" class="bg-gradient-to-br from-white/80 to-slate-50 rounded-lg p-4 border border-slate-100 hover:shadow-md transition-all duration-200">
+              <div class="flex items-center space-x-3">
+                <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: category.color }"></div>
+                <span class="text-sm font-medium text-slate-700">{{ category.name }}</span>
               </div>
-              <div class="mt-2 text-lg font-bold text-slate-900">{{ category.count }}</div>
-              <div class="w-full bg-slate-200 h-2 rounded-full mt-2">
-                <div class="h-2 rounded-full transition-all duration-500" :style="{ width: `${(category.count / aqiData.length * 100) || 0}%`, backgroundColor: category.color }"></div>
+              <div class="mt-3 text-xl font-bold text-slate-900">{{ category.count }}</div>
+              <div class="w-full bg-slate-200 h-2.5 rounded-full mt-3">
+                <div class="h-2.5 rounded-full transition-all duration-500" :style="{ width: `${(category.count / aqiData.length * 100) || 0}%`, backgroundColor: category.color }"></div>
               </div>
             </div>
           </div>
@@ -266,37 +266,37 @@
         <!-- Environmental Metrics -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">Environmental Metrics</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.EnvironmentalMetrics') }}</h3>
             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           </div>
           <div class="grid grid-cols-1 gap-3">
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Temperature</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Temperature') }}</span>
               </div>
-              <span class="text-sm font-bold text-slate-900">{{ averageTemperature }} °C</span>
+              <span class="text-base font-bold text-slate-900">{{ averageTemperature }} °C</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Humidity</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Humidity') }}</span>
               </div>
-              <span class="text-sm font-bold text-slate-900">{{ averageHumidity }} %</span>
+              <span class="text-base font-bold text-slate-900">{{ averageHumidity }} %</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Wind Speed</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.WindSpeed') }}</span>
               </div>
-              <span class="text-sm font-bold text-slate-900">{{ averageWindSpeed }} m/s</span>
+              <span class="text-base font-bold text-slate-900">{{ averageWindSpeed }} m/s</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Pressure</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Pressure') }}</span>
               </div>
-              <span class="text-sm font-bold text-slate-900">{{ averagePressure }} hPa</span>
+              <span class="text-base font-bold text-slate-900">{{ averagePressure }} hPa</span>
             </div>
           </div>
         </div>
@@ -304,41 +304,41 @@
         <!-- Average Pollution Levels -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">Average Pollution Levels</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.AveragePollutionLevels') }}</h3>
             <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
           </div>
-          <div class="space-y-2 text-xs">
-            <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
-              <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
                 <span class="text-slate-700 font-medium">PM2.5</span>
               </div>
               <span class="font-bold text-slate-900">{{ averagePM25 }} µg/m³</span>
             </div>
-            <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
-              <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full"></div>
+            <div class="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full"></div>
                 <span class="text-slate-700 font-medium">PM10</span>
               </div>
               <span class="font-bold text-slate-900">{{ averagePM10 }} µg/m³</span>
             </div>
-            <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
-              <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"></div>
+            <div class="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"></div>
                 <span class="text-slate-700 font-medium">NO2</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageNO2 }} ppb</span>
             </div>
-            <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
-              <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full"></div>
+            <div class="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full"></div>
                 <span class="text-slate-700 font-medium">CO</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageCO }} ppm</span>
             </div>
-            <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
-              <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
+            <div class="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
                 <span class="text-slate-700 font-medium">O3</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageO3 }} ppb</span>
@@ -346,28 +346,28 @@
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Temperature</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Temperature') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageTemperature }} °C</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Humidity</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Humidity') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageHumidity }} %</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Wind Speed</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.WindSpeed') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageWindSpeed }} m/s</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Pressure</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Pressure') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averagePressure }} hPa</span>
             </div>
@@ -382,6 +382,9 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Reactive data
 const aqiData = ref([])
@@ -669,12 +672,12 @@ const initChart = () => {
           backgroundColor: 'rgba(239, 68, 68, 0.1)',
           fill: true,
           tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
+          pointRadius: 5,
+          pointHoverRadius: 7,
           pointBackgroundColor: '#ef4444',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 2,
-          borderWidth: 2
+          borderWidth: 3
         },
         {
           label: 'Bottom 10 Low Pollution',
@@ -683,12 +686,12 @@ const initChart = () => {
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
           fill: false,
           tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
+          pointRadius: 5,
+          pointHoverRadius: 7,
           pointBackgroundColor: '#10b981',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 2,
-          borderWidth: 2,
+          borderWidth: 3,
           borderDash: [6, 3]
         }
       ]
@@ -702,9 +705,9 @@ const initChart = () => {
           position: 'top',
           labels: {
             usePointStyle: true,
-            padding: 15,
+            padding: 20,
             font: {
-              size: 11,
+              size: 12,
               weight: '600'
             },
             color: '#475569'
@@ -717,14 +720,14 @@ const initChart = () => {
           borderColor: '#e2e8f0',
           borderWidth: 1,
           cornerRadius: 8,
-          padding: 10,
+          padding: 12,
           displayColors: true,
           titleFont: {
-            size: 12,
+            size: 14,
             weight: '600'
           },
           bodyFont: {
-            size: 11
+            size: 12
           },
           callbacks: {
             title: function(tooltipItems) {
@@ -746,7 +749,7 @@ const initChart = () => {
           ticks: {
             color: '#64748b',
             font: {
-              size: 11,
+              size: 12,
               weight: '500'
             },
             maxRotation: 45
@@ -761,10 +764,10 @@ const initChart = () => {
           ticks: {
             color: '#64748b',
             font: {
-              size: 11,
+              size: 12,
               weight: '500'
             },
-            padding: 6
+            padding: 8
           }
         }
       },
@@ -848,7 +851,7 @@ const initPieChart = () => {
           borderColor: '#e2e8f0',
           borderWidth: 1,
           cornerRadius: 8,
-          padding: 8
+          padding: 10
         }
       },
       cutout: '65%',
@@ -965,6 +968,10 @@ onMounted(async () => {
 
 .hover\:shadow-lg:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.hover\:shadow-xl:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .hover\:shadow-md:hover {

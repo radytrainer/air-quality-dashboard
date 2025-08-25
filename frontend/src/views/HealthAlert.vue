@@ -48,6 +48,7 @@
         </div>
       </div>
 
+
       <!-- Alert Configuration Cards -->
       <div class="grid gap-6">
         <!-- Good Air Quality -->
@@ -87,6 +88,7 @@
           </div>
         </div>
 
+
         <!-- Moderate Air Quality -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
           <div class="bg-gradient-to-r from-yellow-500 to-amber-500 px-6 py-4">
@@ -123,6 +125,7 @@
             </div>
           </div>
         </div>
+
 
         <!-- Unhealthy for Sensitive Groups -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -169,6 +172,7 @@
             </div>
           </div>
         </div>
+
 
         <!-- Unhealthy Air Quality -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -227,6 +231,7 @@
           </div>
         </div>
 
+
         <!-- Very Unhealthy Air Quality -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
           <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
@@ -283,6 +288,7 @@
             </div>
           </div>
         </div>
+
 
         <!-- Hazardous Air Quality -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -342,6 +348,7 @@
         </div>
       </div>
 
+
       <!-- Action Panel -->
       <div class="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
         <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
@@ -378,6 +385,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- Enhanced Preview Modal -->
     <transition name="modal">
@@ -441,6 +449,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+
 
 const defaultMessages = {
   good: {
@@ -547,6 +556,7 @@ function getStatusLabel(key) {
   };
   return labels[key] || key;
 }
+
 
 function getStatusCardClass(key) {
   const classes = {
