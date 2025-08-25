@@ -48,18 +48,20 @@
         </select>
 
         <button
-          @click="fetchAQIData"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
-        >
-          🔄 {{ $t("city.refresh") }}
-        </button>
+  @click="fetchAQIData"
+  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md flex items-center gap-2 transition-all duration-200"
+>
+  <ArrowPathIcon class="w-5 h-5" />
+  {{ $t("city.refresh") }}
+</button>
 
-        <button
-          @click="exportToCSV"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all duration-200"
-        >
-          📄 {{ $t("city.exportCSV") }}
-        </button>
+<button
+  @click="exportToCSV"
+  class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md flex items-center gap-2 transition-all duration-200"
+>
+  <DocumentIcon class="w-5 h-5" />
+  {{ $t("city.exportCSV") }}
+</button>
       </div>
 
       <div class="text-sm text-gray-500 mb-4 space-y-1">
@@ -175,7 +177,7 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import api from "@/services/api";
-
+import { ArrowPathIcon, DocumentIcon } from '@heroicons/vue/24/solid'
 const search = ref("");
 const pollutant = ref("aqi");
 const cities = ref([]);
