@@ -7,12 +7,12 @@
           <div class="bg-gradient-to-r from-blue-600 to-teal-600 px-8 py-6 text-white">
             <div class="flex items-center justify-between">
               <div>
-                <h1 class="text-3xl font-bold">Health Alert Dashboard</h1>
-                <p class="text-blue-100 mt-2">Real-time air quality monitoring and alert management</p>
+                <h1 class="text-3xl font-bold">{{$t('Health.Health')}}</h1>
+                <p class="text-blue-100 mt-2">{{$t('Health.Real')}}</p>
               </div>
               <div class="text-right">
                 <div class="text-2xl font-bold">{{ totalAlerts }}</div>
-                <div class="text-blue-100">Active Alerts</div>
+                <div class="text-blue-100">{{$t('Health.ActiveAlerts')}}</div>
               </div>
             </div>
           </div>
@@ -59,15 +59,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Good Air Quality (0-50 AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.GoodAir')}}</h3>
               </div>
-              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">Minimal Risk</span>
+              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">{{$t('Health.MinimalRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Message</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicMessage')}}</label>
                 <textarea
                   v-model="messages.good.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none"
@@ -76,7 +76,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroups')}}</label>
                 <textarea
                   v-model="messages.good.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none"
@@ -97,15 +97,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Moderate Air Quality (51-100 AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.ModerateAir')}}</h3>
               </div>
-              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">Low Risk</span>
+              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">{{$t('Health.LowRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Message</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicMessage')}}</label>
                 <textarea
                   v-model="messages.moderate.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 resize-none"
@@ -114,7 +114,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroups')}}</label>
                 <textarea
                   v-model="messages.moderate.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 resize-none"
@@ -135,15 +135,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Unhealthy for Sensitive Groups (101-150 AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.UnhealthyforSensitive')}} </h3>
               </div>
-              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">Moderate Risk</span>
+              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">{{$t('Health.ModerateRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6 mb-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Message</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicMessage')}}</label>
                 <textarea
                   v-model="messages.unhealthySensitive.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 resize-none"
@@ -152,7 +152,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups Alert</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroupsAlert')}}</label>
                 <textarea
                   v-model="messages.unhealthySensitive.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 resize-none"
@@ -162,7 +162,7 @@
               </div>
             </div>
             <div class="space-y-3">
-              <label class="block text-sm font-semibold text-gray-700">Recommended Actions</label>
+              <label class="block text-sm font-semibold text-gray-700">{{$t('Health.RecommendedActions')}}</label>
               <textarea
                 v-model="messages.unhealthySensitive.actions"
                 class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 resize-none"
@@ -182,15 +182,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Unhealthy Air Quality (151-200 AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.UnhealthyAir')}}</h3>
               </div>
-              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">High Risk</span>
+              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">{{$t('Health.HighRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6 mb-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Health Warning</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicHealthWarning')}}</label>
                 <textarea
                   v-model="messages.unhealthy.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 resize-none"
@@ -199,7 +199,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups Alert</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroupsAlert')}}</label>
                 <textarea
                   v-model="messages.unhealthy.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 resize-none"
@@ -210,7 +210,7 @@
             </div>
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Emergency Actions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.EmergencyActions')}}</label>
                 <textarea
                   v-model="messages.unhealthy.emergency"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 resize-none"
@@ -219,7 +219,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Activity Restrictions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.ActivityRestrictions')}}</label>
                 <textarea
                   v-model="messages.unhealthy.restrictions"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 resize-none"
@@ -240,15 +240,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Very Unhealthy Air Quality (201-300 AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.VeryUnhealthyAir')}}</h3>
               </div>
-              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">Very High Risk</span>
+              <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">{{$t('Health.VeryHighRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6 mb-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Health Warning</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicHealthWarning')}}</label>
                 <textarea
                   v-model="messages.veryUnhealthy.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none"
@@ -257,7 +257,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups Alert</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroupsAlert')}}</label>
                 <textarea
                   v-model="messages.veryUnhealthy.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none"
@@ -268,7 +268,7 @@
             </div>
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Emergency Actions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.EmergencyActions')}}</label>
                 <textarea
                   v-model="messages.veryUnhealthy.emergency"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none"
@@ -277,7 +277,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Activity Restrictions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.ActivityRestrictions')}}</label>
                 <textarea
                   v-model="messages.veryUnhealthy.restrictions"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none"
@@ -298,15 +298,15 @@
                 <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                   <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                 </div>
-                <h3 class="text-xl font-bold">Hazardous Air Quality (301+ AQI)</h3>
+                <h3 class="text-xl font-bold">{{$t('Health.HazardousAir')}}</h3>
               </div>
-              <span class="bg-red-600 px-4 py-2 rounded-full text-sm font-medium animate-pulse">Extreme Risk</span>
+              <span class="bg-red-600 px-4 py-2 rounded-full text-sm font-medium animate-pulse">{{$t('Health.ExtremeRisk')}}</span>
             </div>
           </div>
           <div class="p-6">
             <div class="grid md:grid-cols-2 gap-6 mb-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Public Health Emergency</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.PublicHealthEmergency')}}</label>
                 <textarea
                   v-model="messages.hazardous.public"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all duration-200 resize-none"
@@ -315,7 +315,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Sensitive Groups Emergency</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.SensitiveGroupsEmergency')}}</label>
                 <textarea
                   v-model="messages.hazardous.sensitive"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all duration-200 resize-none"
@@ -326,7 +326,7 @@
             </div>
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Emergency Actions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.EmergencyActions')}}</label>
                 <textarea
                   v-model="messages.hazardous.emergency"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all duration-200 resize-none"
@@ -335,7 +335,7 @@
                 ></textarea>
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-semibold text-gray-700">Activity Restrictions</label>
+                <label class="block text-sm font-semibold text-gray-700">{{$t('Health.ActivityRestrictions')}}</label>
                 <textarea
                   v-model="messages.hazardous.restrictions"
                   class="w-full border-2 border-gray-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all duration-200 resize-none"
@@ -357,19 +357,19 @@
               @click="saveMessages"
               class="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-teal-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              Save All Messages
+              {{$t('Health.Save')}}
             </button>
             <button
               @click="openPreview"
               class="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-8 py-3 rounded-xl hover:from-gray-200 hover:to-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              Preview Messages
+              {{$t('Health.Preview')}}
             </button>
             <button
               @click="resetDefaults"
               class="bg-gradient-to-r from-red-100 to-red-200 text-red-700 px-8 py-3 rounded-xl hover:from-red-200 hover:to-red-300 focus:ring-4 focus:ring-red-300 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              Reset to Default
+              {{$t('Health.Reset')}}
             </button>
           </div>
           <div class="flex items-center">
@@ -378,7 +378,7 @@
                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                 </svg>
-                Messages Saved Successfully!
+                {{$t('Health.Messages')}}
               </div>
             </transition>
           </div>
@@ -393,7 +393,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
           <div class="bg-gradient-to-r from-blue-600 to-teal-600 px-6 py-4 text-white">
             <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-bold">Health Alert Messages Preview</h2>
+              <h2 class="text-2xl font-bold">{{$t('Health.HealthAlert')}}</h2>
               <button 
                 @click="showModal = false"
                 class="text-white hover:text-gray-200 transition-colors p-2 hover:bg-white hover:bg-opacity-20 rounded-lg"
@@ -418,23 +418,23 @@
                 </div>
                 <div class="space-y-3 text-sm">
                   <div v-if="msg.public" class="bg-gray-50 p-3 rounded-lg">
-                    <strong class="text-gray-700">Public:</strong> 
+                    <strong class="text-gray-700">{{$t('Health.Public')}}:</strong> 
                     <span class="text-gray-600 ml-2">{{ msg.public }}</span>
                   </div>
                   <div v-if="msg.sensitive" class="bg-gray-50 p-3 rounded-lg">
-                    <strong class="text-gray-700">Sensitive Groups:</strong> 
+                    <strong class="text-gray-700">{{$t('Health.SensitiveGroups')}}:</strong> 
                     <span class="text-gray-600 ml-2">{{ msg.sensitive }}</span>
                   </div>
                   <div v-if="msg.actions" class="bg-gray-50 p-3 rounded-lg">
-                    <strong class="text-gray-700">Recommended Actions:</strong> 
+                    <strong class="text-gray-700">{{$t('Health.RecommendedActions')}}:</strong> 
                     <span class="text-gray-600 ml-2">{{ msg.actions }}</span>
                   </div>
                   <div v-if="msg.emergency" class="bg-gray-50 p-3 rounded-lg">
-                    <strong class="text-gray-700">Emergency Actions:</strong> 
+                    <strong class="text-gray-700">{{$t('Health.EmergencyActions')}}:</strong> 
                     <span class="text-gray-600 ml-2">{{ msg.emergency }}</span>
                   </div>
                   <div v-if="msg.restrictions" class="bg-gray-50 p-3 rounded-lg">
-                    <strong class="text-gray-700">Activity Restrictions:</strong> 
+                    <strong class="text-gray-700">{{$t('Health.ActivityRestrictions')}}:</strong> 
                     <span class="text-gray-600 ml-2">{{ msg.restrictions }}</span>
                   </div>
                 </div>
