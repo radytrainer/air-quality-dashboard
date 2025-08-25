@@ -4,9 +4,9 @@
       <!-- Header -->
       <div class="text-center mb-6">
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">
-          Air Quality Monitor
+           {{ $t('analyticsPage.Air') }}
         </h1>
-        <p class="text-slate-600 text-sm">Real-time global air pollution tracking</p>
+        <p class="text-slate-600 text-sm"> {{ $t('analyticsPage.time') }}</p>
       </div>
 
       <!-- Top 4 Metric Boxes -->
@@ -17,7 +17,7 @@
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Total Locations</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.total') }}</p>
               </div>
               <p class="text-2xl font-bold text-slate-900 mb-1">{{ aqiData.length }}</p>
               <p class="text-xs text-emerald-600 font-medium">
@@ -25,7 +25,7 @@
                   <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                   </svg>
-                  Active
+                 {{ $t('analyticsPage.Active') }}
                 </span>
               </p>
             </div>
@@ -51,7 +51,7 @@
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Highest Pollution</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Highes') }}</p>
               </div>
               <p class="text-2xl font-bold text-slate-900 mb-1">{{ highestPollution?.aqi || 'N/A' }}</p>
               <p class="text-xs text-red-600 font-medium">
@@ -84,7 +84,7 @@
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Lowest Pollution</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Lowest') }}</p>
               </div>
               <p class="text-2xl font-bold text-slate-900 mb-1">{{ lowestPollution?.aqi || 'N/A' }}</p>
               <p class="text-xs text-emerald-600 font-medium">
@@ -117,7 +117,7 @@
             <div>
               <div class="flex items-center space-x-1 mb-1">
                 <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Average AQI</p>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide"> {{ $t('analyticsPage.Average') }}</p>
               </div>
               <p class="text-2xl font-bold text-slate-900 mb-1">{{ averageAQI }}</p>
               <p class="text-xs text-indigo-600 font-medium">
@@ -125,7 +125,7 @@
                   <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                   </svg>
-                  Global average
+                  {{ $t('analyticsPage.Global') }}
                 </span>
               </p>
             </div>
@@ -151,30 +151,30 @@
         <div class="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-6">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-xl font-bold text-slate-900 mb-1">Pollution Trends</h3>
-              <p class="text-slate-600 text-sm">Top 10 vs Bottom 10 locations</p>
+              <h3 class="text-xl font-bold text-slate-900 mb-1"> {{ $t('analyticsPage.Pollution') }}</h3>
+              <p class="text-slate-600 text-sm"> {{ $t('analyticsPage.top') }}</p>
             </div>
             <div class="flex items-center space-x-3">
               <select v-model="chartMetric" @change="updateChart" class="bg-white/80 border border-slate-200 rounded-lg px-3 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="aqi">AQI</option>
                 <option value="pm25">PM2.5</option>
                 <option value="pm10">PM10</option>
-                <option value="temperature">Temperature</option>
+                <option value="temperature"> {{ $t('analyticsPage.Temperature') }}</option>
                 <option value="no2">NO2</option>
                 <option value="co">CO</option>
                 <option value="o3">O3</option>
-                <option value="humidity">Humidity</option>
-                <option value="pressure">Pressure</option>
-                <option value="wind_speed">Wind Speed</option>
+                <option value="humidity"> {{ $t('analyticsPage.Humidity') }}</option>
+                <option value="pressure"> {{ $t('analyticsPage.Pressure') }}</option>
+                <option value="wind_speed"> {{ $t('analyticsPage.WindSpeed') }}</option>
               </select>
               <div class="flex items-center space-x-3 text-xs">
                 <div class="flex items-center space-x-1">
                   <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span class="text-slate-600 font-medium">High: {{ chartHighValue }}</span>
+                  <span class="text-slate-600 font-medium">{{ $t('analyticsPage.High') }}: {{ chartHighValue }}</span>
                 </div>
                 <div class="flex items-center space-x-1">
                   <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                  <span class="text-slate-600 font-medium">Low: {{ chartLowValue }}</span>
+                  <span class="text-slate-600 font-medium">{{ $t('analyticsPage.Low') }}: {{ chartLowValue }}</span>
                 </div>
               </div>
             </div>
@@ -188,8 +188,8 @@
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-3">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <h3 class="text-lg font-bold text-slate-900 mb-1">Top Pollution</h3>
-              <p class="text-slate-600 text-xs">Updates every 30s</p>
+              <h3 class="text-lg font-bold text-slate-900 mb-1"> {{ $t('analyticsPage.TopPollution') }}</h3>
+              <p class="text-slate-600 text-xs"> {{ $t('analyticsPage.UpdatesEvery30s') }}</p>
             </div>
             <div class="flex space-x-2">
               <select v-model="selectedMetric" class="bg-white/80 border border-slate-200 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -199,14 +199,14 @@
                 <option value="no2">NO2</option>
                 <option value="co">CO</option>
                 <option value="o3">O3</option>
-                <option value="temperature">Temperature</option>
-                <option value="humidity">Humidity</option>
-                <option value="pressure">Pressure</option>
-                <option value="wind_speed">Wind Speed</option>
+                <option value="temperature"> {{ $t('analyticsPage.Temperature') }}</option>
+                <option value="humidity"> {{ $t('analyticsPage.Humidity') }}</option>
+                <option value="pressure">{{ $t('analyticsPage.Pressure') }}</option>
+                <option value="wind_speed">{{ $t('analyticsPage.WindSpeed') }}</option>
               </select>
               <select v-model="pollutionType" @change="updatePollutionList" class="bg-white/80 border border-slate-200 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="high">High</option>
-                <option value="low">Low</option>
+                <option value="high">{{ $t('analyticsPage.High') }}</option>
+                <option value="low">{{ $t('analyticsPage.Low') }}</option>
               </select>
             </div>
           </div>
@@ -246,7 +246,7 @@
         <!-- AQI Distribution -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">AQI Distribution</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.AQIDistribution') }}</h3>
             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
           </div>
           <div class="grid grid-cols-2 gap-4">
@@ -266,35 +266,35 @@
         <!-- Environmental Metrics -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">Environmental Metrics</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.EnvironmentalMetrics') }}</h3>
             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           </div>
           <div class="grid grid-cols-1 gap-3">
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Temperature</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Temperature') }}</span>
               </div>
               <span class="text-sm font-bold text-slate-900">{{ averageTemperature }} °C</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Humidity</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Humidity') }}</span>
               </div>
               <span class="text-sm font-bold text-slate-900">{{ averageHumidity }} %</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Wind Speed</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.WindSpeed') }}</span>
               </div>
               <span class="text-sm font-bold text-slate-900">{{ averageWindSpeed }} m/s</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-white/80 to-slate-50 rounded-lg border border-slate-100 hover:shadow-md transition-all duration-200">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full"></div>
-                <span class="text-xs font-medium text-slate-700">Pressure</span>
+                <span class="text-xs font-medium text-slate-700">{{ $t('analyticsPage.Pressure') }}</span>
               </div>
               <span class="text-sm font-bold text-slate-900">{{ averagePressure }} hPa</span>
             </div>
@@ -304,7 +304,7 @@
         <!-- Average Pollution Levels -->
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-white/20 p-4">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-slate-900">Average Pollution Levels</h3>
+            <h3 class="text-lg font-bold text-slate-900">{{ $t('analyticsPage.AveragePollutionLevels') }}</h3>
             <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
           </div>
           <div class="space-y-2 text-xs">
@@ -346,28 +346,28 @@
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Temperature</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Temperature') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageTemperature }} °C</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Humidity</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Humidity') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageHumidity }} %</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Wind Speed</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.WindSpeed') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averageWindSpeed }} m/s</span>
             </div>
             <div class="flex items-center justify-between p-2 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-slate-100">
               <div class="flex items-center space-x-2">
                 <div class="w-2 h-2 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full"></div>
-                <span class="text-slate-700 font-medium">Pressure</span>
+                <span class="text-slate-700 font-medium">{{ $t('analyticsPage.Pressure') }}</span>
               </div>
               <span class="font-bold text-slate-900">{{ averagePressure }} hPa</span>
             </div>
@@ -382,6 +382,9 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Reactive data
 const aqiData = ref([])
