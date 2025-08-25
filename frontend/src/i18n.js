@@ -149,8 +149,89 @@ const messages = {
       AveragePollutionLevels: 'Average Pollution Levels',
       Active:'Active',
       Global: 'Global Average'
+    },
+    city: {
+    title: "City AQI",
+    searchPlaceholder: "Search city...",
+    refresh: "Refresh",
+    exportCSV: "Export CSV",
+    dataSource: "Data source:",
+    lastUpdated: "Last updated",
+    loading: "Loading data...",
+    allLevels: "All Levels",
+    flagAlt: "Flag",
+    showing: "Showing",
+    of: "of",
+    entries: "entries",
+    prev: "Prev",
+    next: "Next",
+    page: "Page",
+    pollutants: {
+      aqi: "AQI",
+      pm25: "PM2.5",
+      pm10: "PM10",
+      o3: "Ozone (O₃)",
+      no2: "NO₂",
+      so2: "SO₂",
+      co: "CO",
+      temperature: "Temperature (°C)",
+      humidity: "Humidity (%)",
+      pressure: "Pressure (hPa)",
+      windSpeed: "Wind Speed (m/s)"
+    },
+    levels: {
+      good: "Good",
+      moderate: "Moderate",
+      unhealthySensitive: "Unhealthy for Sensitive Groups",
+      unhealthy: "Unhealthy",
+      veryUnhealthy: "Very Unhealthy",
+      hazardous: "Hazardous"
+    },
+    table: {
+      city: "City",
+      flag: "Flag",
+      latitude: "Latitude",
+      longitude: "Longitude",
+      pollutant: "Pollutant",
+      value: "Value",
+      level: "Level"
     }
   },
+  user: {
+      title: "User Management",
+      addUser: "Add User",
+      searchPlaceholder: "Search name or email...",
+      allRoles: "All roles",
+      admin: "Admin",
+      user: "User",
+      clear: "Clear",
+      users: "Users",
+      role: "Role",
+      created: "Created",
+      actions: "Actions",
+      loading: "Loading users...",
+      noUsers: "No users found",
+      addTitle: "Add New User",
+      editTitle: "Edit User",
+      viewTitle: "View User",
+      save: "Save",
+      saving: "Saving...",
+      cancel: "Cancel",
+      delete: "Delete",
+      edit: "Edit",
+      view: "View",
+      phone: "Phone",
+      email: "Email",
+      name: "Name",
+      password: "Password",
+      confirmPassword: "Confirm Password",
+      profileOptions: "Profile Image (optional)",
+      phoneOptional: "Phone (optional)",
+      profileImage: "Profile Image",
+      createdAt: "Created at",
+      selectRole: "Select Role",
+    },
+  }, 
   kh: {
     nav: {
       home: 'ទំព័រដើម',
@@ -297,9 +378,9 @@ const messages = {
       EnvironmentalMetrics: 'សូចនាករសុវត្ថិភាពបរិស្ថាន',
       AveragePollutionLevels: 'កម្រិតបំពុលមធ្យម',
       Active: 'សកម្ម',
-      Global: 'មធ្យមភាគសកល'
-    }
+      Global: 'AQIមធ្យមភាគសកល'
   },
+}
 }
 
 const i18n = createI18n({
