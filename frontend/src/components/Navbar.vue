@@ -13,10 +13,9 @@
         />
       </div>
 
-      <!-- Search Bar -->
+      <!-- Enhanced Search Bar with Map Integration -->
       <div class="relative hidden lg:block">
-        <CitySearch @city-selected="handleCitySelected" />
-        <p v-if="selectedCity" class="mt-4">{{ $t('search.selectedCity') }}: {{ selectedCity }}</p>
+        <CitySearch @location-selected="handleLocationSelected" />
       </div>
     </div>
 
@@ -273,7 +272,6 @@ import { useAuthStore } from '@/stores/airQuality'
 import { useI18n } from 'vue-i18n'
 import api from '@/services/api'
 
-const selectedCity = ref('')
 const { locale, t } = useI18n()
 const currentLanguage = ref(locale.value)
 const languageDropdownOpen = ref(false)
@@ -287,8 +285,20 @@ const profile = ref({})
 const loadingProfile = ref(false)
 const profileError = ref(null)
 
-function handleCitySelected(city) {
-  selectedCity.value = city
+// Enhanced location selection handler with map integration
+function handleLocationSelected(location) {
+  // Store selected location for map component to pick up
+  localStorage.setItem('selectedSearchLocation', JSON.stringify(location))
+  
+  // Navigate to home page if not already there
+  if (route.path !== '/home' && route.path !== '/admin-dashboard') {
+    router.push('/home')
+  } else {
+    // Trigger map update if already on home page
+    window.dispatchEvent(new CustomEvent('location-search-selected', { 
+      detail: location 
+    }))
+  }
 }
 
 function toggleLanguageDropdown() {

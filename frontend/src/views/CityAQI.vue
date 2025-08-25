@@ -178,6 +178,9 @@
 import { ref, watch, computed } from "vue";
 import api from "@/services/api";
 import { ArrowPathIcon, DocumentIcon } from '@heroicons/vue/24/solid'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 const search = ref("");
 const pollutant = ref("aqi");
 const cities = ref([]);
