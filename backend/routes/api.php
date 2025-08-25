@@ -22,6 +22,7 @@ use App\Http\Controllers\FireDataController;
 use App\Http\Controllers\Api\ApiAnalyController;
 use App\Http\Controllers\Api\AqiCompareController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\LocationSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,7 @@ Route::get('/aqi', [PollutionDataController::class, 'getAqiData']);
 Route::get('/aqi-data', [ApiAnalyController::class, 'fetchFilteredData']);
 
 Route::get('/news', [NewsController::class, 'index']); // public for user site
+Route::get('/search-locations', [LocationSearchController::class, 'search']); // public location search
 
 // Routes protected by authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -114,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //news routes
     Route::post('/news', [NewsController::class, 'store']);
     Route::put('/news/{id}', [NewsController::class, 'update']);
+    Route::delete('/news/{id}', [NewsController::class, 'destroy']);
 });
 
 Route::get('/categories', [CategoryController::class, 'index']);           // list
