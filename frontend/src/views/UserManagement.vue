@@ -5,7 +5,7 @@
       <div
         class="flex justify-between items-center mb-6 bg-white p-4 rounded shadow"
       >
-        <h1 class="text-2xl font-bold">User Management</h1>
+        <h1 class="text-2xl font-bold">{{ $t('user.title') }}</h1>
         <button
           @click="openAddUser"
           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
@@ -21,7 +21,7 @@
           >
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Add User
+          {{ $t('user.addUser') }}
         </button>
       </div>
       <!-- Search & Filters -->
@@ -29,19 +29,19 @@
         <input
           v-model="searchQuery"
           type="search"
-          placeholder="Search name or email..."
+          :placeholder="$t('user.searchPlaceholder')"
           class="border rounded px-3 py-2 flex-grow min-w-[200px]"
         />
         <select v-model="roleFilter" class="border rounded px-3 py-2">
-          <option value="">All roles</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
+          <option value="">{{ $t('user.allRoles') }}</option>
+          <option value="admin">{{ $t('user.admin') }}</option>
+          <option value="user">{{ $t('user.user') }}</option>
         </select>
         <button
           @click="clearFilters"
           class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300"
         >
-          Clear
+          {{ $t('user.clear') }}
         </button>
       </div>
       <!-- Users Table -->
@@ -52,22 +52,22 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
-                Users
+                 {{ $t('user.users') }}
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
-                Role
+                 {{ $t('user.role') }}
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
-                Created
+                   {{ $t('user.created') }}
               </th>
               <th
                 class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"
               >
-                Actions
+                  {{ $t('user.actions') }}
               </th>
             </tr>
           </thead>
@@ -146,7 +146,7 @@
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                       />
                     </svg>
-                    View
+                    {{ $t('user.view') }}
                   </button>
                   <button
                     @click="
@@ -168,7 +168,7 @@
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                       />
                     </svg>
-                    Edit
+                    {{ $t('user.edit') }}
                   </button>
                   <button
                     @click="
@@ -190,7 +190,7 @@
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       />
                     </svg>
-                    Delete
+                    {{ $t('user.delete') }}
                   </button>
                 </div>
               </td>
@@ -198,13 +198,13 @@
           </tbody>
         </table>
         <div v-if="loading" class="p-4 text-center text-gray-600">
-          Loading users...
+            {{ $t('user.loading') }}
         </div>
         <div
           v-if="!loading && filteredUsers.length === 0"
           class="p-4 text-center text-gray-600"
         >
-          No users found
+           {{ $t('user.noUsers') }}
         </div>
       </div>
     </div>
@@ -214,33 +214,33 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded p-6 w-full max-w-md relative">
-        <h2 class="text-xl font-semibold mb-4">Add New User</h2>
+        <h2 class="text-xl font-semibold mb-4"> {{ $t('user.addTitle') }}</h2>
         <form @submit.prevent="submitAddUser" class="space-y-4 text-sm">
           <input
             v-model="addUserForm.name"
             type="text"
-            placeholder="Name"
+            :placeholder="$t('user.name')" 
             class="w-full border rounded px-3 py-2"
             required
           />
           <input
             v-model="addUserForm.email"
             type="email"
-            placeholder="Email"
+            :laceholder="$t('user.email')"
             class="w-full border rounded px-3 py-2"
             required
           />
           <input
             v-model="addUserForm.password"
             type="password"
-            placeholder="Password"
+            :placeholder="$t('user.password')"
             class="w-full border rounded px-3 py-2"
             required
           />
           <input
             v-model="addUserForm.password_confirmation"
             type="password"
-            placeholder="Confirm Password"
+            :placeholder="$t('user.confirmPassword')"
             class="w-full border rounded px-3 py-2"
             required
           />
@@ -249,19 +249,19 @@
             class="w-full border rounded px-3 py-2"
             required
           >
-            <option value="">Select Role</option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
+            <option value="">{{ $t('user.selectRole') }}</option>
+            <option value="admin">{{ $t('user.admin') }}</option>
+            <option value="user">{{ $t('user.user') }}</option>
           </select>
           <input
             v-model="addUserForm.phone"
             type="tel"
-            placeholder="Phone (optional)"
+            :placeholder="$t('user.phoneOptional')"
             class="w-full border rounded px-3 py-2"
           />
           <div>
             <label class="block mb-1 font-medium"
-              >Profile Image (optional)</label
+              >{{ $t('user.profileOptions') }}</label
             >
             <input @change="onAddImageChange" type="file" accept="image/*" />
             <img
@@ -277,14 +277,14 @@
               @click="closeAddUser"
               class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
             >
-              Cancel
+              {{ $t('user.cancel') }}
             </button>
             <button
               type="submit"
               :disabled="addUserLoading.value"
               class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              {{ addUserLoading.value ? "Saving..." : "Save" }}
+                {{ addUserLoading.value ? $t('user.saving') : $t('user.save') }}
             </button>
           </div>
           <div v-if="addUserErrors" class="text-red-600 mt-2 text-xs">
@@ -329,21 +329,21 @@
         </div>
 
         <!-- Gmail / Email -->
-        <p><strong>Email:</strong> {{ viewUserData.email }}</p>
+        <p><strong>{{ $t('user.email') }}:</strong> {{ viewUserData.email }}</p>
 
         <!-- Role -->
         <p class="mt-2">
-          <strong>Role:</strong> {{ viewUserData.role || "user" }}
+          <strong>{{ $t('user.role') }}:</strong> {{ viewUserData.role || "user" }}
         </p>
 
         <!-- Phone (show only if exists) -->
         <p v-if="viewUserData.phone">
-          <strong>Phone:</strong> {{ viewUserData.phone }}
+          <strong>{{ $t('user.phone') }}:</strong> {{ viewUserData.phone }}
         </p>
 
         <!-- Created at -->
         <p class="mt-2">
-          <strong>Created at:</strong> {{ formatDate(viewUserData.created_at) }}
+          <strong> {{ $t('user.createdAt') }}:</strong> {{ formatDate(viewUserData.created_at) }}
         </p>
       </div>
     </div>
@@ -361,12 +361,12 @@
           &times;
         </button>
 
-        <h3 class="text-2xl font-semibold mb-4">Edit User</h3>
+        <h3 class="text-2xl font-semibold mb-4"> {{ $t('user.editTitle') }}</h3>
 
         <form @submit.prevent="submitEditUser">
           <!-- Name -->
           <div class="mb-3">
-            <label class="block font-semibold">Name</label>
+            <label class="block font-semibold"> {{ $t('user.name') }}</label>
             <input
               v-model="editUserForm.name"
               type="text"
@@ -377,7 +377,7 @@
 
           <!-- Email -->
           <div class="mb-3">
-            <label class="block font-semibold">Email</label>
+            <label class="block font-semibold"> {{ $t('user.email') }}</label>
             <input
               v-model="editUserForm.email"
               type="email"
@@ -388,19 +388,19 @@
 
           <!-- Role -->
           <div class="mb-3">
-            <label class="block font-semibold">Role</label>
+            <label class="block font-semibold"> {{ $t('user.role') }}</label>
             <select
               v-model="editUserForm.role"
               class="w-full border rounded px-3 py-2"
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="user"> {{ $t('user.user') }}</option>
+              <option value="admin"> {{ $t('user.admin') }}</option>
             </select>
           </div>
 
           <!-- Phone -->
           <div class="mb-3">
-            <label class="block font-semibold">Phone</label>
+            <label class="block font-semibold"> {{ $t('user.phone') }}</label>
             <input
               v-model="editUserForm.phone"
               type="text"
@@ -410,7 +410,7 @@
 
           <!-- Profile Image -->
           <div class="mb-3">
-            <label class="block font-semibold">Profile Image</label>
+            <label class="block font-semibold"> {{ $t('user.profileImage') }}</label>
             <input type="file" @change="onEditImageChange" />
             <div v-if="editUserImagePreview" class="mt-2">
               <img
