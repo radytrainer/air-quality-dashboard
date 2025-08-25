@@ -21,7 +21,14 @@ class UserController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get()
                     ->map(function ($user) {
-                        $user->profile_image = $user->profile_image ? Storage::url($user->profile_image) : null;
+                        // Generate full URL for profile image
+                        if ($user->profile_image) {
+                            $user->profile_image = Storage::url($user->profile_image);
+                            // Ensure we have a full URL (not relative path)
+                            if (!str_starts_with($user->profile_image, 'http')) {
+                                $user->profile_image = url($user->profile_image);
+                            }
+                        }
                         return $user;
                     });
         
