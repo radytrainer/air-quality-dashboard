@@ -115,7 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //news routes
     Route::post('/news', [NewsController::class, 'store']);
-    Route::put('/news/{id}', [NewsController::class, 'update']);
+    Route::patch('/news/{id}', [NewsController::class, 'update']);
     Route::delete('/news/{id}', [NewsController::class, 'destroy']);
 });
 
