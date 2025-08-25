@@ -7,7 +7,7 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="text-3xl font-bold text-gray-800 mb-1">{{ totalLocationsComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">Total All Locations</div>
+            <div class="text-sm text-gray-700 font-medium">{{ $t('dashboard.Total') }} </div>
           </div>
         </div>
         <!-- Export Icon - Top Right -->
@@ -25,7 +25,7 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="text-3xl font-bold text-gray-800 mb-1">{{ highPollutionCountComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">High Pollution Locations</div>
+            <div class="text-sm text-gray-700 font-medium">{{ $t('dashboard.High') }}</div>
           </div>
         </div>
         <!-- Export Icon - Top Right -->
@@ -43,7 +43,7 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="text-3xl font-bold text-gray-800 mb-1">{{ lowPollutionCountComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">Low Pollution Locations</div>
+            <div class="text-sm text-gray-700 font-medium">{{ $t('dashboard.Low') }}</div>
           </div>
         </div>
         <!-- Export Icon - Top Right -->
@@ -62,7 +62,7 @@
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topHighPollutionLocation?.aqi || 0 }}</div>
           <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...'
           }}</div>
-          <div class="text-xs text-gray-600">Top High Pollution</div>
+          <div class="text-xs text-gray-600">{{ $t('dashboard.Top') }} </div>
         </div>
         <!-- Export Icon - Top Right -->
         <button @click="exportTopHighPollutionData"
@@ -80,7 +80,7 @@
           <div class="text-2xl font-bold text-gray-800 mb-1">{{ topLowPollutionLocation?.aqi || 0 }}</div>
           <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...'
           }}</div>
-          <div class="text-xs text-gray-600">Top Low Pollution</div>
+          <div class="text-xs text-gray-600">{{ $t('dashboard.top') }}</div>
         </div>
         <!-- Export Icon - Top Right -->
         <button @click="exportTopLowPollutionData"
@@ -98,7 +98,7 @@
       <!-- Pollution Trends -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">High Pollution Pm10</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.Pm10') }} </h3>
         </div>
         <div class="relative h-48">
           <canvas ref="trendsChartRef" class="w-full h-full"></canvas>
@@ -106,11 +106,11 @@
         <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-            <span class="text-gray-600">High Pm10</span>
+            <span class="text-gray-600">{{ $t('dashboard.HighPm10') }}</span>
           </div>
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-gray-600">Low Pm10</span>
+            <span class="text-gray-600">{{ $t('dashboard.LowPm10') }}</span>
           </div>
         </div>
       </div>
@@ -118,7 +118,7 @@
       <!-- Pollution Distribution -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">High Pollution Pm2.5</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.Pm25') }} </h3>
         </div>
         <div class="relative h-48">
           <canvas ref="distributionChartRef" class="w-full h-full"></canvas>
@@ -127,13 +127,13 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-              <span class="text-gray-600">High Pm2.5</span>
+              <span class="text-gray-600">{{ $t('dashboard.HighPm25') }}</span>
             </div>
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-gray-600">Low Pm2.5</span>
+              <span class="text-gray-600">{{ $t('dashboard.LowPm25') }}</span>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@
       <!-- Status Distribution -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Status Distribution</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.status') }}</h3>
           <select v-model="selectedStatusMetric"
             class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}
@@ -171,10 +171,10 @@
         <!-- Card Header -->
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-800">Top Polluted Areas</h3>
+            <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.TopPollutedAreas') }}</h3>
             <button @click="exportData"
               class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-              Export
+              {{ $t('dashboard.Export') }}
             </button>
           </div>
         </div>
@@ -185,7 +185,7 @@
           <div class="mb-4 space-y-2">
             <!-- Pollution Level Filter -->
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-medium text-gray-700 min-w-[45px]">Level:</span>
+              <span class="text-sm font-medium text-gray-700 min-w-[45px]">{{ $t('dashboard.Level') }}:</span>
               <div class="flex bg-gray-100 rounded-lg p-1">
                 <button @click="pollutionFilter = 'high'" :class="[
                   'px-3 py-1 text-xs font-medium rounded-md transition-colors',
@@ -193,7 +193,7 @@
                     ? 'bg-red-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 ]">
-                  High
+                  {{ $t('analyticsPage.High') }}
                 </button>
                 <button @click="pollutionFilter = 'low'" :class="[
                   'px-3 py-1 text-xs font-medium rounded-md transition-colors',
@@ -201,14 +201,14 @@
                     ? 'bg-green-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 ]">
-                  Low
+                   {{ $t('analyticsPage.Low') }}
                 </button>
               </div>
             </div>
 
             <!-- Metric Selector -->
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-medium text-gray-700 min-w-[45px]">Metric:</span>
+              <span class="text-sm font-medium text-gray-700 min-w-[45px]">{{ $t('dashboard.Metric') }}:</span>
               <select v-model="selectedMetric"
                 class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1">
                 <option value="aqi">AQI</option>
@@ -269,7 +269,7 @@
                   {{Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0),
                     0) / filteredTop5Locations.length) || 0}}
                 </div>
-                <div class="text-gray-600">Average</div>
+                <div class="text-gray-600">{{ $t('dashboard.Average') }}</div>
               </div>
             </div>
           </div>
@@ -279,8 +279,8 @@
       <!-- Pollution Map with Selection -->
       <div class="lg:col-span-2 bg-white rounded-md p-1 shadow-sm">
         <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-semibold text-gray-800">Air Quality Map</h3>
-          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">Export</button>
+          <h3 class="text-sm font-semibold text-gray-800">{{ $t('dashboard.AirQualityMap') }}</h3>
+          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">{{ $t('dashboard.Export') }}</button>
         </div>
         <div class="relative">
           <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg bg-gray-100">
