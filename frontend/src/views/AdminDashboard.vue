@@ -139,7 +139,7 @@
             <div class="text-3xl font-bold text-gray-800 mb-1">
               {{ topHighPollutionLocation?.aqi || 0 }}
             </div>
-            <div class="text-sm font-medium text-gray-600 mb-1 truncate">
+            <div class="text-sm font-medium text-gray-600 mb-1 truncate max-w-[120px]">
               {{ topHighPollutionLocation?.name || "Loading..." }}
             </div>
             <div class="text-xs text-gray-500 mt-2">
@@ -183,7 +183,7 @@
             <div class="text-2xl font-bold text-gray-800 mb-1">
               {{ topLowPollutionLocation?.aqi || 0 }}
             </div>
-            <div class="text-sm font-medium text-gray-600 mb-1 truncate">
+            <div class="text-sm font-medium text-gray-600 mb-1 truncate max-w-[120px]">
               {{ topLowPollutionLocation?.name || "Loading..." }}
             </div>
             <div class="text-xs text-gray-500">{{ $t("dashboard.top") }}</div>
