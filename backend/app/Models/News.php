@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class News extends Model
 {
-    protected $fillable = ['caption', 'media'];
+    protected $fillable = ['caption', 'media', 'category_id'];
 
     protected $casts = [
         'media' => 'array',
@@ -22,6 +22,7 @@ class News extends Model
     }
     public function category()
     {
-        return $this->belongsTo(\App\Models\Category::class);
+        return $this->belongsTo(Category::class);
     }
+
 }
