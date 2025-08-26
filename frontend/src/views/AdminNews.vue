@@ -334,10 +334,11 @@ function onSelectFiles(e) {
 
 // Edit news
 function startEdit(item) {
-  editing.value = { ...item }
+  editing.value = { ...item, category_id: item.category_id || item.category?.id }
   keep.value = [...(item.media ?? [])]
   newFiles.value = []
 }
+
 
 function toggleKeep(path) {
   if (keep.value.includes(path)) {
@@ -354,8 +355,8 @@ function onSelectNewFiles(e) {
 async function saveEdit() {
   try {
     const fd = new FormData()
-    if (editing.value.caption) fd.append('caption', editing.value.caption)
-    if (editing.value.category_id) fd.append('category_id', editing.value.category_id)
+    fd.append('caption', editing.value.caption ?? '')
+    fd.append('category_id', editing.value.category_id ?? '')
     keep.value.forEach(p => fd.append('keep[]', p))
     newFiles.value.forEach(f => fd.append('media[]', f))
     await api.patch(`/news/${editing.value.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
