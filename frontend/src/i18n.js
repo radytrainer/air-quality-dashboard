@@ -1,4 +1,5 @@
 import { createI18n } from 'vue-i18n'
+import CityDetailView from './views/CityDetailView.vue'
 
 const messages = {
   en: {
@@ -294,6 +295,35 @@ const messages = {
     EmergencyActions: 'Emergency Actions',
     ActivityRestrictions: 'Activity Restrictions',
   },
+  CityDetail:{
+    Back: 'Back',
+    Lastupdated: 'Last updated',
+    CurrentAQI: 'Current AQI',
+    Add: 'Add',
+    WeatherConditions: 'Weather Conditions',
+    Temperature: 'Temperature',
+    Humidity: 'Humidity',
+    Pressure: 'Pressure',
+    Wind: 'Wind',
+    AirQualityMetrics: 'Air Quality Metrics',
+    Pollutant: 'Pollutant',
+    Value: 'Value',
+    Unit: 'Unit',	
+    Status: 'Status',
+    Top3Pollutants: 'Top 3 Pollutants',
+    HealthAdvisory: 'Health Advisory',
+    Good: 'Good',
+    Airqualityissatisfactory:'Air quality is satisfactory.',
+    GeneralRecommendations: 'General Recommendations',
+    CheckAQIbeforeoutdooractivities: 'Check AQI before outdoor activities',
+    Keepwindowsclosedduringhighpollution:'Keep windows closed during high pollution',
+    Useairpurifiersindoors: 'Use air purifiers indoors',
+    Wearmaskswhennecessary: 'Wear masks when necessary',
+    HealthImpact: 'Health Impact',
+    Value:'Value',
+    Loadingcitydata: 'Loading city data',
+    Citydatanotfound: 'City data not found'
+  },
   }, 
   kh: {
     nav: {
@@ -587,7 +617,34 @@ Health: {
   EmergencyActions: 'សកម្មភាពបន្ទាន់',
   ActivityRestrictions: 'កម្រិតសកម្មភាព',
 },
-
+CityDetail:{
+    Back: 'ត្រឡប់ក្រោយ',
+    Lastupdated: 'ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ',
+    CurrentAQI: 'សូចនាករ AQI បច្ចុប្បន្ន',
+    Add: 'បន្ថែម',
+    WeatherConditions: 'លក្ខខណ្ឌអាកាសធាតុ',
+    Temperature: 'សីតុណ្ហភាព',
+    Humidity: 'សំណើម',
+    Pressure: 'សម្ពាធ',
+    Wind: 'ខ្យល់',
+    AirQualityMetrics: 'បរិមាណគុណភាពខ្យល់',
+    Pollutant: 'សារធាតុពុល',
+    Value: 'តម្លៃ',
+    Unit: 'ឯកតា',	
+    Status: 'ស្ថានភាព',
+    Top3Pollutants: 'សារធាតុពុល ៣ កំពូល',
+    HealthAdvisory: 'ដំណឹងប្រឹក្សាសុខភាព',
+    Good: 'ល្អ',
+    Airqualityissatisfactory:'គុណភាពខ្យល់គឺពេញចិត្ត។',
+    GeneralRecommendations: 'សំណើទូទៅ',
+    CheckAQIbeforeoutdooractivities: 'ពិនិត្យ AQI មុនពេលចេញក្រៅផ្ទះ',
+    Keepwindowsclosedduringhighpollution:'បិទបង្អួចពេលមានការបំពុលខ្ពស់',
+    Useairpurifiersindoors: 'ប្រើម៉ាស៊ីនបូមអាកាសនៅក្នុងផ្ទះ',
+    Wearmaskswhennecessary: 'ពាក់ម៉ាស់នៅពេលចាំបាច់',
+    HealthImpact: 'ផលប៉ះពាល់សុខភាព',
+    Loadingcitydata: 'កំពុងផ្ទុកទិន្នន័យទីក្រុង',
+    Citydatanotfound: 'រកមិនឃើញទិន្នន័យទីក្រុង'
+}
 }
 }
 

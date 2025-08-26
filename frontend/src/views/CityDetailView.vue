@@ -3,13 +3,13 @@
     <!-- Top bar -->
     <div class="top-bar">
       <button @click="$router.back()" class="back-button">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        Back
+        {{$t('CityDetail.Back')}}
       </button>
       <div class="last-updated">
-        <span>Last updated:</span>
+        <span>{{$t('CityDetail.Lastupdated')}}:</span>
         <span>{{ lastUpdated }}</span>
       </div>
     </div>
@@ -31,7 +31,7 @@
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <span class="text-gray-500 text-xs mb-1">Current AQI</span>
+            <span class="text-gray-500 text-xs mb-1">{{$t('CityDetail.CurrentAQI')}}</span>
             <div class="flex items-center gap-2">
               <div :class="aqiBadge(cityData?.aqi) + ' aqi-badge'">
                 <span class="aqi-badge-text">{{ cityData?.aqi ?? "N/A" }}</span>
@@ -61,7 +61,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 014-4h1a4 4 0 014-4h0a4 4 0 014 4h1a4 4 0 014 4v1a4 4 0 01-4 4H7a4 4 0 01-4-4v-1z" />
           </svg>
-          Weather Conditions
+          {{$t('CityDetail.WeatherConditions')}}
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div class="weather-metric">
@@ -75,7 +75,7 @@
               <path fill="url(#gradTemp)" d="M14 14.76V4a2 2 0 10-4 0v10.76A4 4 0 1014 14.76zM12 20a2 2 0 002-2h-4a2 2 0 002 2z" />
             </svg>
             <span class="weather-value">{{ cityData?.temperature ?? "N/A" }}°C</span>
-            <span class="weather-label">Temperature</span>
+            <span class="weather-label">{{$t('CityDetail.Temperature')}}</span>
           </div>
           <div class="weather-metric">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
               <path fill="url(#gradHum)" d="M12 2.69l.59.81C16.14 8.28 18 12 18 15a6 6 0 11-12 0c0-3 1.86-6.72 5.41-11.50l.59-.81z" />
             </svg>
             <span class="weather-value">{{ cityData?.humidity ?? "N/A" }}%</span>
-            <span class="weather-label">Humidity</span>
+            <span class="weather-label">{{$t('CityDetail.Humidity')}}</span>
           </div>
           <div class="weather-metric">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,14 +96,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
             </svg>
             <span class="weather-value">{{ cityData?.pressure ?? "N/A" }}</span>
-            <span class="weather-label">Pressure</span>
+            <span class="weather-label">{{$t('CityDetail.Pressure')}}</span>
           </div>
           <div class="weather-metric">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h13a4 4 0 100-8 4 4 0 00-4 4m-6 8h9a2 2 0 110 4 2 2 0 01-2-2" />
             </svg>
             <span class="weather-value">{{ cityData?.wind_speed ?? cityData?.wind ?? "N/A" }}</span>
-            <span class="weather-label">Wind</span>
+            <span class="weather-label">{{$t('CityDetail.Wind')}}</span>
           </div>
         </div>
       </div>
@@ -116,15 +116,15 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h13a4 4 0 100-8 4 4 0 00-4 4m-6 8h9a2 2 0 110 4 2 2 0 01-2-2" />
           </svg>
-          Air Quality Metrics
+          {{$t('CityDetail.AirQualityMetrics')}}
         </div>
         <table class="w-full text-xs">
           <thead>
             <tr class="text-teal-700 font-semibold">
-              <th class="py-2 px-3 text-left">Pollutant</th>
-              <th class="py-2 px-3 text-left">Value</th>
-              <th class="py-2 px-3 text-left">Unit</th>
-              <th class="py-2 px-3 text-left">Status</th>
+              <th class="py-2 px-3 text-left">{{$t('CityDetail.Pollutant')}}</th>
+              <th class="py-2 px-3 text-left">{{$t('CityDetail.Value')}}</th>
+              <th class="py-2 px-3 text-left">{{$t('CityDetail.Unit')}}</th>
+              <th class="py-2 px-3 text-left">{{$t('CityDetail.Status')}}</th>
             </tr>
           </thead>
           <tbody>
@@ -146,12 +146,12 @@
     <!-- Pollutant Guide -->
     <div v-if="cityData" class="card-container">
       <div class="pollutant-guide-card">
-        <div class="font-semibold text-base mb-3">Top 3 Pollutants</div>
+        <div class="font-semibold text-base mb-3">{{$t('CityDetail.Top3Pollutants')}}</div>
         <div v-for="pollutant in topPollutants" :key="pollutant.label" class="pollutant-item">
           <div class="pollutant-label">{{ pollutant.label }}</div>
           <div class="pollutant-description">{{ pollutant.description }}</div>
-          <div class="pollutant-health">Health Impact: {{ pollutant.healthImpact }}</div>
-          <div class="pollutant-value">Value: {{ pollutant.value }} {{ pollutant.unit }}</div>
+          <div class="pollutant-health">{{$t('CityDetail.HealthImpact')}} :{{ pollutant.healthImpact }}</div>
+          <div class="pollutant-value">{{$t('CityDetail.Value')}}: {{ pollutant.value }} {{ pollutant.unit }}</div>
         </div>
       </div>
     </div>
@@ -163,19 +163,19 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
           </svg>
-          Health Advisory
+          {{$t('CityDetail.HealthAdvisory')}}
         </div>
         <div :class="aqiAdvisoryBox(cityData?.aqi) + ' advisory-box'">
-          <div class="font-bold mb-1 text-sm">{{ getAQIDescription(cityData?.aqi) }}</div>
-          <div class="text-xs">{{ getAQIAdvice(cityData?.aqi) }}</div>
+          <div class="font-bold mb-1 text-ml">{{ getAQIDescription(cityData?.aqi) }}</div>
+          <div class="text-sm">{{ getAQIAdvice(cityData?.aqi) }}</div>
         </div>
         <div class="mt-3 text-xs text-gray-700">
-          <div class="font-semibold mb-1 text-sm">General Recommendations:</div>
-          <ul class="recommendations-list list-disc ml-5 space-y-1 text-xs">
-            <li>Check AQI before outdoor activities</li>
-            <li>Keep windows closed during high pollution</li>
-            <li>Use air purifiers indoors</li>
-            <li>Wear masks when necessary</li>
+          <div class="font-semibold mb-1 text-xl">{{$t('CityDetail.GeneralRecommendations')}}:</div>
+          <ul class="recommendations-list ml-5 space-y-1 text-sm">
+            <li>{{$t('CityDetail.CheckAQIbeforeoutdooractivities')}}</li>
+            <li>{{$t('CityDetail.Keepwindowsclosedduringhighpollution')}}</li>
+            <li>{{$t('CityDetail.Useairpurifiersindoors')}}</li>
+            <li>{{$t('CityDetail.Wearmaskswhennecessary')}}</li>
           </ul>
         </div>
       </div>
@@ -183,10 +183,10 @@
 
     <!-- Loading & Error -->
     <div v-if="loading" class="loading-message">
-      Loading city data...
+      {{$t('CityDetail.Loadingcitydata')}}...
     </div>
     <div v-else-if="!cityData" class="error-message">
-      City data not found.
+      {{$t('CityDetail.Citydatanotfound')}}.
     </div>
   </div>
 </template>
