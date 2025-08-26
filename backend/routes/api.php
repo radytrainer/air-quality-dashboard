@@ -114,8 +114,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //news routes
+    Route::get('/news', [NewsController::class, 'index']);
     Route::post('/news', [NewsController::class, 'store']);
-    Route::put('/news/{id}', [NewsController::class, 'update']);
+    Route::patch('/news/{id}', [NewsController::class, 'update']); // PATCH route
     Route::delete('/news/{id}', [NewsController::class, 'destroy']);
 });
 
