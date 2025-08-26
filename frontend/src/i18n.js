@@ -106,7 +106,7 @@ const messages = {
     comparePage: {
       header: 'Air Quality Comparison',
       liveBadge: 'Live',
-      realTimeInfo: '📈 Real-time air quality analysis across global cities with timezone intelligence',
+      realTimeInfo: ' Real-time air quality analysis across global cities with timezone intelligence',
       citiesTracked: 'Cities Tracked',
       citiesTrackedDesc: 'These cities are actively monitored for pollutant levels.',
       countries: 'Countries',
@@ -428,7 +428,7 @@ const messages = {
     comparePage: {
       header: 'ការប្រៀបធៀបគុណភាពអាកាស',
       liveBadge: 'ផ្ទាល់',
-      realTimeInfo: '📈 វិភាគគុណភាពអាកាសពិតប្រាកដនៅទីក្រុងពិភពលោកជាមួយការយល់ដឹងអំពីម៉ោងតំបន់',
+      realTimeInfo: ' វិភាគគុណភាពអាកាសពិតប្រាកដនៅទីក្រុងពិភពលោកជាមួយការយល់ដឹងអំពីម៉ោងតំបន់',
       citiesTracked: 'ទីក្រុងដែលត្រូវបានតាមដាន',
       citiesTrackedDesc: 'ទីក្រុងទាំងនេះត្រូវបានតាមដានសម្រាប់កម្រិតសារធាតុពុល។',
       countries: 'ប្រទេស',
@@ -436,7 +436,7 @@ const messages = {
       activeTimezones: 'ម៉ោងតំបន់សកម្ម',
       activeTimezonesDesc: 'ការតាមដានកំពុងសកម្មនៅម៉ោងតំបន់ទូទាំងពិភពលោក។',
       selectCities: 'ជ្រើសទីក្រុងសម្រាប់ប្រៀបធៀប',
-      primaryCity: 'ទីក្រុងចម្បង',
+      primaryCity: 'ទីក្រុងទី១',
       primaryCityDesc: 'ជ្រើសទីក្រុងចំបងសម្រាប់ប្រៀបធៀប',
       secondaryCity: 'ទីក្រុងទី២',
       secondaryCityDesc: 'ជ្រើសទីក្រុងទី២សម្រាប់ប្រៀបធៀប',
