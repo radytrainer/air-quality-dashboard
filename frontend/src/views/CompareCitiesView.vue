@@ -5,15 +5,15 @@
       <div class="flex items-center gap-3 mb-3">
         <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
         <h1 class="text-4xl font-bold text-gray-900">
-          Air Quality Comparison
+          {{$t('comparePage.header')}}
         </h1>
         <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-          Live
+           {{$t('comparePage.liveBadge')}}
         </span>
       </div>
       <p class="text-gray-600 flex items-center gap-2">
         <LineChart class="w-4 h-4 text-blue-600" />
-        Real-time air quality analysis across global cities
+        {{$t('comparePage.realTimeInfo')}}
       </p>
     </header>
 
@@ -21,22 +21,22 @@
     <div class="grid md:grid-cols-3 gap-6 mb-10">
       <!-- Cities Tracked -->
       <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <div class="text-gray-900 font-semibold text-lg mb-1">Cities Tracked</div>
-        <div class="text-sm text-gray-500 mb-3">Actively monitored cities worldwide</div>
+        <div class="text-gray-900 font-semibold text-lg mb-1">{{$t('comparePage.citiesTracked')}}</div>
+        <div class="text-sm text-gray-500 mb-3">{{$t('comparePage.citiesTrackedDesc')}}</div>
         <div class="text-blue-600 text-3xl font-bold">{{ totalCities }}</div>
       </div>
 
       <!-- Countries -->
       <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <div class="text-gray-900 font-semibold text-lg mb-1">Countries</div>
-        <div class="text-sm text-gray-500 mb-3">Nations with data coverage</div>
+        <div class="text-gray-900 font-semibold text-lg mb-1">{{$t('comparePage.countries')}}</div>
+        <div class="text-sm text-gray-500 mb-3">{{$t('comparePage.countriesDesc')}}</div>
         <div class="text-blue-600 text-3xl font-bold">{{ totalCountries }}</div>
       </div>
 
       <!-- Active Timezones -->
       <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <div class="text-gray-900 font-semibold text-lg mb-1">Active Timezones</div>
-        <div class="text-sm text-gray-500 mb-3">Global monitoring coverage</div>
+        <div class="text-gray-900 font-semibold text-lg mb-1">{{$t('comparePage.activeTimezones')}}</div>
+        <div class="text-sm text-gray-500 mb-3">{{$t('comparePage.activeTimezonesDesc')}}</div>
         <div class="text-blue-600 text-xl font-bold">
           {{ activeTimezonesDisplay }}
         </div>
@@ -48,7 +48,7 @@
       <!-- Header -->
       <h2 class="text-2xl font-bold mb-8 text-gray-900 flex items-center gap-2">
         <Search class="w-6 h-6 text-blue-600" />
-        Select Cities to Compare
+        {{$t('comparePage.selectCities')}}
       </h2>
 
       <!-- Two selectors side by side -->
@@ -83,7 +83,7 @@
         <!-- Simplified VS badge -->
         <div class="flex justify-center items-center">
           <div class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold text-sm">
-            VS
+            {{$t('comparePage.vs')}}
           </div>
         </div>
 
@@ -103,14 +103,14 @@
       <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-lg border border-red-200 flex items-center gap-2">
         <AlertTriangle class="w-5 h-5 text-red-600" />
         <p class="text-red-700 font-medium">
-          <strong>{{ city1Data.name }}</strong> has poor air quality (AQI: <strong>{{ city1Data.aqi }}</strong>)
+          <strong>{{ city1Data.name }}</strong> {{$t('comparePage.poorAirQuality')}}  (AQI: <strong>{{ city1Data.aqi }}</strong>)
         </p>
       </div>
 
       <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-lg border border-red-200 flex items-center gap-2">
         <AlertTriangle class="w-5 h-5 text-red-600" />
         <p class="text-red-700 font-medium">
-          <strong>{{ city2Data.name }}</strong> has poor air quality (AQI: <strong>{{ city2Data.aqi }}</strong>)
+          <strong>{{ city2Data.name }}</strong>{{$t('comparePage. poorAirQuality')}} (AQI: <strong>{{ city2Data.aqi }}</strong>)
         </p>
       </div>
 
@@ -118,7 +118,7 @@
       <div v-if="city1Data && city2Data && !errorMessage" class="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 class="text-xl font-semibold mb-4 text-center text-gray-900 flex items-center gap-2 justify-center">
           <BarChart2 class="w-5 h-5 text-blue-600" />
-          Pollutant Level Comparison
+         {{$t('comparePage.pollutantComparison')}}
         </h3>
         <CompareBarChart :city1="city1Data" :city2="city2Data" />
       </div>
@@ -127,31 +127,31 @@
       <button @click="resetSelection"
         class="mt-8 mx-auto flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 rounded-lg transition-colors">
         <RotateCcw class="w-4 h-4" />
-        Reset Comparison
+        {{$t('comparePage.resetButton')}}
       </button>
 
       <!-- Simplified AQI color guide -->
       <div class="bg-gray-50 rounded-lg p-6 mt-6 border border-gray-200">
         <h3 class="font-semibold text-center mb-4 text-gray-900 flex items-center gap-2 justify-center">
           <Wind class="w-5 h-5 text-gray-600" />
-          AQI Color Guide
+          {{$t('comparePage.aqiGuide')}}
         </h3>
         <div class="flex justify-center gap-4 flex-wrap">
           <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-green-500 rounded"></span>
-            <span class="text-sm font-medium text-gray-700">Good (0–50)</span>
+            <span class="text-sm font-medium text-gray-700">{{$t('comparePage.good')}}</span>
           </div>
           <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-yellow-500 rounded"></span>
-            <span class="text-sm font-medium text-gray-700">Moderate (51–100)</span>
+            <span class="text-sm font-medium text-gray-700">{{$t('comparePage.moderate')}}</span>
           </div>
           <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-orange-500 rounded"></span>
-            <span class="text-sm font-medium text-gray-700">Unhealthy (101–150)</span>
+            <span class="text-sm font-medium text-gray-700">{{$t('comparePage.unhealthySensitive')}}</span>
           </div>
           <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
             <span class="w-4 h-4 bg-red-500 rounded"></span>
-            <span class="text-sm font-medium text-gray-700">Unhealthy (151+)</span>
+            <span class="text-sm font-medium text-gray-700">{{$t('comparePage.Unhealthy')}}</span>
           </div>
         </div>
       </div>
