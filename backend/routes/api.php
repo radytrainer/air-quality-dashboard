@@ -122,5 +122,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/categories', [CategoryController::class, 'index']);           // list
 Route::post('/categories/create', [CategoryController::class, 'store']);   // create
 Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
-Route::put('/categories/{id}/update', [CategoryController::class, 'update']); // update
-Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete
+Route::put('/categories/{category}/update', [CategoryController::class, 'update']); // update
+Route::delete('/categories/{category}/delete', [CategoryController::class, 'destroy']); // delete
