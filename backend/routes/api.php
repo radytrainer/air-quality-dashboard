@@ -115,12 +115,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //news routes
     Route::post('/news', [NewsController::class, 'store']);
+
     Route::put('/news/{id}', [NewsController::class, 'update']);
     Route::delete('/news/{id}', [NewsController::class, 'destroy']);
+
+    Route::patch('/news/{news}', [NewsController::class, 'update']);
+    Route::delete('/news/{news}', [NewsController::class, 'destroy']);
+
 });
 
 Route::get('/categories', [CategoryController::class, 'index']);           // list
 Route::post('/categories/create', [CategoryController::class, 'store']);   // create
 Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
-Route::post('/categories/{id}/update', [CategoryController::class, 'update']); // update
+Route::put('/categories/{id}/update', [CategoryController::class, 'update']); // update
 Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete
