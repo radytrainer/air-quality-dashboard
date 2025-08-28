@@ -1,5 +1,132 @@
 <template>
   <div class="container mx-auto p-4 space-y-4">
+    <!-- Air Quality Index Title -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Air Quality Index</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Monitor air quality levels and pollution data in real-time from around the world
+      </p>
+    </div>
+
+    <!-- Three Boxes Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <!-- Box 1: User Favorites -->
+      <div class="bg-white shadow-lg rounded-xl p-3 border border-blue-100 transition-all duration-300 hover:shadow-xl">
+        <h3 class="text-base font-semibold mb-3 text-blue-600 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+          My Favorites
+        </h3>
+        <div v-if="favorites.length > 0" class="space-y-2 max-h-48 overflow-y-auto">
+          <div v-for="fav in favorites" :key="fav.id" 
+               class="flex items-center justify-between p-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-all duration-200"
+               @click="goToLocation(fav)">
+            <div class="flex items-center space-x-2">
+              <img :src="fav.flag" alt="flag" class="w-5 h-3 object-cover rounded-sm">
+              <span class="text-xs font-medium text-gray-700">{{ fav.name }}</span>
+            </div>
+            <button @click.stop="toggleFavorite(fav)" class="text-red-500 hover:text-red-700 transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div v-else class="text-gray-500 text-xs">No favorites yet</div>
+      </div>
+
+      <!-- Box 2: Temperature and Pollution -->
+      <div class="bg-white shadow-lg rounded-xl p-3 border border-orange-100 transition-all duration-300 hover:shadow-xl">
+        <h3 class="text-base font-semibold mb-3 text-orange-600 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.049l1.715-5.349L11 6.477V5h2a1 1 0 110 2H7a1 1 0 010-2h2v1.477L6.237 8.583l1.715 5.349a1 1 0 01-.285 1.049A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.049l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552a2 2 0 00.547 2.078A1.99 1.99 0 005 15a1.99 1.99 0 001.271-.456 2 2 0 00.547-2.078L5 10.274zm10 0l-.818 2.552a2 2 0 00.547 2.078A1.99 1.99 0 0015 15a1.99 1.99 0 001.271-.456 2 2 0 00.547-2.078L15 10.274z" clip-rule="evenodd" />
+          </svg>
+          Temperature & Pollution
+        </h3>
+        <div v-if="userLocation && nearestStation" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-orange-600">{{ nearestStation.temperature }}°C</div>
+              <div class="text-xs text-gray-600">{{ nearestStation.name }}</div>
+            </div>
+            <div class="text-3xl">
+              <span v-if="nearestStation.temperature < 0">❄️</span>
+              <span v-else-if="nearestStation.temperature < 15">🌤️</span>
+              <span v-else-if="nearestStation.temperature < 25">☀️</span>
+              <span v-else>🔥</span>
+            </div>
+          </div>
+          
+          <!-- Pollution Indicators -->
+          <div class="grid grid-cols-2 gap-1 mt-2">
+            <div class="flex items-center text-xs p-1 rounded" :style="{ backgroundColor: '#f0f9ff' }">
+              <span class="font-medium mr-1">PM2.5:</span>
+              <span class="font-semibold" :style="{ color: getColor(nearestStation.pm25, 'pm25') }">
+                {{ nearestStation.pm25 || 'N/A' }}
+              </span>
+            </div>
+            <div class="flex items-center text-xs p-1 rounded" :style="{ backgroundColor: '#f0f9ff' }">
+              <span class="font-medium mr-1">PM10:</span>
+              <span class="font-semibold" :style="{ color: getColor(nearestStation.pm10, 'pm10') }">
+                {{ nearestStation.pm10 || 'N/A' }}
+              </span>
+            </div>
+            <div class="flex items-center text-xs p-1 rounded" :style="{ backgroundColor: '#f0f9ff' }">
+              <span class="font-medium mr-1">NO₂:</span>
+              <span class="font-semibold" :style="{ color: getColor(nearestStation.no2, 'no2') }">
+                {{ nearestStation.no2 || 'N/A' }}
+              </span>
+            </div>
+            <div class="flex items-center text-xs p-1 rounded" :style="{ backgroundColor: '#f0f9ff' }">
+              <span class="font-medium mr-1">O₃:</span>
+              <span class="font-semibold" :style="{ color: getColor(nearestStation.o3, 'o3') }">
+                {{ nearestStation.o3 || 'N/A' }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="text-xs text-gray-500">
+            Nearest station ({{ calculateDistance(userLocation.lat, userLocation.lon, nearestStation.lat, nearestStation.lon).toFixed(1) }} km)
+          </div>
+        </div>
+        <div v-else class="text-gray-500 text-xs">Detecting location...</div>
+      </div>
+
+      <!-- Box 3: Small Map -->
+      <div class="bg-white shadow-lg rounded-xl p-3 border border-green-100 transition-all duration-300 hover:shadow-xl">
+        <h3 class="text-base font-semibold mb-3 text-green-600 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+          </svg>
+          Your Location
+        </h3>
+        <div v-if="userLocation" class="space-y-2">
+          <div id="small-map" class="h-28 w-full rounded-lg overflow-hidden relative bg-gray-100"></div>
+          <div class="flex justify-between text-xs text-gray-700">
+            <div>
+              <div class="font-medium">Coordinates:</div>
+              <div>{{ userLocation.lat.toFixed(4) }}, {{ userLocation.lon.toFixed(4) }}</div>
+            </div>
+            <div v-if="nearestStation" class="text-right">
+              <div class="font-medium">AQI:</div>
+              <div :style="{ color: getColor(nearestStation.aqi, 'aqi') }" class="font-bold">
+                {{ nearestStation.aqi }}
+              </div>
+            </div>
+          </div>
+          <button @click="centerMapOnUser" 
+                  class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-medium py-1.5 px-3 rounded-lg transition duration-200 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+            </svg>
+            Center Map on Me
+          </button>
+        </div>
+        <div v-else class="text-gray-500 text-xs">Detecting location...</div>
+      </div>
+    </div>
+
     <!-- Map -->
     <div class="bg-white shadow-lg rounded-xl p-4 relative">
       <h2 class="text-lg font-semibold mb-4 text-gray-800">{{ $t('home.airQualityMap') }}</h2>
@@ -106,7 +233,6 @@
         </div>
       </div>
     </div>
-
     <!-- Global Rankings -->
     <section class="mt-8 px-2 md:px-4 space-y-6">
       <h2 class="text-base font-semibold text-gray-800">{{ $t('home.globalRanking') }}</h2>
@@ -157,7 +283,6 @@
             </tbody>
           </table>
         </div>
-
         <!-- Cleanest -->
         <div class="bg-white rounded-2xl shadow-lg p-4 border border-green-200 transition-all duration-300 hover:shadow-xl">
           <h3 class="text-lg font-semibold text-green-600 mb-3">{{ $t('home.cleanest') }}</h3>
@@ -209,7 +334,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { onMounted, onUnmounted, ref, watch, computed, nextTick } from "vue";
 import { useRouter } from "vue-router";
@@ -218,12 +342,12 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/airQuality";
-
 const router = useRouter();
 const selectedPollutant = ref("aqi");
 const searchQuery = ref("");
 const aqiData = ref([]);
 let map = null;
+let smallMap = null;
 let markers = [];
 const markerMap = ref({});
 const searchMarkers = ref([]);
@@ -231,7 +355,7 @@ const showAllResults = ref(false);
 const maxVisibleResults = ref(5);
 const favorites = ref([]);
 const auth = useAuthStore();
-
+const userLocation = ref(null);
 // Computed properties for rankings
 const top10MostPolluted = computed(() =>
   [...aqiData.value]
@@ -245,7 +369,21 @@ const top10LeastPolluted = computed(() =>
     .sort((a, b) => a.aqi - b.aqi)
     .slice(0, 10)
 );
-
+// Computed property for nearest station
+const nearestStation = computed(() => {
+  if (!userLocation.value || aqiData.value.length === 0) return null;
+  let minDist = Infinity;
+  let nearest = null;
+  aqiData.value.forEach(station => {
+    if (!station.lat || !station.lon) return;
+    const dist = calculateDistance(userLocation.value.lat, userLocation.value.lon, station.lat, station.lon);
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = station;
+    }
+  });
+  return nearest;
+});
 // --- COLOR & STATUS FUNCTIONS ---
 const getColorAQI = (value, pollutant = "aqi") => {
   const val = parseFloat(value);
@@ -260,9 +398,7 @@ const getColorAQI = (value, pollutant = "aqi") => {
   }
   return "#999";
 };
-
 const getStatusLabelAQI = (value) => getStatusAqi(value, "aqi");
-
 const getStatusAqi = (value, pollutant = "aqi") => {
   const val = parseFloat(value);
   if (isNaN(val)) return "N/A";
@@ -276,7 +412,6 @@ const getStatusAqi = (value, pollutant = "aqi") => {
   }
   return "N/A";
 };
-
 // Pollutant options
 const pollutantOptions = [
   { value: "aqi", label: "AQI", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFCC00"/><path d="M12 12l4-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
@@ -290,7 +425,6 @@ const pollutantOptions = [
   { value: "pressure", label: "Pressure", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#66CC66"/><path d="M12 12l3-4" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>` },
   { value: "wind", label: "Wind", icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 12h13a3 3 0 1 0 0-6M3 18h9a3 3 0 1 1 0 6" stroke="#33CCFF" stroke-width="2" stroke-linecap="round"/></svg>` }
 ];
-
 // Color scale
 const getColor = (value, pollutant) => {
   const val = parseFloat(value);
@@ -341,7 +475,6 @@ const getColor = (value, pollutant) => {
       return "#999";
   }
 };
-
 // Status text
 const getStatus = (value, pollutant) => {
   const val = parseFloat(value);
@@ -392,7 +525,6 @@ const getStatus = (value, pollutant) => {
       return "N/A";
   }
 };
-
 // Legend items
 const getLegendItems = (pollutant) => {
   switch (pollutant) {
@@ -455,10 +587,8 @@ const getLegendItems = (pollutant) => {
       return [];
   }
 };
-
 const legendItems = computed(() => getLegendItems(selectedPollutant.value));
 const legendTitle = computed(() => `${selectedPollutant.value.toUpperCase()} Levels`);
-
 // Search results
 const searchResults = computed(() => {
   const searchTerm = searchQuery.value.trim().toLowerCase();
@@ -470,7 +600,6 @@ const searchResults = computed(() => {
     )
     .slice(0, 12);
 });
-
 // Fetch data
 const fetchAQIData = async () => {
   try {
@@ -483,7 +612,6 @@ const fetchAQIData = async () => {
     console.error("Error fetching AQI data:", error);
   }
 };
-
 const fetchPhnomPenhAQI = async () => {
   try {
     const { data } = await axios.get("http://127.0.0.1:8000/api/air-quality/phnom-penh");
@@ -516,7 +644,6 @@ const fetchPhnomPenhAQI = async () => {
     console.error("Error fetching Phnom Penh AQI data:", error);
   }
 };
-
 const assignIDs = (data) => {
   return data.map((station, index) => ({
     ...station,
@@ -524,7 +651,6 @@ const assignIDs = (data) => {
     flag: station.flag || `https://flagcdn.com/w160/${getCountryCode(station.country || 'kh')}.png`,
   }));
 };
-
 // Helper to extract country code from flag URL or country name
 const getCountryCode = (country) => {
   const countryCodeMap = {
@@ -558,7 +684,6 @@ const getCountryCode = (country) => {
   const normalizedCountry = country.toLowerCase();
   return countryCodeMap[normalizedCountry] || 'kh';
 };
-
 // Fetch favorites
 const fetchFavorites = async () => {
   try {
@@ -578,12 +703,10 @@ const fetchFavorites = async () => {
     console.error("Failed to fetch favorites:", err);
   }
 };
-
 // Check if city is favorite
 const isFavorite = (station) => {
   return favorites.value.some(fav => fav.name.toLowerCase() === station.name.toLowerCase());
 };
-
 // Toggle favorite
 const toggleFavorite = async (station) => {
   try {
@@ -658,13 +781,11 @@ const toggleFavorite = async (station) => {
     });
   }
 };
-
 // Render markers
 const renderMarkers = () => {
   markers.forEach((marker) => marker.remove());
   markers = [];
   markerMap.value = {};
-
   aqiData.value.forEach((station) => {
     if (!station.lat || !station.lon) return;
     let value;
@@ -676,11 +797,9 @@ const renderMarkers = () => {
     if (selectedPollutant.value !== "aqi" && (value === null || value === undefined)) {
       return;
     }
-
     const color = getColor(value, selectedPollutant.value);
     const status = getStatus(value, selectedPollutant.value);
     const isFav = isFavorite(station);
-
     // Create custom icon for favorite cities
     const icon = isFav ? L.divIcon({
       html: `
@@ -702,12 +821,10 @@ const renderMarkers = () => {
       opacity: 1,
       fillOpacity: 0.8,
     });
-
     const renderRow = (label, val, unit = "") => {
       if (val === null || val === undefined || val === "N/A") return "";
       return `<div><strong>${label}:</strong> ${val}${unit}</div>`;
     };
-
     const popupContent = `
       <div style="font-family: 'Arial', sans-serif; max-width: 200px;">
         <div style="font-weight: 700; font-size: 12px; color: #000000; border-bottom: 1px solid #000000; padding-bottom: 2px; margin-bottom: 4px; text-align: center;">
@@ -754,7 +871,6 @@ const renderMarkers = () => {
         </div>
       </div>
     `;
-
     const marker = isFav ? L.marker([station.lat, station.lon], { icon }) : L.circleMarker([station.lat, station.lon], {
       radius: 6,
       fillColor: color,
@@ -763,9 +879,7 @@ const renderMarkers = () => {
       opacity: 1,
       fillOpacity: 0.8,
     });
-
     marker.addTo(map).bindPopup(popupContent);
-
     // Handle popup interactions
     marker.on('popupopen', () => {
       const detailBtn = document.getElementById(`view-detail-${station.id}`);
@@ -791,11 +905,9 @@ const renderMarkers = () => {
         }
       });
     });
-
     markers.push(marker);
     markerMap.value[station.name] = marker;
   });
-
   // Add favorite marker from localStorage
   const favoriteCityData = localStorage.getItem('selectedFavoriteCity');
   if (favoriteCityData) {
@@ -812,7 +924,6 @@ const renderMarkers = () => {
     }
   }
 };
-
 // Search location
 const searchLocation = () => {
   searchMarkers.value.forEach((marker) => marker.remove());
@@ -851,14 +962,12 @@ const searchLocation = () => {
     });
   }
 };
-
 // Clear search
 const clearSearch = () => {
   searchQuery.value = "";
   searchMarkers.value.forEach((marker) => marker.remove());
   searchMarkers.value = [];
 };
-
 // Go to location
 const goToLocation = (result) => {
   clearSearch();
@@ -868,11 +977,9 @@ const goToLocation = (result) => {
     marker.openPopup();
   }
 };
-
 // Zoom controls
 const zoomIn = () => map.zoomIn();
 const zoomOut = () => map.zoomOut();
-
 // Initialize map
 const initMap = () => {
   map = L.map("map", {
@@ -890,6 +997,76 @@ const initMap = () => {
     }
   ).addTo(map);
 };
+// Initialize small map
+const initSmallMap = () => {
+  if (userLocation.value) {
+    // Destroy existing small map if it exists
+    if (smallMap) {
+      smallMap.remove();
+    }
+    
+    // Create new small map
+    nextTick(() => {
+      const mapContainer = document.getElementById('small-map');
+      if (mapContainer) {
+        smallMap = L.map("small-map", {
+          center: [userLocation.value.lat, userLocation.value.lon],
+          zoom: 10,
+          zoomControl: false,
+          scrollWheelZoom: false,
+          dragging: false,
+          touchZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+        });
+        
+        L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+          {
+            attribution: "&copy; OpenStreetMap & CARTO",
+            subdomains: "abcd",
+            maxZoom: 19,
+          }
+        ).addTo(smallMap);
+        
+        // Add marker for user location
+        L.marker([userLocation.value.lat, userLocation.value.lon], {
+          icon: L.divIcon({
+            html: `<div style="background-color: #10B981; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>`,
+            className: "user-location-marker",
+            iconSize: [12, 12],
+            iconAnchor: [6, 6],
+          })
+        }).addTo(smallMap);
+      }
+    });
+  }
+};
+// Calculate distance between two coordinates
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  const d = R * c; // Distance in km
+  return d;
+};
+
+const deg2rad = (deg) => {
+  return deg * (Math.PI/180);
+};
+
+// Center main map on user location
+const centerMapOnUser = () => {
+  if (userLocation.value && map) {
+    map.setView([userLocation.value.lat, userLocation.value.lon], 10);
+  }
+};
 
 // Detect user location
 const detectUserLocation = () => {
@@ -898,18 +1075,30 @@ const detectUserLocation = () => {
       (position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
-        map.setView([lat, lon], 5);
-        L.marker([lat, lon]).addTo(map).bindPopup(`You are here! (Last updated: 02:55 PM +07, Aug 21, 2025)`).openPopup();
+        userLocation.value = { lat, lon };
+        
+        if (map) {
+          map.setView([lat, lon], 5);
+          L.marker([lat, lon]).addTo(map).bindPopup(`You are here! (Last updated: 02:55 PM +07, Aug 21, 2025)`).openPopup();
+        }
+        
+        // Initialize small map
+        initSmallMap();
       },
       (error) => {
         console.warn("Geolocation error:", error.message);
+        // Set a default location if geolocation fails
+        userLocation.value = { lat: 11.5564, lon: 104.9282 }; // Default to Phnom Penh
+        initSmallMap();
       }
     );
   } else {
     console.warn("Geolocation is not supported by this browser.");
+    // Set a default location if geolocation is not supported
+    userLocation.value = { lat: 11.5564, lon: 104.9282 }; // Default to Phnom Penh
+    initSmallMap();
   }
 };
-
 // City coordinates helper
 const getCityCoordinates = (cityName, countryCode) => {
   const cityCoords = {
@@ -940,7 +1129,6 @@ const getCityCoordinates = (cityName, countryCode) => {
     lon: getApproximateLon(countryCode)
   };
 };
-
 const getApproximateLat = (countryCode) => {
   const countryCoords = {
     'us': 39.8283, 'gb': 54.7023, 'fr': 46.6033, 'de': 51.1657, 'it': 41.8719,
@@ -951,7 +1139,6 @@ const getApproximateLat = (countryCode) => {
   };
   return countryCoords[countryCode.toLowerCase()] || 0;
 };
-
 const getApproximateLon = (countryCode) => {
   const countryCoords = {
     'us': -98.5795, 'gb': -3.2766, 'fr': 1.8883, 'de': 10.4515, 'it': 12.5674,
@@ -962,7 +1149,6 @@ const getApproximateLon = (countryCode) => {
   };
   return countryCoords[countryCode.toLowerCase()] || 0;
 };
-
 // Enhanced search location handler for navbar integration
 const handleSearchLocationSelected = (event) => {
   const location = event.detail
@@ -1022,7 +1208,6 @@ const handleSearchLocationSelected = (event) => {
     }, 10000)
   }
 }
-
 // Lifecycle hooks with enhanced search integration
 onMounted(() => {
   initMap();
@@ -1053,14 +1238,19 @@ onMounted(() => {
     fetchFavorites();
   }, 30000);
 });
-
 watch(selectedPollutant, () => {
   renderMarkers();
 });
-
+// Watch for user location changes to update small map
+watch(userLocation, () => {
+  initSmallMap();
+});
 // Cleanup event listeners
 onUnmounted(() => {
-  window.removeEventListener('location-search-selected', handleSearchLocationSelected)
+  window.removeEventListener('location-search-selected', handleSearchLocationSelected);
+  if (smallMap) {
+    smallMap.remove();
+  }
 });
 </script>
 
@@ -1076,5 +1266,8 @@ button {
 }
 button:hover {
   transform: translateY(-1px);
+}
+#small-map {
+  z-index: 0;
 }
 </style>

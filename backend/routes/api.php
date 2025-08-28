@@ -125,3 +125,7 @@ Route::post('/categories/create', [CategoryController::class, 'store']);   // cr
 Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
 Route::post('/categories/{id}/update', [CategoryController::class, 'update']); // update
 Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete
+
+
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('news', NewsController::class);

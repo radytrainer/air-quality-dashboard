@@ -12,9 +12,7 @@ class CategoryController extends Controller
     // GET /api/categories
     public function index()
     {
-        return response()->json(
-            Category::orderBy('name')->get()
-        );
+        return response()->json(Category::orderBy('name')->get());
     }
 
     // POST /api/categories
@@ -51,6 +49,6 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return response()->json(['message' => 'Deleted']);
+        return response()->json(['message' => 'Category deleted successfully']);
     }
 }

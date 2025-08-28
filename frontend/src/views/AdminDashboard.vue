@@ -3,94 +3,118 @@
     <!-- Top Metric Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
       <!-- Total All Locations -->
-      <div class="bg-purple-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ totalLocationsComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">Total All Locations</div>
-          </div>
-        </div>
-        <!-- Export Icon - Top Right -->
-        <button @click="exportAllData"
-          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
-      </div>
+      <!-- Total Locations Card -->
+<div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
+  <div class="flex items-center ">
+    <!-- Added colored circular icon -->
+    <div class="w-12 h-12 bg-purple-100 rounded-full mb-4 flex items-center justify-center flex-shrink-0">
+      <span class="text-purple-600 font-bold text-sm ">TOT</span>
+    </div>
+    <div class="text-center flex-1">
+      <div class="text-3xl font-bold text-gray-800 mb-1">{{ totalLocationsComputed }}</div>
+      <div class="text-sm text-gray-600 font-medium">{{ $t('dashboard.Total') }}</div>
+    </div>
+  </div>
+  <!-- Export Icon - Top Right -->
+  <button @click="exportAllData"
+    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-full hover:bg-gray-100">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+  </button>
+</div>
 
-      <!-- High Pollution Locations -->
-      <div class="bg-green-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ highPollutionCountComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">High Pollution Locations</div>
-          </div>
-        </div>
-        <!-- Export Icon - Top Right -->
-        <button @click="exportAllHighPollutionData"
-          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
-      </div>
+<!-- High Pollution Locations -->
+<div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
+  <div class="text-center flex items-center">
+    <!-- Added colored circular icon -->
+    <div class="w-12 h-12 bg-green-100 rounded-full mb-8 flex items-center justify-center flex-shrink-0">
+      <span class="text-green-600 font-bold text-sm">HIGH</span>
+    </div>
+    <div class="flex-1">
+      <div class="text-3xl font-bold text-gray-800 mb-1">{{ highPollutionCountComputed }}</div>
+      <div class="text-sm text-gray-600 font-medium">{{ $t('dashboard.High') }}</div>
+    </div>
+  </div>
+  <!-- Export Icon - Top Right -->
+  <button @click="exportAllHighPollutionData"
+    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-full hover:bg-gray-100">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+  </button>
+</div>
 
-      <!-- Low Pollution Locations -->
-      <div class="bg-orange-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ lowPollutionCountComputed }}</div>
-            <div class="text-sm text-gray-700 font-medium">Low Pollution Locations</div>
-          </div>
-        </div>
-        <!-- Export Icon - Top Right -->
-        <button @click="exportAllLowPollutionData"
-          class="absolute top-3 right-3 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
-      </div>
+<!-- Low Pollution Locations -->
+<div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
+  <div class="text-center flex items-center">
+    <!-- Added colored circular icon -->
+    <div class="w-12 h-12 bg-orange-100 rounded-full mb-8 flex items-center justify-center flex-shrink-0">
+      <span class="text-orange-600 font-bold text-sm">LOW</span>
+    </div>
+    <div class="flex-1">
+      <div class="text-3xl font-bold text-gray-800 mb-1">{{ lowPollutionCountComputed }}</div>
+      <div class="text-sm text-gray-600 font-medium">{{ $t('dashboard.Low') }}</div>
+    </div>
+  </div>
+  <!-- Export Icon - Top Right -->
+  <button @click="exportAllLowPollutionData"
+    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-full hover:bg-gray-100">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+  </button>
+</div>
 
-      <!-- Top High Pollution -->
-      <div class="bg-red-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-800 mb-1">{{ topHighPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...'
-          }}</div>
-          <div class="text-xs text-gray-600">Top High Pollution</div>
-        </div>
-        <!-- Export Icon - Top Right -->
-        <button @click="exportTopHighPollutionData"
-          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
-      </div>
+<!-- Top High Pollution -->
+<div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
+  <div class="text-center flex items-center">
+    <!-- Added colored circular icon -->
+    <div class="w-12 h-12 bg-red-100 rounded-full mb-8 flex items-center justify-center flex-shrink-0">
+      <span class="text-red-600 font-bold text-xs">TOP</span>
+    </div>
+    <div class="text-center flex-2">
+      <div class="text-3xl font-bold text-gray-800 mb-1">{{ topHighPollutionLocation?.aqi || 0 }}</div>
+      <div class="text-sm font-medium text-gray-600 mb-1 truncate">{{ topHighPollutionLocation?.name || 'Loading...' }}</div>
+      <div class="text-xs text-gray-500 mt-2">{{ $t('dashboard.Top') }}</div>
+    </div>
+  </div>
+  <!-- Export Icon - Top Right -->
+  <button @click="exportTopHighPollutionData"
+    class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-full hover:bg-gray-100">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+  </button>
+</div>
 
-      <!-- Top Low Pollution -->
-      <div class="bg-blue-300 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-800 mb-1">{{ topLowPollutionLocation?.aqi || 0 }}</div>
-          <div class="text-sm font-medium text-gray-700 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...'
-          }}</div>
-          <div class="text-xs text-gray-600">Top Low Pollution</div>
-        </div>
-        <!-- Export Icon - Top Right -->
-        <button @click="exportTopLowPollutionData"
-          class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-white/20">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-        </button>
-      </div>
+<!-- Top Low Pollution -->
+<div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative">
+  <div class=" text-center flex items-center">
+    <!-- Added colored circular icon -->
+    <div class="w-12 h-12 bg-blue-100 rounded-full mb-8 flex items-center justify-center flex-shrink-0">
+      <span class="text-blue-600 font-bold text-xs">LOW</span>
+    </div>
+    <div class="text-center flex-1">
+      <div class="text-2xl font-bold text-gray-800 mb-1">{{ topLowPollutionLocation?.aqi || 0 }}</div>
+      <div class="text-sm font-medium text-gray-600 mb-1 truncate">{{ topLowPollutionLocation?.name || 'Loading...' }}</div>
+      <div class="text-xs text-gray-500">{{ $t('dashboard.top') }}</div>
+    </div>
+  </div>
+  <!-- Export Icon - Top Right -->
+  <button @click="exportTopLowPollutionData"
+    class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-full hover:bg-gray-100">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+    </button>
+</div>
+
     </div>
 
     <!-- Middle Row -->
@@ -98,7 +122,7 @@
       <!-- Pollution Trends -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">High Pollution Pm10</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.Pm10') }} </h3>
         </div>
         <div class="relative h-48">
           <canvas ref="trendsChartRef" class="w-full h-full"></canvas>
@@ -106,11 +130,11 @@
         <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-            <span class="text-gray-600">High Pm10</span>
+            <span class="text-gray-600">{{ $t('dashboard.HighPm10') }}</span>
           </div>
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-gray-600">Low Pm10</span>
+            <span class="text-gray-600">{{ $t('dashboard.LowPm10') }}</span>
           </div>
         </div>
       </div>
@@ -118,7 +142,7 @@
       <!-- Pollution Distribution -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">High Pollution Pm2.5</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.Pm25') }} </h3>
         </div>
         <div class="relative h-48">
           <canvas ref="distributionChartRef" class="w-full h-full"></canvas>
@@ -127,13 +151,13 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-              <span class="text-gray-600">High Pm2.5</span>
+              <span class="text-gray-600">{{ $t('dashboard.HighPm25') }}</span>
             </div>
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-gray-600">Low Pm2.5</span>
+              <span class="text-gray-600">{{ $t('dashboard.LowPm25') }}</span>
             </div>
           </div>
         </div>
@@ -142,7 +166,7 @@
       <!-- Status Distribution -->
       <div class="bg-white rounded-2xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Status Distribution</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.status') }}</h3>
           <select v-model="selectedStatusMetric"
             class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option v-for="option in pollutantOptions" :key="option.value" :value="option.value">{{ option.label }}
@@ -171,10 +195,10 @@
         <!-- Card Header -->
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-800">Top Polluted Areas</h3>
+            <h3 class="text-lg font-semibold text-gray-800">{{ $t('dashboard.TopPollutedAreas') }}</h3>
             <button @click="exportData"
               class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-              Export
+              {{ $t('dashboard.Export') }}
             </button>
           </div>
         </div>
@@ -185,7 +209,7 @@
           <div class="mb-4 space-y-2">
             <!-- Pollution Level Filter -->
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-medium text-gray-700 min-w-[45px]">Level:</span>
+              <span class="text-sm font-medium text-gray-700 min-w-[45px]">{{ $t('dashboard.Level') }}:</span>
               <div class="flex bg-gray-100 rounded-lg p-1">
                 <button @click="pollutionFilter = 'high'" :class="[
                   'px-3 py-1 text-xs font-medium rounded-md transition-colors',
@@ -193,7 +217,7 @@
                     ? 'bg-red-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 ]">
-                  High
+                  {{ $t('analyticsPage.High') }}
                 </button>
                 <button @click="pollutionFilter = 'low'" :class="[
                   'px-3 py-1 text-xs font-medium rounded-md transition-colors',
@@ -201,14 +225,14 @@
                     ? 'bg-green-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 ]">
-                  Low
+                   {{ $t('analyticsPage.Low') }}
                 </button>
               </div>
             </div>
 
             <!-- Metric Selector -->
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-medium text-gray-700 min-w-[45px]">Metric:</span>
+              <span class="text-sm font-medium text-gray-700 min-w-[45px]">{{ $t('dashboard.Metric') }}:</span>
               <select v-model="selectedMetric"
                 class="px-3 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1">
                 <option value="aqi">AQI</option>
@@ -269,7 +293,7 @@
                   {{Math.round(filteredTop5Locations.reduce((sum, loc) => sum + (parseFloat(loc[selectedMetric]) || 0),
                     0) / filteredTop5Locations.length) || 0}}
                 </div>
-                <div class="text-gray-600">Average</div>
+                <div class="text-gray-600">{{ $t('dashboard.Average') }}</div>
               </div>
             </div>
           </div>
@@ -279,8 +303,8 @@
       <!-- Pollution Map with Selection -->
       <div class="lg:col-span-2 bg-white rounded-md p-1 shadow-sm">
         <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-semibold text-gray-800">Air Quality Map</h3>
-          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">Export</button>
+          <h3 class="text-sm font-semibold text-gray-800">{{ $t('dashboard.AirQualityMap') }}</h3>
+          <button class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">{{ $t('dashboard.Export') }}</button>
         </div>
         <div class="relative">
           <div id="map" class="h-[500px] w-full overflow-hidden relative rounded-lg bg-gray-100">
