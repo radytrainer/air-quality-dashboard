@@ -85,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favourites', [FavouriteController::class, 'store']); // add favourite
     Route::delete('/favourites/{city_name}', [FavouriteController::class, 'destroy']); // remove favourite
 
+
     // User management routes
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);              // List users
@@ -114,18 +115,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //news routes
-    Route::get('/news', [NewsController::class, 'index']);
     Route::post('/news', [NewsController::class, 'store']);
-    Route::patch('/news/{id}', [NewsController::class, 'update']); // PATCH route
-    Route::delete('/news/{id}', [NewsController::class, 'destroy']);
+    Route::patch('/news/{news}', [NewsController::class, 'update']);
+    Route::delete('/news/{news}', [NewsController::class, 'destroy']);
 });
 
 Route::get('/categories', [CategoryController::class, 'index']);           // list
 Route::post('/categories/create', [CategoryController::class, 'store']);   // create
 Route::get('/categories/{id}', [CategoryController::class, 'show']);       // show one
-Route::post('/categories/{id}/update', [CategoryController::class, 'update']); // update
+Route::put('/categories/{id}/update', [CategoryController::class, 'update']); // update
 Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']); // delete
-
-
-Route::apiResource('categories', CategoryController::class);
-Route::apiResource('news', NewsController::class);

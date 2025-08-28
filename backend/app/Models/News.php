@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class News extends Model
 {
-    protected $fillable = ['caption', 'media', 'category_id'];
+    protected $fillable = ['caption', 'category_id', 'media', 'video_link'];
 
+    // Cast media to array
     protected $casts = [
         'media' => 'array',
     ];
@@ -20,7 +21,7 @@ class News extends Model
         $paths = $this->media ?? [];
         return array_map(fn($p) => asset('storage/' . $p), $paths);
     }
-    public function category()
+        public function category()
     {
         return $this->belongsTo(Category::class);
     }
