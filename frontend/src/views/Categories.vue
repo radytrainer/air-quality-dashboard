@@ -1,6 +1,5 @@
 <template>
   <div class="p-6 max-w-7xl mx-auto">
-
     <!-- Back Button -->
     <button
       @click="$router.push('/admin-news')"
@@ -23,9 +22,20 @@
 
       <!-- Add Category Form -->
       <div v-if="showForm" class="mb-4">
-        <input v-model="catName" placeholder="Category Name" class="border p-2 w-full mb-2"/>
-        <input v-model="catDesc" placeholder="Description" class="border p-2 w-full mb-2"/>
-        <button @click="createCategory()" class="bg-green-600 text-white px-4 py-2 rounded-md">
+        <input
+          v-model="catName"
+          placeholder="Category Name"
+          class="border p-2 w-full mb-2"
+        />
+        <input
+          v-model="catDesc"
+          placeholder="Description"
+          class="border p-2 w-full mb-2"
+        />
+        <button
+          @click="createCategory()"
+          class="bg-green-600 text-white px-4 py-2 rounded-md"
+        >
           Add Category
         </button>
       </div>
@@ -34,22 +44,29 @@
       <table class="w-full border">
         <thead>
           <tr class="bg-gray-100">
-            <th class="border px-4 py-2">ID</th>
+            <th class="border px-4 py-2">N°</th>
             <th class="border px-4 py-2">Name</th>
             <th class="border px-4 py-2">Description</th>
             <th class="border px-4 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="c in categories" :key="c.id">
-            <td class="border px-4 py-2">{{ c.id }}</td>
+          <tr v-for="(c, index) in categories" :key="c.id">
+            <!-- Show index instead of real DB id -->
+            <td class="border px-4 py-2">{{ index + 1 }}</td>
             <td class="border px-4 py-2">{{ c.name }}</td>
             <td class="border px-4 py-2">{{ c.description || "—" }}</td>
             <td class="border px-4 py-2 flex gap-2">
-              <button @click="editCategory(c)" class="bg-yellow-500 text-white px-2 py-1 rounded-md">
+              <button
+                @click="editCategory(c)"
+                class="bg-yellow-500 text-white px-2 py-1 rounded-md"
+              >
                 Edit
               </button>
-              <button @click="deleteCategory(c.id)" class="bg-red-600 text-white px-2 py-1 rounded-md">
+              <button
+                @click="deleteCategory(c.id)"
+                class="bg-red-600 text-white px-2 py-1 rounded-md"
+              >
                 Delete
               </button>
             </td>
@@ -57,7 +74,6 @@
         </tbody>
       </table>
     </div>
-
   </div>
 </template>
 
@@ -87,10 +103,14 @@ async function fetchCategories() {
 // Create Category
 // ------------------
 async function createCategory() {
-  if (!catName.value.trim()) return Swal.fire("Error", "Category name required", "error");
+  if (!catName.value.trim())
+    return Swal.fire("Error", "Category name required", "error");
 
   try {
-    await api.post("/categories/create", { name: catName.value.trim(), description: catDesc.value.trim() });
+    await api.post("/categories/create", {
+      name: catName.value.trim(),
+      description: catDesc.value.trim(),
+    });
     catName.value = "";
     catDesc.value = "";
     showForm.value = false;
@@ -107,10 +127,14 @@ async function createCategory() {
 // ------------------
 function editCategory(category) {
   Swal.fire({
-    title: 'Edit Category',
+    title: "Edit Category",
     html: `
-      <input id="swal-name" class="swal2-input" placeholder="Category Name" value="${category.name}">
-      <input id="swal-desc" class="swal2-input" placeholder="Description" value="${category.description ?? ''}">
+      <input id="swal-name" class="swal2-input" placeholder="Category Name" value="${
+        category.name
+      }">
+      <input id="swal-desc" class="swal2-input" placeholder="Description" value="${
+        category.description ?? ""
+      }">
     `,
     focusConfirm: false,
     showCancelButton: true,
@@ -119,15 +143,19 @@ function editCategory(category) {
       const name = document.getElementById("swal-name").value;
       const description = document.getElementById("swal-desc").value;
       return { name, description };
-    }
+    },
   }).then(async (result) => {
     if (!result.isConfirmed) return;
 
     const { name, description } = result.value;
-    if (!name.trim()) return Swal.fire("Error", "Category name required", "error");
+    if (!name.trim())
+      return Swal.fire("Error", "Category name required", "error");
 
     try {
-      await api.put(`/categories/${category.id}/update`, { name: name.trim(), description: description.trim() });
+      await api.put(`/categories/${category.id}/update`, {
+        name: name.trim(),
+        description: description.trim(),
+      });
       await fetchCategories();
       Swal.fire("Success", "Category updated!", "success");
     } catch (err) {
@@ -142,13 +170,13 @@ function editCategory(category) {
 // ------------------
 async function deleteCategory(id) {
   const confirm = await Swal.fire({
-    title: 'Are you sure?',
+    title: "Are you sure?",
     text: "This action cannot be undone!",
-    icon: 'warning',
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
   });
 
   if (confirm.isConfirmed) {

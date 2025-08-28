@@ -69,7 +69,7 @@
       <input
         v-model="searchTerm"
         type="text"
-        placeholder="Search by caption or index"
+        placeholder="Search by caption or number"
         class="border rounded-md px-3 py-2 w-full sm:w-64"
       />
     </div>
@@ -81,7 +81,7 @@
       <table v-if="paginatedNews.length" class="w-full border border-gray-300">
         <thead>
           <tr class="bg-gray-100">
-            <th class="border px-4 py-2">#</th>
+            <th class="border px-4 py-2">N°</th>
             <th class="border px-4 py-2">Caption</th>
             <th class="border px-4 py-2">Category</th>
             <th class="border px-4 py-2">Media</th>
