@@ -1,105 +1,178 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-2 md:p-4">
-    <div class="max-w-7xl mx-auto">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+    <div class="max-w-7xl mx-auto space-y-8">
       <!-- Header with enhanced styling -->
-      <header class="text-center mb-4 md:mb-6">
+      <header class="text-center mb-6">
         <div class="inline-flex flex-col items-center">
-          <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+          <div class="flex items-center gap-2 mb-2">
             <div class="relative">
-              <div class="w-2 h-2 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <div class="absolute inset-0 w-2 h-2 md:w-3 md:h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div class="absolute inset-0 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75"></div>
             </div>
-            <h1 class="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               {{ $t('comparePage.header') }}
             </h1>
-            <span class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md">
+            <span class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full text-sm font-semibold shadow-md">
               {{ $t('comparePage.liveBadge') }}
             </span>
           </div>
-          <p class="text-slate-600 flex items-center gap-1 text-xs md:text-sm">
-            <LineChart class="w-3 h-3 md:w-4 md:h-4 text-blue-600 animate-float" />
+          <p class="text-slate-600 flex items-center gap-1 text-sm">
+            <LineChart class="w-4 h-4 text-blue-600 animate-float" />
             {{ $t('comparePage.realTimeInfo') }}
           </p>
         </div>
       </header>
       
-      <!-- Enhanced Info Cards - More Compact -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
+      <!-- Top 4 Metric Boxes - Following the style of the provided template -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Cities Tracked -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow border border-white/20 p-3 md:p-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
-          <div class="flex items-start justify-between">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="flex items-center gap-1 mb-1">
-                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+              <div class="flex items-center space-x-1 mb-1">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                 <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">{{ $t('comparePage.citiesTracked') }}</p>
               </div>
-              <p class="text-lg md:text-xl font-bold text-slate-900 mb-1">{{ totalCities }}</p>
-              <p class="text-xs text-slate-500">{{ $t('comparePage.citiesTrackedDesc') }}</p>
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ totalCities }}</p>
+              <p class="text-sm text-blue-600 font-medium">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ $t('comparePage.citiesTrackedDesc') }}
+                </span>
+              </p>
             </div>
-            <div class="bg-blue-100 p-1.5 rounded-lg animate-pulse-slow">
-              <MapPin class="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <MapPin class="w-5 h-5 text-white" />
+              </div>
+              <button @click="exportData('cities')" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
         
         <!-- Countries -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow border border-white/20 p-3 md:p-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
-          <div class="flex items-start justify-between">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="flex items-center gap-1 mb-1">
-                <div class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
+              <div class="flex items-center space-x-1 mb-1">
+                <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                 <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">{{ $t('comparePage.countries') }}</p>
               </div>
-              <p class="text-lg md:text-xl font-bold text-slate-900 mb-1">{{ totalCountries }}</p>
-              <p class="text-xs text-slate-500">{{ $t('comparePage.countriesDesc') }}</p>
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ totalCountries }}</p>
+              <p class="text-sm text-purple-600 font-medium">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ $t('comparePage.countriesDesc') }}
+                </span>
+              </p>
             </div>
-            <div class="bg-purple-100 p-1.5 rounded-lg animate-pulse-slow">
-              <Globe class="w-4 h-4 md:w-5 md:h-5 text-purple-600 animate-rotate-slow" />
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Globe class="w-5 h-5 text-white animate-rotate-slow" />
+              </div>
+              <button @click="exportData('countries')" class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
         
         <!-- Active Timezones -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow border border-white/20 p-3 md:p-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
-          <div class="flex items-start justify-between">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="flex items-center gap-1 mb-1">
-                <div class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
+              <div class="flex items-center space-x-1 mb-1">
+                <div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                 <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">{{ $t('comparePage.activeTimezones') }}</p>
               </div>
-              <p class="text-base md:text-lg font-bold text-slate-900 mb-1">{{ activeTimezonesDisplay }}</p>
-              <p class="text-xs text-slate-500">{{ $t('comparePage.activeTimezonesDesc') }}</p>
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ activeTimezones }}</p>
+              <p class="text-sm text-amber-600 font-medium">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ userTimezoneDisplay }}
+                </span>
+              </p>
             </div>
-            <div class="bg-amber-100 p-1.5 rounded-lg animate-pulse-slow">
-              <Clock class="w-4 h-4 md:w-5 md:h-5 text-amber-600 animate-tick" />
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                <Clock class="w-5 h-5 text-white animate-tick" />
+              </div>
+              <button @click="exportData('timezones')" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Average AQI -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center space-x-1 mb-1">
+                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Average AQI</p>
+              </div>
+              <p class="text-3xl font-bold text-slate-900 mb-2">{{ averageAQI }}</p>
+              <p class="text-sm text-indigo-600 font-medium">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  Global average
+                </span>
+              </p>
+            </div>
+            <div class="flex flex-col items-end space-y-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <BarChart2 class="w-5 h-5 text-white" />
+              </div>
+              <button @click="exportData('aqi')" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Main Comparison Section - More Compact -->
-      <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow border border-white/20 p-4 md:p-5 mb-4 md:mb-6">
+      <!-- Main Comparison Section -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8">
         <!-- Section Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-5">
-          <h2 class="text-base md:text-lg font-bold text-slate-900 flex items-center gap-1 md:gap-2 mb-2 md:mb-0">
-            <Search class="w-4 h-4 md:w-5 md:h-5 text-blue-600 animate-pulse-slow" />
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2 mb-2 md:mb-0">
+            <Search class="w-5 h-5 text-blue-600 animate-pulse-slow" />
             {{ $t('comparePage.selectCities') }}
           </h2>
           <button 
             @click="resetSelection"
-            class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg transition-colors duration-200 text-xs md:text-sm">
-            <RotateCcw class="w-3 h-3" />
+            class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+            <RotateCcw class="w-4 h-4" />
             {{ $t('comparePage.resetButton') }}
           </button>
         </div>
         
         <!-- Loading State -->
-        <div v-if="loading" class="flex justify-center items-center py-6">
-          <div class="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <div v-if="loading" class="flex justify-center items-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
         </div>
         
         <!-- City Selectors -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-5 md:mb-6">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <CitySelectorForCompare
             :label="$t('comparePage.primaryCity')"
             :description="$t('comparePage.primaryCityDesc')"
@@ -117,8 +190,8 @@
         </div>
         
         <!-- City Comparison Display -->
-        <div v-if="city1Data && city2Data && !errorMessage" class="mb-5 md:mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center mb-5 md:mb-6">
+        <div v-if="city1Data && city2Data && !errorMessage" class="mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
             <!-- Left City Card -->
             <CityCard 
               :city="city1Data"
@@ -129,7 +202,7 @@
             <div class="flex justify-center items-center">
               <div class="relative">
                 <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></div>
-                <div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-1.5 rounded-full font-bold text-sm md:text-base shadow-lg">
+                <div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
                   {{ $t('comparePage.vs') }}
                 </div>
               </div>
@@ -142,85 +215,85 @@
             />
           </div>
           
-          <!-- Enhanced Alerts - More Compact -->
-          <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-2.5 mb-2.5 rounded-md border border-red-200 flex items-start gap-2 shadow-sm">
-            <div class="bg-red-100 p-1.5 rounded-lg flex-shrink-0">
-              <AlertTriangle class="w-4 h-4 text-red-600 animate-bounce" />
+          <!-- Enhanced Alerts -->
+          <div v-if="city1Data && city1Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl border border-red-200 flex items-start gap-3 shadow-sm">
+            <div class="bg-red-100 p-2 rounded-lg flex-shrink-0">
+              <AlertTriangle class="w-5 h-5 text-red-600 animate-bounce" />
             </div>
             <div>
-              <p class="text-red-700 font-medium text-xs">
+              <p class="text-red-700 font-medium text-sm">
                 <strong>{{ city1Data.name }}</strong> {{ $t('comparePage.poorAirQuality') }} (AQI: <strong>{{ city1Data.aqi }}</strong>)
               </p>
-              <p class="text-red-600 text-xs mt-0.5">{{ $t('comparePage.healthWarning') }}</p>
+              <p class="text-red-600 text-sm mt-1">{{ $t('comparePage.healthWarning') }}</p>
             </div>
           </div>
           
-          <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-2.5 mb-2.5 rounded-md border border-red-200 flex items-start gap-2 shadow-sm">
-            <div class="bg-red-100 p-1.5 rounded-lg flex-shrink-0">
-              <AlertTriangle class="w-4 h-4 text-red-600 animate-bounce" />
+          <div v-if="city2Data && city2Data.aqi > 100" class="bg-red-50 p-4 mb-4 rounded-xl border border-red-200 flex items-start gap-3 shadow-sm">
+            <div class="bg-red-100 p-2 rounded-lg flex-shrink-0">
+              <AlertTriangle class="w-5 h-5 text-red-600 animate-bounce" />
             </div>
             <div>
-              <p class="text-red-700 font-medium text-xs">
+              <p class="text-red-700 font-medium text-sm">
                 <strong>{{ city2Data.name }}</strong> {{ $t('comparePage.poorAirQuality') }} (AQI: <strong>{{ city2Data.aqi }}</strong>)
               </p>
-              <p class="text-red-600 text-xs mt-0.5">{{ $t('comparePage.healthWarning') }}</p>
+              <p class="text-red-600 text-sm mt-1">{{ $t('comparePage.healthWarning') }}</p>
             </div>
           </div>
           
-          <!-- Chart Comparison Section - More Compact -->
-          <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-3 rounded-md border border-slate-200 shadow-inner">
-            <h3 class="text-sm md:text-base font-bold mb-2 md:mb-3 text-center text-slate-900 flex items-center gap-1 justify-center">
-              <BarChart2 class="w-4 h-4 md:w-5 md:h-5 text-blue-600 animate-pulse-slow" />
+          <!-- Chart Comparison Section -->
+          <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border border-slate-200 shadow-inner">
+            <h3 class="text-lg font-bold mb-4 text-center text-slate-900 flex items-center gap-2 justify-center">
+              <BarChart2 class="w-5 h-5 text-blue-600 animate-pulse-slow" />
               {{ $t('comparePage.pollutantComparison') }}
             </h3>
-            <div class="bg-white p-2.5 rounded-md shadow-sm">
+            <div class="bg-white p-4 rounded-xl shadow-sm">
               <CompareBarChart :city1="city1Data" :city2="city2Data" />
             </div>
           </div>
         </div>
         
-        <!-- Error Message - More Compact -->
-        <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-2.5 mb-3 rounded-r-md shadow-sm">
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-lg shadow-sm">
           <div class="flex items-center gap-2">
-            <AlertCircle class="w-4 h-4 md:w-5 md:h-5 text-red-500 animate-pulse" />
-            <p class="text-red-700 font-medium text-xs md:text-sm">{{ errorMessage }}</p>
+            <AlertCircle class="w-5 h-5 text-red-500 animate-pulse" />
+            <p class="text-red-700 font-medium text-sm">{{ errorMessage }}</p>
           </div>
         </div>
         
-        <!-- Enhanced AQI Guide - More Compact -->
-        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-md p-3 md:p-4 border border-slate-200 shadow-inner">
-          <h3 class="font-bold text-sm md:text-base mb-2 md:mb-3 text-center text-slate-900 flex items-center gap-1 justify-center">
-            <Wind class="w-4 h-4 md:w-5 md:h-5 text-slate-600 animate-pulse-slow" />
+        <!-- Enhanced AQI Guide -->
+        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200 shadow-inner">
+          <h3 class="font-bold text-lg mb-4 text-center text-slate-900 flex items-center gap-2 justify-center">
+            <Wind class="w-5 h-5 text-slate-600 animate-pulse-slow" />
             {{ $t('comparePage.aqiGuide') }}
           </h3>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-2">
-            <div class="flex flex-col items-center bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-              <div class="w-6 h-6 bg-green-500 rounded-full mb-1 flex items-center justify-center">
-                <Check class="w-3 h-3 text-white" />
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+              <div class="w-8 h-8 bg-green-500 rounded-full mb-2 flex items-center justify-center">
+                <Check class="w-4 h-4 text-white" />
               </div>
-              <span class="text-xs font-semibold text-gray-700">{{ $t('comparePage.good') }}</span>
-              <span class="text-xs text-gray-500 mt-0.5">0-50</span>
+              <span class="text-sm font-semibold text-gray-700">{{ $t('comparePage.good') }}</span>
+              <span class="text-sm text-gray-500 mt-1">0-50</span>
             </div>
-            <div class="flex flex-col items-center bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-              <div class="w-6 h-6 bg-yellow-500 rounded-full mb-1 flex items-center justify-center">
-                <Minus class="w-3 h-3 text-white" />
+            <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+              <div class="w-8 h-8 bg-yellow-500 rounded-full mb-2 flex items-center justify-center">
+                <Minus class="w-4 h-4 text-white" />
               </div>
-              <span class="text-xs font-semibold text-gray-700">{{ $t('comparePage.moderate') }}</span>
-              <span class="text-xs text-gray-500 mt-0.5">51-100</span>
+              <span class="text-sm font-semibold text-gray-700">{{ $t('comparePage.moderate') }}</span>
+              <span class="text-sm text-gray-500 mt-1">51-100</span>
             </div>
-            <div class="flex flex-col items-center bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-              <div class="w-6 h-6 bg-orange-500 rounded-full mb-1 flex items-center justify-center">
-                <AlertTriangle class="w-3 h-3 text-white" />
+            <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+              <div class="w-8 h-8 bg-orange-500 rounded-full mb-2 flex items-center justify-center">
+                <AlertTriangle class="w-4 h-4 text-white" />
               </div>
-              <span class="text-xs font-semibold text-gray-700">{{ $t('comparePage.unhealthySensitive') }}</span>
-              <span class="text-xs text-gray-500 mt-0.5">101-150</span>
+              <span class="text-sm font-semibold text-gray-700">{{ $t('comparePage.unhealthySensitive') }}</span>
+              <span class="text-sm text-gray-500 mt-1">101-150</span>
             </div>
-            <div class="flex flex-col items-center bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-              <div class="w-6 h-6 bg-red-500 rounded-full mb-1 flex items-center justify-center">
-                <X class="w-3 h-3 text-white" />
+            <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+              <div class="w-8 h-8 bg-red-500 rounded-full mb-2 flex items-center justify-center">
+                <X class="w-4 h-4 text-white" />
               </div>
-              <span class="text-xs font-semibold text-gray-700">{{ $t('comparePage.Unhealthy') }}</span>
-              <span class="text-xs text-gray-500 mt-0.5">151+</span>
+              <span class="text-sm font-semibold text-gray-700">{{ $t('comparePage.Unhealthy') }}</span>
+              <span class="text-sm text-gray-500 mt-1">151+</span>
             </div>
           </div>
         </div>
@@ -230,7 +303,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import axios from 'axios'
 import CitySelectorForCompare from '@/components/CitySelectorForCompare.vue'
 import CityCard from '@/components/CityCard.vue'
@@ -251,6 +324,7 @@ import {
   X
 } from "lucide-vue-next"
 
+// Reactive state
 const cities = ref([])
 const selectedCity1 = ref(null)
 const selectedCity2 = ref(null)
@@ -261,10 +335,53 @@ const loading = ref(true)
 const userTimezone = ref('')
 const userTime = ref('')
 
-// ------------------
-// Detect user's timezone & update current time
-// ------------------
+// Computed properties
+const totalCities = computed(() => cities.value.length)
+const totalCountries = computed(() => {
+  const countries = cities.value
+    .map(city => {
+      if (city.name) {
+        const parts = city.name.split(',')
+        return parts[parts.length - 1].trim()
+      }
+      return null
+    })
+    .filter(Boolean)
+  return new Set(countries).size
+})
+const activeTimezones = computed(() => {
+  const tzs = cities.value
+    .map(city => city.timezone)
+    .filter(Boolean)
+  if (userTimezone.value && !tzs.includes(userTimezone.value)) {
+    tzs.push(userTimezone.value)
+  }
+  return new Set(tzs).size
+})
+
+// User timezone display in small format
+const userTimezoneDisplay = computed(() => {
+  if (userTimezone.value && userTime.value) {
+    // Format to show only the city part of the timezone and time
+    const timezoneParts = userTimezone.value.split('/')
+    const timezoneCity = timezoneParts.length > 1 ? timezoneParts[1].replace(/_/g, ' ') : userTimezone.value
+    return `${timezoneCity} - ${userTime.value}`
+  }
+  return ''
+})
+
+// Average AQI computed property
+const averageAQI = computed(() => {
+  if (!cities.value.length) return 'N/A'
+  const validData = cities.value.filter(item => parseInt(item.aqi) > 0)
+  if (!validData.length) return 'N/A'
+  const sum = validData.reduce((acc, item) => acc + (parseInt(item.aqi) || 0), 0)
+  return Math.round(sum / validData.length)
+})
+
+// Initialize component
 onMounted(() => {
+  // Detect user timezone
   try {
     userTimezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
   } catch (err) {
@@ -287,57 +404,16 @@ onMounted(() => {
   }
   
   updateTime()
-  setInterval(updateTime, 1000)
+  const timeInterval = setInterval(updateTime, 1000)
   
   // Fetch cities data
   fetchCities()
+  
+  // Cleanup interval on unmount
+  onUnmounted(() => clearInterval(timeInterval))
 })
 
-// ------------------
-// Computed: total cities count
-// ------------------
-const totalCities = computed(() => cities.value.length)
-
-// ------------------
-// Computed: total countries count
-// ------------------
-const totalCountries = computed(() => {
-  const countries = cities.value
-    .map(city => {
-      if (city.name) {
-        const parts = city.name.split(',')
-        return parts[parts.length - 1].trim()
-      }
-      return null
-    })
-    .filter(Boolean)
-  return new Set(countries).size
-})
-
-// ------------------
-// Computed: active timezones including user's timezone
-// ------------------
-const activeTimezones = computed(() => {
-  const tzs = cities.value
-    .map(city => city.timezone)
-    .filter(Boolean)
-  if (userTimezone.value && !tzs.includes(userTimezone.value)) {
-    tzs.push(userTimezone.value)
-  }
-  return new Set(tzs).size
-})
-
-const activeTimezonesDisplay = computed(() => {
-  return userTimezone.value && userTime.value
-    ? `${activeTimezones.value} (You: ${userTimezone.value} - ${userTime.value})`
-    : activeTimezones.value > 0
-      ? activeTimezones.value
-      : 'N/A'
-})
-
-// ------------------
 // Fetch cities including Phnom Penh
-// ------------------
 async function fetchCities() {
   loading.value = true
   errorMessage.value = ''
@@ -367,7 +443,6 @@ async function fetchCities() {
     }
     
     cities.value = allCities
-    console.log('Total cities:', cities.value.length)
   } catch (error) {
     console.error('Failed to fetch cities:', error)
     errorMessage.value = 'Unable to load cities data. Please try again later.'
@@ -376,20 +451,15 @@ async function fetchCities() {
   }
 }
 
-// ------------------
 // Update city card data
-// ------------------
 function updateCity1Info(city) {
   city1Data.value = city || null
 }
-
 function updateCity2Info(city) {
   city2Data.value = city || null
 }
 
-// ------------------
 // Reset selections
-// ------------------
 function resetSelection() {
   selectedCity1.value = null
   selectedCity2.value = null
@@ -398,60 +468,83 @@ function resetSelection() {
   errorMessage.value = ''
 }
 
-// Auto-update card data when selection changes
-watch(selectedCity1, updateCity1Info)
-watch(selectedCity2, updateCity2Info)
+// Export data function
+function exportData(type) {
+  let data = []
+  let filename = ''
+  let headers = []
+  
+  const escapeCsvValue = (value) => {
+    if (value == null) return ''
+    const str = String(value)
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    return str
+  }
+  
+  switch(type) {
+    case 'cities':
+      headers = ['name', 'aqi', 'timezone', 'flag', 'countryCode']
+      data = cities.value.map(item => 
+        headers.map(header => escapeCsvValue(item[header])).join(',')
+      )
+      data.unshift(headers.join(','))
+      filename = 'cities-tracked.csv'
+      break
+    case 'countries':
+      const countries = [...new Set(cities.value.map(city => {
+        if (city.name) {
+          const parts = city.name.split(',')
+          return parts[parts.length - 1].trim()
+        }
+        return null
+      }).filter(Boolean))]
+      data = countries.map(country => escapeCsvValue(country))
+      data.unshift('Country')
+      filename = 'countries-tracked.csv'
+      break
+    case 'timezones':
+      const timezones = [...new Set(cities.value
+        .map(city => city.timezone)
+        .filter(Boolean))]
+      if (userTimezone.value && !timezones.includes(userTimezone.value)) {
+        timezones.push(userTimezone.value)
+      }
+      data = timezones.map(tz => escapeCsvValue(tz))
+      data.unshift('Timezone')
+      filename = 'active-timezones.csv'
+      break
+    case 'aqi':
+      data = [
+        `metric,value,timestamp`,
+        `average_aqi,${escapeCsvValue(averageAQI.value)},${escapeCsvValue(new Date().toISOString())}`
+      ]
+      filename = 'average-aqi.csv'
+      break
+  }
+  
+  const blob = new Blob([data.join('\n')], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+// Watch for selection changes
+watch(selectedCity1, (newCity) => {
+  updateCity1Info(newCity)
+})
+watch(selectedCity2, (newCity) => {
+  updateCity2Info(newCity)
+})
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-* {
-  font-family: 'Inter', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* Enhanced transitions and animations */
-select {
-  background-color: white;
-}
-
-/* Custom animations */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-.animate-pulse-slow {
-  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes rotate-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.animate-rotate-slow {
-  animation: rotate-slow 15s linear infinite;
-}
-
-@keyframes tick {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-.animate-tick {
-  animation: tick 1s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-.animate-bounce {
-  animation: bounce 1s ease-in-out infinite;
-}
 </style>

@@ -187,7 +187,7 @@
                     <div
                       v-for="(url, index) in article.media_urls.slice(0, 4)"
                       :key="index"
-                      class="w-16 h-16 rounded-md overflow-hidden border border-gray-200"
+                      class="w-16 h-16 rounded-md overflow-hidden border border-gray-200 media-container"
                       @click="openMediaAt(article.media_urls, index)"
                     >
                       <template v-if="isImage(url)">
@@ -473,6 +473,7 @@
     </transition>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted, nextTick } from "vue";
 import api from "@/services/api";
@@ -604,36 +605,105 @@ function closeModal() {
   currentMediaIndex.value = 0;
 }
 function isImage(url) {
-  if (!url) return false;
+  if (!url) {
+    console.log('Empty URL provided');
+    return false;
+  }
+  
+  console.log('Checking URL:', url);
+  
+  // Convert to lowercase for case-insensitive matching
+  const lowerUrl = url.toLowerCase();
+  
+  // Check for data URLs (base64 encoded images)
+  if (lowerUrl.startsWith('data:image/')) {
+    console.log('Detected as data:image URL');
+    return true;
+  }
   
   // Check for common image extensions
-  if (url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp|ico)(\?.*)?$/i)) {
+  const imageExtensions = [
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif', 
+    '.webp', '.svg', '.ico', '.heic', '.heif', '.avif', '.jxl'
+  ];
+  if (imageExtensions.some(ext => lowerUrl.includes(ext))) {
+    console.log('Detected as image by extension');
     return true;
   }
   
   // Check for image content type in URL parameters
-  if (url.match(/image\/(jpeg|jpg|gif|png|webp|svg|bmp|ico)/i)) {
+  if (lowerUrl.includes('image/') || 
+      lowerUrl.includes('format=jpg') || 
+      lowerUrl.includes('format=jpeg') || 
+      lowerUrl.includes('format=png') || 
+      lowerUrl.includes('format=gif') || 
+      lowerUrl.includes('format=bmp') || 
+      lowerUrl.includes('format=tiff') || 
+      lowerUrl.includes('format=webp') || 
+      lowerUrl.includes('format=svg') || 
+      lowerUrl.includes('format=ico')) {
+    console.log('Detected as image by content type');
     return true;
   }
   
   // Check for common image patterns in URL
-  if (url.match(/\/img\/|\/image\/|\/photo\/|\/media\//i)) {
+  if (lowerUrl.match(/\/img\/|\/image\/|\/photo\/|\/media\/|\/pictures\/|\/photos\//)) {
+    console.log('Detected as image by URL pattern');
     return true;
   }
   
+  // Check for image-related query parameters
+  if (lowerUrl.includes('type=image') || 
+      lowerUrl.includes('contenttype=image') || 
+      lowerUrl.includes('mimetype=image') ||
+      lowerUrl.includes('responsecontenttype=image')) {
+    console.log('Detected as image by query parameter');
+    return true;
+  }
+  
+  // Check for CDN patterns that typically serve images
+  if (lowerUrl.includes('cdn') && 
+      (lowerUrl.includes('img') || lowerUrl.includes('image') || lowerUrl.includes('photo'))) {
+    console.log('Detected as image by CDN pattern');
+    return true;
+  }
+  
+  console.log('URL detected as non-image');
   return false;
 }
 function handleImageError(e, item) {
   console.error('Image failed to load:', e.target.src);
   
+  // Check if the URL might actually be a video
+  const url = e.target.src;
+  const lowerUrl = url.toLowerCase();
+  const isVideo = lowerUrl.includes('.mp4') || 
+                 lowerUrl.includes('.webm') || 
+                 lowerUrl.includes('.ogg') || 
+                 lowerUrl.includes('.mov') ||
+                 lowerUrl.includes('video/');
+  
   // Create a fallback element
   const fallback = document.createElement('div');
-  fallback.className = 'w-full h-full bg-gradient-to-br from-purple-200 to-indigo-200 flex items-center justify-center';
-  fallback.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-    </svg>
-  `;
+  fallback.className = 'w-full h-full flex items-center justify-center rounded-md';
+  
+  if (isVideo) {
+    // Show video icon if it might be a video
+    fallback.className += ' bg-gradient-to-br from-purple-200 to-indigo-200';
+    fallback.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    `;
+  } else {
+    // Show generic media icon for other failures
+    fallback.className += ' bg-gradient-to-br from-gray-200 to-gray-300';
+    fallback.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    `;
+  }
   
   // Replace the broken image with the fallback
   e.target.parentNode.replaceChild(fallback, e.target);
@@ -776,6 +846,7 @@ onMounted(async () => {
   }, 30000);
 });
 </script>
+
 <style scoped>
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -812,5 +883,21 @@ img {
 }
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+.media-container {
+  position: relative;
+  overflow: hidden;
+}
+.media-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 0.375rem;
 }
 </style>

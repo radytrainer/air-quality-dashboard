@@ -1,128 +1,36 @@
 <template>
-  <div class="p-6 space-y-6 max-w-7xl mx-auto">
-    <!-- Toggleable Create Category Section -->
-    <div class="mb-4">
+  <div class="p-6 max-w-7xl mx-auto space-y-6">
+
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <button
-        @click="showCategoryForm = !showCategoryForm"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2"
+        @click="$router.push('/categories')"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
       >
-        <svg
-          v-if="!showCategoryForm"
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-        <svg
-          v-else
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-        {{ showCategoryForm ? "Hide Category Form" : "Add New Category" }}
+        Manage Categories
       </button>
 
-      <div
-        v-if="showCategoryForm"
-        class="mt-4 bg-white shadow-md rounded-lg p-6 transition-all duration-300"
+      <button
+        @click="showNewsForm = !showNewsForm"
+        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
       >
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">
-          {{ editingCategory ? "Edit Category" : "Create Category" }}
-        </h2>
-        <input
-          v-model="catName"
-          placeholder="Category name"
-          class="border border-gray-300 rounded-md p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          v-model="catDesc"
-          placeholder="Description"
-          class="border border-gray-300 rounded-md p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <div class="flex space-x-3">
-          <button
-            @click="editingCategory ? saveCategoryEdit() : createCategory()"
-            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-          >
-            {{ editingCategory ? "Save Category" : "Add Category" }}
-          </button>
-          <button
-            v-if="editingCategory"
-            @click="cancelCategoryEdit"
-            class="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+        {{ showNewsForm ? "Hide Create News" : "Create News" }}
+      </button>
     </div>
 
-    <!-- Categories List Section -->
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">All Categories</h2>
-      <div
-        v-if="categories.length === 0"
-        class="text-gray-500 text-center py-4"
-      >
-        No categories available.
-      </div>
-      <div
-        v-for="c in categories"
-        :key="c.id"
-        class="border border-gray-200 rounded-lg p-4 mb-4 hover:shadow-lg transition-shadow"
-      >
-        <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-lg font-medium text-gray-800">{{ c.name }}</h3>
-            <p class="text-sm text-gray-600">
-              {{ c.description || "No description" }}
-            </p>
-          </div>
-          <div class="flex space-x-3">
-            <button
-              @click="startCategoryEdit(c)"
-              class="px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              @click="deleteCategory(c.id)"
-              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Create News Form -->
+    <div v-if="showNewsForm" class="bg-white shadow-md rounded-lg p-6 mt-4 transition-all duration-300">
+      <h2 class="text-xl font-semibold mb-4">Create News</h2>
 
-
-    <!-- Create News Section -->
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Create News</h2>
       <input
         v-model="caption"
         placeholder="Caption"
-        class="border border-gray-300 rounded-md p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        class="border border-gray-300 rounded-md p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
+
       <select
         v-model="selectedCategory"
-        class="border border-gray-300 rounded-md p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        class="border border-gray-300 rounded-md p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
         <option disabled value="">-- Choose Category --</option>
         <option v-for="c in categories" :key="c.id" :value="c.id">
@@ -133,318 +41,166 @@
         type="file"
         multiple
         @change="onSelectFiles"
-        class="mb-4 text-gray-600"
+        class="mb-3 text-gray-600"
         accept="image/*,video/*"
       />
+
       <input
         v-model="videoLink"
         type="text"
-        placeholder="Video link (optional, e.g., YouTube)"
-        class="border border-gray-300 rounded-md p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="Video link (optional)"
+        class="border border-gray-300 rounded-md p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
 
       <button
         @click="createNews"
-        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
       >
         Post News
       </button>
     </div>
 
-    <!-- News List Section -->
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">All News</h2>
-      <div v-if="newsList.length === 0" class="text-gray-500 text-center py-4">
-        No news items available.
-      </div>
-      <div
-        v-for="n in newsList"
-        :key="n.id"
-        class="border border-gray-200 rounded-lg p-4 mb-4 hover:shadow-lg transition-shadow"
-      >
-        <!-- Caption -->
-        <input
-          v-if="editing && editing.id === n.id"
-          v-model="editing.caption"
-          class="border border-gray-300 rounded-md p-2 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          v-else
-          :value="n.caption"
-          disabled
-          class="border border-gray-300 rounded-md p-2 w-full mb-3 bg-gray-100 cursor-not-allowed"
-        />
+    <!-- Filters -->
+    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 items-center">
+      <select v-model="filterCategory" class="border rounded-md px-3 py-2">
+        <option value="">All Categories</option>
+        <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
 
-        <!-- Category -->
-        <select
-          v-if="editing && editing.id === n.id"
-          v-model="editing.category_id"
-          class="border border-gray-300 rounded-md p-2 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      <input
+        v-model="searchTerm"
+        type="text"
+        placeholder="Search by caption or number"
+        class="border rounded-md px-3 py-2 w-full sm:w-64"
+      />
+    </div>
+
+    <!-- News Table -->
+    <div class="bg-white shadow-md rounded-lg p-6 mt-4">
+      <h2 class="text-xl font-semibold mb-4">All News</h2>
+
+      <table v-if="paginatedNews.length" class="w-full border border-gray-300">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="border px-4 py-2">N°</th>
+            <th class="border px-4 py-2">Caption</th>
+            <th class="border px-4 py-2">Category</th>
+            <th class="border px-4 py-2">Media</th>
+            <th class="border px-4 py-2">Video Link</th>
+            <th class="border px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(n, index) in paginatedNews" :key="n.id" class="hover:bg-gray-50">
+            <td class="border px-4 py-2">{{ n.globalIndex }}</td>
+            <td class="border px-4 py-2">{{ n.caption }}</td>
+            <td class="border px-4 py-2">{{ n.category?.name ?? "—" }}</td>
+            <td class="border px-4 py-2">
+              <div class="flex flex-wrap gap-2">
+                <template v-for="(path, i) in n.media" :key="i">
+                  <video
+                    v-if="path.match(/\.(mp4|webm)$/)"
+                    :src="n.media_urls[i]"
+                    controls
+                    class="w-24 h-24 object-cover rounded-md"
+                  ></video>
+                  <img
+                    v-else
+                    :src="n.media_urls[i]"
+                    class="w-24 h-24 object-cover rounded-md"
+                  />
+                </template>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <a v-if="n.video_link" :href="n.video_link" target="_blank" class="text-blue-600 underline">Watch</a>
+              <span v-else>—</span>
+            </td>
+            <td class="border px-4 py-2 flex gap-2 justify-center">
+              <button
+                @click="editNews(n)"
+                class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 flex items-center gap-1"
+              >
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button
+                @click="deleteNews(n.id)"
+                class="bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200 flex items-center gap-1"
+              >
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div v-else class="text-gray-500 text-center py-4">No news items available.</div>
+
+      <!-- Pagination -->
+      <div class="flex justify-center mt-4 space-x-2">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
         >
-          <option disabled value="">-- Choose Category --</option>
-          <option v-for="c in categories" :key="c.id" :value="c.id">
-            {{ c.name }}
-          </option>
-        </select>
-        <div v-else class="text-sm text-gray-600 mb-3">
-          Category: {{ n.category?.name ?? "—" }}
-        </div>
-
-        <!-- Media -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
-          <div
-            v-for="(path, i) in n.media"
-            :key="i"
-            class="border border-gray-200 rounded-lg p-2"
-          >
-            <template v-if="path.match(/\.(mp4|webm)$/)">
-              <video
-                :src="n.media_urls[i]"
-                controls
-                class="w-full h-40 object-cover rounded-md"
-              ></video>
-            </template>
-            <template v-else>
-              <img
-                :src="n.media_urls[i]"
-                class="w-full h-40 object-cover rounded-md"
-              />
-            </template>
-
-            <div v-if="editing && editing.id === n.id" class="mt-2">
-              <label class="text-sm text-gray-600 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  :checked="keep.includes(path)"
-                  @change="toggleKeep(path)"
-                  class="h-4 w-4 text-indigo-600"
-                />
-                Keep this file
-              </label>
-            </div>
-          </div>
-        </div>
-
-
-        <!-- Video Link -->
-        <input
-          v-if="editing && editing.id === n.id"
-          v-model="editing.video_link"
-          type="text"
-          placeholder="Video link (optional)"
-          class="border border-gray-300 rounded-md p-2 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <div v-else-if="n.video_link" class="mb-3">
-          <a
-            :href="n.video_link"
-            target="_blank"
-            class="text-blue-600 underline"
-            >Watch Video</a
-          >
-        </div>
-
-        <!-- Upload new files -->
-        <div v-if="editing && editing.id === n.id" class="mb-4">
-          <input
-            type="file"
-            multiple
-            @change="onSelectNewFiles"
-            class="text-gray-600"
-            accept="image/*,video/*"
-          />
-        </div>
-
-        <!-- Action buttons -->
-        <div class="flex space-x-3">
-          <button
-            v-if="!editing || editing.id !== n.id"
-            @click="startEdit(n)"
-            class="px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
-          >
-            Edit
-          </button>
-          <button
-            v-else
-            @click="saveEdit"
-            class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Save
-          </button>
-          <button
-            v-if="editing && editing.id === n.id"
-            @click="cancelEdit()"
-            class="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            @click="deleteNews(n.id)"
-            class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
-          >
-            Delete
-          </button>
-        </div>
+          Prev
+        </button>
+        <button
+          v-for="p in totalPages"
+          :key="p"
+          @click="currentPage = p"
+          :class="['px-3 py-1 border rounded-md', currentPage === p ? 'bg-blue-600 text-white' : 'hover:bg-gray-100']"
+        >
+          {{ p }}
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-3 py-1 border rounded-md hover:bg-gray-100 disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import Swal from "sweetalert2";
 import api from "@/services/api";
 
-// --------------------
-// News State
-// --------------------
 const caption = ref("");
-const files = ref([]);
 const selectedCategory = ref("");
-const newsList = ref([]);
-const editing = ref({
-  id: null,
-  caption: "",
-  category_id: "",
-  video_link: "",
-});
-const keep = ref([]);
-const newFiles = ref([]);
-const videoLink = ref(""); 
+const files = ref([]);
+const videoLink = ref("");
+const showNewsForm = ref(false);
 
-// --------------------
-// Category State
-// --------------------
 const categories = ref([]);
-const catName = ref("");
-const catDesc = ref("");
-const showCategoryForm = ref(false);
-const editingCategory = ref(null);
+const newsList = ref([]);
 
-// --------------------
-// Fetch all news
-// --------------------
-async function fetchNews() {
-  try {
-    const { data } = await api.get("/news");
-    newsList.value = data;
-  } catch (error) {
-    console.error("Error fetching news:", error);
-    alert("Failed to fetch news");
-  }
-}
+const filterCategory = ref("");
+const searchTerm = ref("");
 
-// --------------------
-// Fetch all categories
-// --------------------
+const currentPage = ref(1);
+const perPage = ref(5);
+
 async function fetchCategories() {
   try {
     const { data } = await api.get("/categories");
     categories.value = data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    alert("Failed to fetch categories");
+  } catch (err) {
+    console.error(err);
   }
 }
 
-// --------------------
-// Category CRUD
-// --------------------
-async function createCategory() {
-  if (!catName.value.trim()) {
-    alert("Category name is required");
-    return;
-  }
+async function fetchNews() {
   try {
-    await api.post("/categories", {
-      name: catName.value,
-      description: catDesc.value,
-    });
-    catName.value = "";
-    catDesc.value = "";
-    showCategoryForm.value = false;
-    await fetchCategories();
-  } catch (error) {
-    console.error("Error creating category:", error);
-    alert("Failed to create category");
-  }
-}
-
-function startCategoryEdit(category) {
-  editingCategory.value = { ...category };
-  catName.value = category.name;
-  catDesc.value = category.description || "";
-  showCategoryForm.value = true;
-}
-
-
-async function saveCategoryEdit() {
-  if (!catName.value.trim()) {
-    alert("Category name is required");
-    return;
-  }
-  try {
-    await api.patch(`/categories/${editingCategory.value.id}`, {
-      name: catName.value,
-      description: catDesc.value,
-    });
-    catName.value = "";
-    catDesc.value = "";
-    showCategoryForm.value = false;
-    editingCategory.value = null;
-    await fetchCategories();
-  } catch (error) {
-    console.error("Error updating category:", error);
-    alert("Failed to update category");
-  }
-}
-
-function cancelCategoryEdit() {
-  catName.value = "";
-  catDesc.value = "";
-  showCategoryForm.value = false;
-  editingCategory.value = null;
-}
-
-async function deleteCategory(id) {
-  if (!confirm("Are you sure you want to delete this category?")) return;
-  try {
-    await api.delete(`/categories/${id}`);
-    await fetchCategories();
-  } catch (error) {
-    console.error("Error deleting category:", error);
-    alert("Failed to delete category");
-  }
-}
-
-// --------------------
-// News CRUD
-// --------------------
-async function createNews() {
-  if (!selectedCategory.value) {
-    alert("Please choose a category");
-    return;
-  }
-
-  try {
-    const fd = new FormData();
-    fd.append("caption", caption.value.trim());
-    fd.append("category_id", selectedCategory.value);
-
-    files.value.forEach((f) => fd.append("media[]", f));
-
-    if (videoLink.value?.trim()) {
-      fd.append("video_link", videoLink.value.trim());
-    }
-
-    await api.post("/news", fd); // ✅ keep POST
-
-    caption.value = "";
-    selectedCategory.value = "";
-    files.value = [];
-    videoLink.value = ""; // <-- clear
-    await fetchNews();
-  } catch (error) {
-    console.error("Error creating news:", error);
-    alert("Failed to create news");
+    const { data } = await api.get("/news");
+    newsList.value = data;
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -452,95 +208,167 @@ function onSelectFiles(e) {
   files.value = Array.from(e.target.files);
 }
 
-function onSelectNewFiles(e) {
-  newFiles.value = Array.from(e.target.files);
-}
+// ------------------
+// Create News
+// ------------------
+async function createNews() {
+  if (!selectedCategory.value) return Swal.fire("Error", "Please choose a category", "error");
+  if (!caption.value.trim()) return Swal.fire("Error", "Caption is required", "error");
 
-function startEdit(item) {
-  editing.value = {
-    id: item.id,
-    caption: item.caption || "",
-    category_id: item.category_id || item.category?.id || "",
-    video_link: item.video_link || "",
-  };
-  keep.value = [...(item.media ?? [])];
-  newFiles.value = [];
-}
-
-async function saveEdit() {
-  if (!editing.value.caption?.trim()) {
-    alert("Caption is required");
-    return;
-  }
-  if (!editing.value.category_id) {
-    alert("Category is required");
-    return;
-  }
+  const fd = new FormData();
+  fd.append("caption", caption.value.trim());
+  fd.append("category_id", selectedCategory.value);
+  files.value.forEach(f => fd.append("media[]", f));
+  if (videoLink.value?.trim()) fd.append("video_link", videoLink.value.trim());
 
   try {
-    const fd = new FormData();
-    fd.append("_method", "PATCH");
-    fd.append("caption", editing.value.caption.trim());
-    fd.append("category_id", editing.value.category_id);
-
-    keep.value.forEach((p) => fd.append("keep[]", p));
-    newFiles.value.forEach((f) => fd.append("media[]", f));
-
-    if (editing.value.video_link?.trim()) {
-      fd.append("video_link", editing.value.video_link.trim());
-    }
-
-    await api.post(`/news/${editing.value.id}`, fd);
-
-    cancelEdit();
+    await api.post("/news", fd);
+    caption.value = "";
+    selectedCategory.value = "";
+    files.value = [];
+    videoLink.value = "";
+    showNewsForm.value = false;
     await fetchNews();
-  } catch (error) {
-    if (error.response?.status === 422) {
-      const errs = error.response.data.errors;
-      alert(Object.values(errs).flat().join("\n"));
-    } else {
-      alert("Failed to save news");
+    Swal.fire("Success", "News created!", "success");
+  } catch (err) {
+    Swal.fire("Error", "Failed to create news", "error");
+  }
+}
+
+// ------------------
+// Edit News
+// ------------------
+function editNews(news) {
+  // Clone current media and prepare newFiles array
+  let keepFiles = [...(news.media ?? [])];
+  let newFilesLocal = [];
+
+  Swal.fire({
+    title: 'Edit News',
+    width: 700,
+    html: `
+      <input id="swal-caption" class="swal2-input" placeholder="Caption" value="${news.caption}">
+      <select id="swal-category" class="swal2-select mb-2">
+        <option value="">--Choose Category--</option>
+        ${categories.value
+          .map(
+            (c) =>
+              `<option value="${c.id}" ${c.id === news.category_id ? 'selected' : ''}>${c.name}</option>`
+          )
+          .join('')}
+      </select>
+      <input type="file" id="swal-files" multiple class="swal2-file mb-2" accept="image/*,video/*">
+      <input id="swal-video" class="swal2-input" placeholder="Video link (optional)" value="${news.video_link ?? ''}">
+      <div id="current-media" class="flex flex-wrap gap-2 mt-2">
+        ${news.media_urls
+          ?.map(
+            (url, i) => `
+          <div class="w-24 h-24 border p-1 rounded-md relative">
+            ${url.match(/\.(mp4|webm)$/)
+              ? `<video src="${url}" class="w-full h-full object-cover rounded-md" controls></video>`
+              : `<img src="${url}" class="w-full h-full object-cover rounded-md"/>`}
+            <label class="flex items-center gap-1 text-xs mt-1">
+              <input type="checkbox" class="keep-file" data-path="${news.media[i]}" checked> Keep
+            </label>
+          </div>`
+          )
+          .join('') ?? ''}
+      </div>
+    `,
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    didOpen: () => {
+      const fileInput = document.getElementById('swal-files');
+      fileInput.addEventListener('change', (e) => {
+        newFilesLocal = Array.from(e.target.files);
+      });
+    },
+    preConfirm: () => {
+      const caption = document.getElementById('swal-caption').value;
+      const category_id = document.getElementById('swal-category').value;
+      const video_link = document.getElementById('swal-video').value;
+      const keep = Array.from(document.querySelectorAll('.keep-file'))
+        .filter(el => el.checked)
+        .map(el => el.dataset.path);
+      return { caption, category_id, video_link, keep };
+    },
+  }).then(async (result) => {
+    if (!result.isConfirmed) return;
+
+    const { caption, category_id, video_link, keep } = result.value;
+    if (!caption || !category_id) {
+      return Swal.fire("Error", "Caption and category are required", "error");
     }
-    console.error("Error saving news:", error.response?.data || error);
-  }
+
+    try {
+      const fd = new FormData();
+      fd.append("_method", "PATCH");
+      fd.append("caption", caption.trim());
+      fd.append("category_id", category_id);
+      fd.append("video_link", video_link?.trim() ?? "");
+      keep.forEach(p => fd.append("keep[]", p));
+      if (newFilesLocal.length) newFilesLocal.forEach(f => fd.append("media[]", f));
+
+      await api.post(`/news/${news.id}`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      await fetchNews();
+      Swal.fire("Success", "News updated!", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to update news", "error");
+    }
+  });
 }
 
-function toggleKeep(item) {
-  const index = keep.value.indexOf(item);
-  if (index > -1) {
-    keep.value.splice(index, 1);
-  } else {
-    keep.value.push(item);
-  }
-}
 
-function cancelEdit() {
-  editing.value = {
-    id: null,
-    caption: "",
-    category_id: "",
-    video_link: "",
-  };
-  keep.value = [];
-  newFiles.value = [];
-}
-
+// ------------------
+// Delete News
+// ------------------
 async function deleteNews(id) {
-  if (!confirm("Are you sure you want to delete this news item?")) return;
-  try {
-    await api.delete(`/news/${id}`);
-    await fetchNews();
-  } catch (error) {
-    console.error("Error deleting news:", error);
-    alert("Failed to delete news");
+  const confirm = await Swal.fire({
+    title: 'Are you sure?',
+    text: "This action cannot be undone!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  });
+  if (confirm.isConfirmed) {
+    try {
+      await api.delete(`/news/${id}`);
+      await fetchNews();
+      Swal.fire("Deleted!", "News has been deleted.", "success");
+    } catch (err) {
+      Swal.fire("Error", "Failed to delete news", "error");
+    }
   }
 }
 
-// --------------------
-// Lifecycle
-// --------------------
+const filteredNews = computed(() => {
+  let list = [...newsList.value];
+  if (filterCategory.value) list = list.filter(n => n.category_id === filterCategory.value);
+  list = list.map((n, idx) => ({ ...n, globalIndex: idx + 1 }));
+  if (searchTerm.value.trim()) {
+    const term = searchTerm.value.toLowerCase();
+    list = list.filter(n => n.caption.toLowerCase().includes(term) || String(n.globalIndex).includes(term));
+  }
+  return list;
+});
+
+const totalPages = computed(() => Math.ceil(filteredNews.value.length / perPage.value));
+const paginatedNews = computed(() =>
+  filteredNews.value.slice((currentPage.value - 1) * perPage.value, currentPage.value * perPage.value)
+);
+
+function prevPage() { if (currentPage.value > 1) currentPage.value--; }
+function nextPage() { if (currentPage.value < totalPages.value) currentPage.value++; }
+
 onMounted(() => {
-  fetchNews();
   fetchCategories();
+  fetchNews();
 });
 </script>

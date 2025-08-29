@@ -20,6 +20,7 @@ import Profile from '@/views/Profile.vue'
 import Message from '@/views/Message.vue'
 import AdminNews from '@/views/AdminNews.vue'
 import UserNews from '@/views/UserNews.vue'
+import Categories from '@/views/Categories.vue'
 
 
 
@@ -86,6 +87,12 @@ const routes = [
     path: '/user-management',
     name: 'user-management',
     component: UserManagement,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/categories',
+    name: 'categories',
+    component: Categories,
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
