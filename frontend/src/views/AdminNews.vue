@@ -33,9 +33,10 @@
         class="border border-gray-300 rounded-md p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
         <option disabled value="">-- Choose Category --</option>
-        <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+        <option v-for="c in categories" :key="c.id" :value="c.id">
+          {{ c.name }}
+        </option>
       </select>
-
       <input
         type="file"
         multiple
